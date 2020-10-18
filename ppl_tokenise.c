@@ -10,7 +10,7 @@ typedef struct typeExpression{
     char name[100];
     enum type_var type;
     enum bind_type bind;
-    //UNION
+    //UNION...
 }typeExpression;
 
 typeExpression typeExpressionTable[MAX];
