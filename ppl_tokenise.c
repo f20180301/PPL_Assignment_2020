@@ -98,7 +98,7 @@ char * getToken(char *lexeme){
             return "Variable";
         }
     }
-   return "Error"; 
+   return "ERROR"; 
     
 }
 
