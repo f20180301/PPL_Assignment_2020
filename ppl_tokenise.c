@@ -3,8 +3,8 @@
 #include<stdlib.h>
 #define MAX 100
 
- char *ha[12];  
-char *op[16][2]; //FOR KEYWORD
+ char *ha[12];   // Array for storing keywords 
+char *op[16][2]; // Array for storing Operators and their names
 
 
 //type expression Table //fill while TRAVERSING PARSE-TREE
