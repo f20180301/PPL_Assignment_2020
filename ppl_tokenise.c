@@ -3,8 +3,8 @@
 #include<stdlib.h>
 #define MAX 100
 
- char *ha[12];   // Array for storing keywords 
-char *op[16][2]; // Array for storing Operators and their names
+ char *ha[13];  
+char *op[16][2]; //FOR KEYWORD
 
 
 //type expression Table //fill while TRAVERSING PARSE-TREE
@@ -64,7 +64,7 @@ char * getToken(char *lexeme){
     return "Primitive Data";
     else if(flag==0)
     {
-        for(int i=0;i<12;i++)
+        for(int i=0;i<13;i++)
         if(strcmp(lexeme,ha[i])==0)
           return "Keyword";
 
@@ -98,7 +98,7 @@ char * getToken(char *lexeme){
             return "Variable";
         }
     }
-   return "ERROR"; 
+   return "Error"; 
     
 }
 
@@ -172,6 +172,7 @@ ha[8]="real";
 ha[9]="boolean";
 ha[10]="array";
 ha[11]="jagged array";
+ha[12]="R1";
 
 op[0][0]="+";
 op[0][1]="PLUS";
