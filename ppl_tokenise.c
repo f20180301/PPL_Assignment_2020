@@ -3,7 +3,7 @@
 #include<stdlib.h>
 #define MAX 100
 
- char *ha[13];  
+ char *ha[13][2];  
 char *op[16][2]; //FOR KEYWORD
 
 
@@ -65,8 +65,8 @@ char * getToken(char *lexeme){
     else if(flag==0)
     {
         for(int i=0;i<13;i++)
-        if(strcmp(lexeme,ha[i])==0)
-          return "Keyword";
+        if(strcmp(lexeme,ha[i][0])==0)
+          return ha[i][1];
 
           flag=1;
     }
@@ -95,7 +95,7 @@ char * getToken(char *lexeme){
                 return "ERROR";
                 
             }
-            return "Variable";
+            return "ID";
         }
     }
    return "Error"; 
@@ -160,36 +160,50 @@ void tokeniseSourcecode(char a[100],token *head){       //Function for File Reda
 //driver
 int main(){
     //checkingTokeniser
-ha[0]="program";
-ha[1]="declare";
-ha[2]="list";
-ha[3]="of";
-ha[4]="variables";
-ha[5]="size";
-ha[6]="values";
-ha[7]="integer";
-ha[8]="real";
-ha[9]="boolean";
-ha[10]="array";
-ha[11]="jagged array";
-ha[12]="R1";
+ha[0][0]="program";
+ha[0][1]="PROGRAM";
+ha[1][0]="declare";
+ha[1][1]="DECLARE";
+ha[2][0]="list";
+ha[2][1]="LIST";
+ha[3][0]="of";
+ha[3][1]="OF";
+ha[4][0]="variables";
+ha[4][1]="VARIABLES";
+ha[5][0]="size";
+ha[5][1]="SIZE";
+ha[6][0]="values";
+ha[6][1]="VALUES";
+ha[7][0]="integer";
+ha[7][1]="INTEGER";
+ha[8][0]="real";
+ha[8][1]="REAL";
+ha[9][0]="boolean";
+ha[9][1]="BOOLEAN";
+ha[10][0]="array";
+ha[10][1]="ARRAY";
+ha[11][0]="jagged array";
+ha[11][1]="JAGGED";
+ha[12][0]="R1";
+ha[12][1]="R1";
+
 
 op[0][0]="+";
 op[0][1]="PLUS";
 op[1][0]="-";
 op[1][1]="MINUS";
 op[2][0]="*";
-op[2][1]="MULT";
+op[2][1]="MUL";
 op[3][0]="/";
-op[3][1]="DIV";
+op[3][1]="DIVIDE";
 op[4][0]="(";
-op[4][1]="RBOP";
+op[4][1]="BROP";
 op[5][0]=")";
-op[5][1]="RBCL";
+op[5][1]="BRCL";
 op[6][0]="{";
-op[6][1]="CBOP";
+op[6][1]="CURLYOP";
 op[7][0]="}";
-op[7][1]="CBCL";
+op[7][1]="CURLYCL";
 op[8][0]="[";
 op[8][1]="SQOP";
 op[9][0]="]";
@@ -203,9 +217,9 @@ op[12][1]="COLON";
 op[13][0]=";";
 op[13][1]="SEMICOLON";
 op[14][0]="..";
-op[14][1]="TWODOT";
+op[14][1]="DD";
 op[15][0]="=";
-op[15][1]="ASSIGN";
+op[15][1]="EQUALS";
 
 
 
