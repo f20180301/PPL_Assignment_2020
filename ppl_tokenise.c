@@ -61,7 +61,7 @@ char * getToken(char *lexeme){
     else if(strcmp(lexeme,"true")==0||strcmp(lexeme,"false")==0)
     return "Boolean";*/
     if((c>=48&&c<=57)||strcmp(lexeme,"true")==0||strcmp(lexeme,"false")==0)
-    return "Primitive Data";
+    return "NUM";
     else if(flag==0)
     {
         for(int i=0;i<13;i++)
