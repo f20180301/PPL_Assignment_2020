@@ -75,8 +75,7 @@ void traverse_parse_tree(/*receive params t, T*/){
            }
            //
            exp_table_record.record.primitive_type=temp->child->value(int, real or bool);
-
-       }
+         }
        else if(temp->=="Array"){
            temp.tag=ARRAY;
            temp=temp->fiirstchild; 
