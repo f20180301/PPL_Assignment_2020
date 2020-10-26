@@ -10,20 +10,21 @@ char *op[16][2]; //FOR KEYWORD
 //type expression Table //fill while TRAVERSING PARSE-TREE
 enum type_var{primitive, rectangular, jagged};
 enum bind_type{static_bind, dynamic_bind, not_applicable};
-typedef struct typeExpression{
-    char name[100];
-    enum type_var type;
-    enum bind_type bind;
-    //UNION...
-}typeExpression;
+// typedef struct typeExpression{
+//     char name[100];
+//     enum type_var type;
+//     enum bind_type bind;
+//     //UNION...
+// }typeExpression;
 
-typeExpression typeExpressionTable[MAX];
-void printTypeexpressiontable(){        //PRINTING TABLE (3 enteries)
-    for(int i=0;i<3;i++){
-        printf("%s %d %d\n", typeExpressionTable[i].name, typeExpressionTable[i].type, typeExpressionTable[i].bind);
-    }
-    return;
-}
+// typeExpression typeExpressionTable[MAX];
+// void printTypeexpressiontable(){        //PRINTING TABLE (3 enteries)
+//     for(int i=0;i<3;i++){
+//         printf("%s %d %d\n", typeExpressionTable[i].name, typeExpressionTable[i].type, typeExpressionTable[i].bind);
+//     }
+//     return;
+// }
+//in new file
 //type expression table
 
 //TokenisedStream
@@ -91,8 +92,10 @@ char * getToken(char *lexeme){
                 if((i<20)&&(d=='_'||(d>=65&&d<=90)||(d>=97&&d<=122)||(d>=48&&d<=57)))
                 {i++;
                 continue;}
-                else
+                else{
+                //printf("yaha %d %s \n\n",i,lexeme);
                 return "ERROR";
+                }
                 
             }
             return "ID";
@@ -126,7 +129,7 @@ void printLinkedList(){         //Test function for printing entire LinkedList o
     token * temp=head;
     printf("\n NOW PRINTING \n\n");
     while(temp!=NULL){
-          printf("%s         ->       %s             --->>         %d\n",temp->lexeme,temp->token,temp->lineno);
+          printf("%10.10s %10.10s %d\n",temp->lexeme,temp->token,temp->lineno);
           temp=temp->next;
     }
 }
@@ -143,13 +146,13 @@ void tokeniseSourcecode(char a[100],token *head){       //Function for File Reda
     while(fscanf(fp,"%[^\n]\n", buff)!=EOF){
        count++;
        char *token_split;
-       token_split=strtok(buff," ");
+       token_split=strtok(buff," \t");
        while(token_split!=NULL){
            if(token_split!=NULL){
            s=createNode(token_split,count);
            insertNode(s);
            }
-           token_split=strtok(NULL," ");
+           token_split=strtok(NULL," \t");
        }
     }
     printLinkedList();
@@ -191,7 +194,7 @@ ha[12][1]="R1";
 op[0][0]="+";
 op[0][1]="PLUS";
 op[1][0]="-";
-op[1][1]="MINUS";
+op[1][1]="MINUS";       //ADD DASH WALA -- IF NEEDED HERE ; 
 op[2][0]="*";
 op[2][1]="MUL";
 op[3][0]="/";
@@ -223,19 +226,19 @@ op[15][1]="EQUALS";
 
 
 
-    tokeniseSourcecode("filename.txt",head);
+    tokeniseSourcecode("testcases/t6.txt",head);
     //checking TypeExpression
-    typeExpression t;
-    strcpy(t.name,"q1");
-    t.type=primitive;
-    t.bind=not_applicable;
-    printf("%s %d %d\n\n", t.name, t.type, t.bind);
+    // typeExpression t;
+    // strcpy(t.name,"q1");
+    // t.type=primitive;
+    // t.bind=not_applicable;
+    // //printf("%s %d %d\n\n", t.name, t.type, t.bind);
+    // //
+    // typeExpressionTable[0]=t;
+    // typeExpressionTable[1]=t;
+    // typeExpressionTable[2]=t;
     //
-    typeExpressionTable[0]=t;
-    typeExpressionTable[1]=t;
-    typeExpressionTable[2]=t;
-    //
-    printTypeexpressiontable();
+    // printTypeexpressiontable();
     //end
     return 0;
 }

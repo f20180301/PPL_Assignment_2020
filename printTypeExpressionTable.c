@@ -160,6 +160,7 @@ void printTypeExpressionsTable(TypeExpressionTable T[],int m,char *filename){
         }
          fprintf(fp,"\n");
     }
+    fclose(fp);
 }
 
 int main(){
