@@ -354,7 +354,7 @@ int main(){
 int arr[]={ 5,4, 3,  5, 4, 4,1,6,0};
     strcpy(t[3].var_name,"var_3d_j");
     t[3].info=N_A;
-    t[3].tag=assignment_stmt;
+    t[3].tag=jagged_array;
     t[3].record.j_arr_record.dim=3;
     t[3].record.j_arr_record.r1_low=2;
     t[3].record.j_arr_record.r1_high=4;

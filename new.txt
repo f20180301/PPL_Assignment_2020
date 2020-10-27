@@ -2,5 +2,5 @@
      var_a           array          Static  <type=rectangularArray, dimensions=3, range_R1= (9, 11), range_R2= (9, 12), range_R3= (0, 11), basicElementType = Integer>
      var_p       primitive   NotApplicable  <basicType=INTEGER>
   var_2d_j    jagged_array   NotApplicable  <type =jaggedArray, dimensions=2, range_R1=(3, 8) range_R2 = ( 8 , 9 , 10 , 11 , 12 , 13 ), basicElementType = integer>
-  var_3d_j assignment_stmt   NotApplicable  NOT A VALID TYPE EXPRESSION
+  var_3d_j    jagged_array   NotApplicable  <type =jaggedArray, dimensions=3, range_R1=(2, 4) range_R2 = ( 2 [ 5, 4 ], 3 [ 5, 4, 3 ], 4 [ 5, 4, 3, 5 ]), basicElementType = integer>
      var_p       primitive   NotApplicable  <basicType=BOOLEAN>
