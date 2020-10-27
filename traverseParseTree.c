@@ -1,19 +1,280 @@
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>
-typedef enum  {
-   INTEGER,
-   REAL,
-   BOOLEAN, 
-   TYPE_ERROR
-}primitive;
+/*************************TOKEN STRUCT IMPORTS******************************/
+#define MAX 100
 
-typedef enum  {
-   PRIMITIVE,
-   ARRAY,
-   J_ARRAY,
-   NA
-}declaration_type;
+char *ha[13][2];  
+char *op[16][2]; //FOR KEYWORD
+
+
+typedef struct token{       //TOKEN STRUCTURE
+    char lexeme[200];
+    char token[200];
+    int lineno;
+    struct token* next;
+}token;
+
+token * head=NULL;
+token * tail=NULL;      //Head, Tail of LinkedList for TokenStream
+
+/**************************END TOKEN STRUCT***************************************/
+
+/**********************GRAMMAR STRUCT IMPORTS************************/
+#define TOTAL_TERMINALS 34
+#define TOTAL_NON_TERMINALS 34
+#define NON_TERMINALS 34
+char *TerminalMap[] =
+    {
+        "PROGRAM",
+        "BROP",
+        "BRCL",
+        "CURLYOP",
+        "CURLYCL",
+        "EQUALS",
+        "DECLARE",
+        "ID",
+        "COLON",
+        "LIST",
+        "OF",
+        "VARIABLES",
+        "SEMICOLON",
+        "ARRAY",
+        "INTEGER",
+        "SQOP",
+        "DD",
+        "SQCL",
+        "JAGGED",
+        "R1",
+        "NUM",
+        "REAL",
+        "BOOLEAN",
+        "PLUS",
+        "MINUS",
+        "DIVIDE",
+        "MUL",
+        "TRE",
+        "FAL",
+        "SIZE",
+        "VALUES",
+        "AND",
+        "OR",
+        "EPSILON"
+        };
+char *NonTerminalMap[] =
+    {
+        "s",
+        "start",
+        "declaration",
+        "declaration_stmt",
+        "assignment",
+        "assignment_stmt",
+        "primitive",
+        "single_primitive",
+        "multi_primitive",
+        "array",
+        "array_dim",
+        "jagged_array",
+        "jagged_2d_array",
+        "jagged_3d_array",
+        "jagged_2d_dim",
+        "jagged_3d_dim",
+        "jag_lines",
+        "jag_line",
+        "jag_list",
+        "num_list",
+        "num_id",
+        "var_list",
+        "arr_pid",
+        "idx",
+        "type",
+        "expression",
+        "arithmetic_expression",
+        "term",
+        "factor",
+        "op1",
+        "op2",
+        "boolean_expression",
+        "or_expression",
+        "fact_bool"};
+
+typedef enum
+{
+    PROGRAM,
+    BROP,
+    BRCL,
+    CURLYOP,
+    CURLYCL,
+    EQUALS,
+    DECLARE,
+    ID,
+    COLON,
+    LIST,
+    OF,
+    VARIABLES,
+    SEMICOLON,
+    ARRAY,
+    INTEGER,
+    SQOP,
+    DD,
+    SQCL,
+    JAGGED,
+    R1,
+    NUM,
+    REAL,
+    BOOLEAN,
+    PLUS,
+    MINUS,
+    DIVIDE,
+    MUL,
+    TRE,
+    FAL,
+    SIZE,
+    VALUES,
+    AND,
+    OR,
+    EPSILON
+} Terminal;
+
+typedef enum
+{
+    s,
+    start,
+    declaration,
+    declaration_stmt,
+    assignment,
+    assignment_stmt,
+    primitive,
+    single_primitive,
+    multi_primitive,
+    array,
+    array_dim,
+    jagged_array,
+    jagged_2d_array,
+    jagged_3d_array,
+    jagged_2d_dim,
+    jagged_3d_dim,
+    jag_lines,
+    jag_line,
+    jag_list,
+    num_list,
+    num_id,
+    var_list,
+    arr_pid,
+    idx,
+    type,
+    expression,
+    arithmetic_expression,
+    term,
+    factor,
+    op1,
+    op2,
+    boolean_expression,
+    or_expression,
+    fact_bool
+} NonTerminal;
+
+
+typedef union SYMBOL {
+    Terminal t;
+    NonTerminal nt;
+} symbol;
+
+typedef struct RULE // Single Node of a rule in RHS
+{
+    int isterm; // 0=Non-Term  // 1=Terminal
+    symbol type;
+    struct RULE *next;
+} rule;
+
+// wrapper for a complete rule
+typedef struct GRULES // Linked list of mutiple rules corresponding to a single LHS
+{
+    rule *head;
+    struct GRULES *next;
+} grules;
+
+typedef struct // Derivation of a particular single LHS
+{
+    NonTerminal nt;
+    //char nonTerminal[100];
+    grules *head;
+} grammar;
+/***********GRAMMAR STRUCT IMPORTS END***************/
+
+
+
+/********PARSE TREE NODE*********/
+// Terminal Nodes
+typedef struct terminalNode
+{
+	Terminal t;
+	char lexeme[100];
+	int line_num;
+} TerminalNode;
+
+// NonTerminal Nodes
+typedef struct nonTerminalNode
+{	
+	NonTerminal nt;
+	grules * expRule; // for getting the rule used in parsing
+} NonTerminalNode;
+
+// Union for Term / NonTerm Nodes
+typedef union nodeType
+{
+	TerminalNode terminal;
+	NonTerminalNode nonTerminal;
+} NodeType;
+
+
+// ParseTree Node
+typedef struct treeNode
+{
+	int isTerm; // tag for term/non_term and leaf / non_leaf
+	NodeType Node;	// Details corresponding to a Terminal or a NonTerminal Node
+	
+	//TypeExpression t; // to be done
+	// only for NonTerminal or Both ??
+	
+	struct treeNode * parent; // parent of the node
+	struct treeNode * sibling; // right sibling of the node
+	
+	//for linkedlist of children
+	struct treeNode* firstChild;
+	
+} parseTree;
+/********PARSE TREE NODE*********/
+
+/***************TYPE EXPRESSION TABLE AND STRUCTS**********************/
+
+// typedef enum  {
+//    INTEGER,
+//    REAL,
+//    BOOLEAN, 
+//    TYPE_ERROR
+// }primitive;
+
+// typedef enum  {
+//    PRIMITIVE,
+//    ARRAY,
+//    J_ARRAY,
+//    NA
+// }declaration_type;
+
+typedef enum{
+    Static,
+    Dynamic,
+    N_A
+}bind_info;
+
+char string_bind[3][25] = {
+                        "Static",
+                        "Dynamic",
+                        "NotApplicable"
+                     };
+
+
 
 typedef union {
     int *_line;
@@ -34,92 +295,113 @@ typedef struct  {
 }jagged_array_record;
 
 typedef union type_Expression_record{
-     primitive primitive_type;
+     Terminal primitive_type;//INT<BOOL<REAL
      array_record arr_record;
      jagged_array_record j_arr_record;
 } type_Expression_record;
 
 typedef struct TypeExpression{
-    declaration_type tag;
+    NonTerminal tag;///primitive,array,jagged
     type_Expression_record record;
 }TypeExpression;
 
+typedef struct TypeExpressionTable{
+    char var_name[200];
+    NonTerminal tag;
+    bind_info info;
+    type_Expression_record record;
 
-void traverse_parse_tree(/*receive params t, T*/){
-    if(t->__=="START"){
-        traverse(t->firstChild,T);
-        traverse(t->firstChild->sibling,T);
+}TypeExpressionTable;
+
+/***************TYPE EXPRESSION TABLE AND STRUCTS**********************/
+
+void traverse_parse_tree(parseTree *t,TypeExpressionTable table[]){
+    if(t->isTerm==0&&t->Node.nonTerminal.nt==s){
+        t=t->firstChild->sibling->sibling->sibling->sibling;   
+        traverse_parse_tree(t,table);
+        //pointer t is pointing/moving to <start>
+        return;
     }
-    else if(t->=="DECLARATION"){
-        traverse(t->firstChild); //to dec_stmnt
+     //pointer t is pointing/moving to <start>
+    else if(t->isTerm==0&&t->Node.nonTerminal.nt==start){
+        traverse_parse_tree(t->firstChild,table);
+        traverse_parse_tree(t->firstChild->sibling,table);
+        return;
+    }
+    
+    else if(t->isTerm==0&&t->Node.nonTerminal.nt==declaration){
+        traverse_parse_tree(t->firstChild,table); //to dec_stmnt
         if(t->firstChild->sibling!=NULL){
-        traverse(t->firstChild->sibling);
+        traverse_parse_tree(t->firstChild->sibling,table);//to declarations or null
         }
+        return;
    }
-   else if(t->="DELARATION_STATEMENT"){
+   else if(t->isTerm==0&&t->Node.nonTerminal.nt==declaration_stmt){
        //build for the "typeExpression" of this declarartion statement, error reporting
-       TypeExpression exp_table_record;
-       * temp=t;    //just being safe, making copy
+       TypeExpressionTable exp_table_record;
+       parseTree * temp=t;    //just being safe, making copy
        temp=temp->firstChild;
-       if(temp->=="Primitive"){
-           temp.tag=PRIMITIVE;
-           temp=temp->firstchild; 
-           * varlist_pointer;   //pointing to var_list  //moving into single/multiple_primitive node
-           if(SINGLE){
+
+       if(temp->isTerm==0&&temp->Node.nonTerminal.nt==primitive){
+           exp_table_record.tag=primitive;          //primitive/jagged_array/array//terminal
+           temp=temp->firstChild; 
+           parseTree* varlist_pointer=NULL;   //pointing to var_list  //moving into single/multiple_primitive node //populate type expressions
+           if(temp->isTerm==0&&temp->Node.nonTerminal.nt==single_primitive){
                varlist_pointer=temp=temp->firstChild->sibling;
                temp=temp->sibling->sibling;//moving into colon ke baad wala node
            }
            else{//multiple
-               varlist_pointer=temp=temp->firstchild->sibling->sibling->sibling->sibling;
+               varlist_pointer=temp=temp->firstChild->sibling->sibling->sibling->sibling;
                temp=temp->sibling->sibling;//moving into colon ke baad wala node
            }
            //
-           exp_table_record.record.primitive_type=temp->child->value(int, real or bool);
+           exp_table_record.record.primitive_type=temp->firstChild->Node.terminal.t; //INT/BOOl/REAL(terminal)
            //daalnaa
          }
-       else if(temp->=="Array"){
-           temp.tag=ARRAY;
+
+       else if(temp->isTerm==0&&temp->Node.nonTerminal.nt==array){
+           exp_table_record.tag=array;
            ///temp2=temp
-           temp=temp->fiirstchild; 
-           * varlist_pointer; 
-            if(SINGLE){
-               varlist_pointer=temp=temp->fiirstchild->sibling;
+           temp=temp->firstChild; 
+           parseTree * varlist_pointer=NULL; 
+            if(temp->isTerm==0&&temp->Node.nonTerminal.nt==single_array){
+               varlist_pointer=temp=temp->firstChild->sibling;
                temp=temp->sibling->sibling;//moving into colon ke baad wala node
                //daalte hue hi nikalo.
            }
            else{
-               varlist_pointer=temp=temp->fiirstchild->sibling->sibling->sibling->sibling;
+               varlist_pointer=temp=temp->firstChild->sibling->sibling->sibling->sibling;
                temp=temp->sibling->sibling;//moving into colon ke baad wala node
            }
             temp=temp->sibling;//(ignore just after colon, arrray written)
             //<array_dim> hai aab, in temp
             
             do{
-                temp=temp->firstChild //(moving into the child of  <array_dim>)
+                temp=temp->firstChild ;//(moving into the child of  <array_dim>)
                 temp=temp->sibling;
-                id or num =temp->firstChild;
+                //id or num =temp->firstChild;
                 temp=temp->sibling->sibling;
-                id or num =temp->firstChild; 
+               // id or num =temp->firstChild; 
                 temp=temp->sibling->sibling;//reaches <array_dim>
                 //chk type(dynamic), dimension(lower<upper), read, and error report, maintain counter for Dimension Count, dimension=count;
-                store to type_Expression_record.record.arr_record;
+                //store to type_Expression_record.record.arr_record;
             }while(temp!=NULL);
 //temp2=daalde
        }
        //while exiting put in node
 
-       else if(temp->=="Jagged_Array"){
+       else if(temp->isTerm==0&&temp->Node.nonTerminal.nt==jagged_array){
            temp=temp->firstChild;
-        if(temp->=="Jagged_2d_Array"){
-           temp.tag=J_ARRAY;
-           temp=temp->fiirstchild; 
-           * varlist_pointer; 
-                if(SINGLE){
-               varlist_pointer=temp=temp->fiirstchild->sibling;
-               temp=temp->sibling->sibling;//moving into colon ke baad wala node
+           if(temp->isTerm==0&&temp->Node.nonTerminal.nt==jagged_2d_array){
+           exp_table_record.tag=jagged_array;
+           temp=temp->firstChild; 
+           parseTree* varlist_pointer; 
+                if(temp->isTerm==0&&temp->Node.nonTerminal.nt==single_jegged2darray){
+                    varlist_pointer=temp=temp->firstChild->sibling;
+                    temp=temp->sibling->sibling;//moving into colon ke baad wala node
                 }
                 else{
-                    varlist_pointer=temp=temp->fiirstchild->sibling->sibling->sibling->sibling;
+                    varlist_pointer=temp=temp->firstChild->sibling->sibling->sibling->sibling;
                     temp=temp->sibling->sibling;//moving into colon ke baad wala node
                 }
            temp=temp->sibling->sibling;//(ignore just after colon, jagged and arrray written)
@@ -135,7 +417,7 @@ void traverse_parse_tree(/*receive params t, T*/){
                 do{
                 //temp pointing on <jag_line>
                 temp=temp->firstChild;
-                * temp_jag=temp->firstChild;  //point to R1             
+                parseTree* temp_jag=temp->firstChild;  //point to R1             
                 temp_jag=temp_jag->sibling->sibling;//pointing on NUM
                 int indx=temp_jag;
                 //chk index in l_bound,u_bound and particularly increasing//#######TO BE DONE
@@ -161,23 +443,23 @@ void traverse_parse_tree(/*receive params t, T*/){
           // exp_table_record.record.j_arr_record=temp->child->value;
 
        }
-       else if(temp->=="Jagged_3d_Array"){
-           temp.tag=J_ARRAY;
-           temp=temp->fiirstchild; 
-           * varlist_pointer; 
-           if(SINGLE){
-               varlist_pointer=temp=temp->fiirstchild->sibling;
+       else if(temp->isTerm==0&&temp->Node.nonTerminal.nt==jagged_3d_array){
+           exp_table_record.tag=jagged_array;
+           temp=temp->firstChild; 
+           parseTree* varlist_pointer; 
+           if(temp->isTerm==0&&temp->Node.nonTerminal.nt==single_jagged3darray){
+               varlist_pointer=temp=temp->firstChild->sibling;
                temp=temp->sibling->sibling;//moving into colon ke baad wala node
            }
            else{
-               varlist_pointer=temp=temp->fiirstchild->sibling->sibling->sibling->sibling;
+               varlist_pointer=temp=temp->firstChild->sibling->sibling->sibling->sibling;
                temp=temp->sibling->sibling;//moving into colon ke baad wala node
            }
            temp=temp->sibling->sibling;//(ignore just after colon, jagged and arrray written)
             //<jagged_dim> hai , in temp
         //CONTINUE THIS WORK//CONTINUE THIS WORK//CONTINUE THIS WORK
-            int l_bound=temp->firstChild->sibling->firstChild
-            int u_bound=temp-firstChild->sibling->sibling->sibling->firstChild
+            int l_bound=temp->firstChild->sibling->firstChild;
+            int u_bound=temp-firstChild->sibling->sibling->sibling->firstChild;
             int dimension=3;
             if(l_bound<=u_bound){//chk =
                 //kamm alag hoga.
@@ -185,30 +467,33 @@ void traverse_parse_tree(/*receive params t, T*/){
             else{
                 //error
             }
-           exp_table_record.record.j_arr_record=temp->child;
+           exp_table_record.record.j_arr_record=temp->firstChild;
        }
        }
        //reach, type expression record ready,
        //populate varlist_pointer, with typeexpression,
        //populate typeExpressionTable with variable created.
+       return;
    }
 
-    else if(t->=="ASSIGNMENT"){
-        traverse(t->firstChild);
+    else if(t->isTerm==0&&t->Node.nonTerminal.nt==assignment){
+        traverse_parse_tree(t->firstChild,table);
         if(t->firstChild->sibling!=NULL){
-        traverse(t->firstChild->sibling);
+        traverse_parse_tree(t->firstChild->sibling,table);
         }
+        return;
 }
 
-else if(t->"Assign_Stmnt") //<assignment_stmt> 
+else if(t->isTerm==0&&t->Node.nonTerminal.nt==assignment_stmt){//<assignment_stmt> 
 //=> <arr_pid> EQUALS <expression> SEMICOLON
-{
 type_left;type_right;
 //CONTINUE THIS WORK//CONTINUE THIS WORK//CONTINUE THIS WORK
 t=t->firstChild;(check validity)//-->boundck, etc if array type var                   int a = 2 + 3.7 + 5;
 t=t->sibling->sibling;//move to expree(send to function, find return type) -- , + , &&
 (type_left!=type_right){
    // ERROR //otherwise no isseus
+}
+return;
 }
 }
 

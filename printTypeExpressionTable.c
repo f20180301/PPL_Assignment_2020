@@ -1,30 +1,179 @@
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>
+char *TerminalMap[] =
+    {
+        "PROGRAM",
+        "BROP",
+        "BRCL",
+        "CURLYOP",
+        "CURLYCL",
+        "EQUALS",
+        "DECLARE",
+        "ID",
+        "COLON",
+        "LIST",
+        "OF",
+        "VARIABLES",
+        "SEMICOLON",
+        "ARRAY",
+        "INTEGER",
+        "SQOP",
+        "DD",
+        "SQCL",
+        "JAGGED",
+        "R1",
+        "NUM",
+        "REAL",
+        "BOOLEAN",
+        "PLUS",
+        "MINUS",
+        "DIVIDE",
+        "MUL",
+        "TRE",
+        "FAL",
+        "SIZE",
+        "VALUES",
+        "AND",
+        "OR",
+        "EPSILON"
+        };
+char *NonTerminalMap[] =
+    {
+        "s",
+        "start",
+        "declaration",
+        "declaration_stmt",
+        "assignment",
+        "assignment_stmt",
+        "primitive",
+        "single_primitive",
+        "multi_primitive",
+        "array",
+        "array_dim",
+        "jagged_array",
+        "jagged_2d_array",
+        "jagged_3d_array",
+        "jagged_2d_dim",
+        "jagged_3d_dim",
+        "jag_lines",
+        "jag_line",
+        "jag_list",
+        "num_list",
+        "num_id",
+        "var_list",
+        "arr_pid",
+        "idx",
+        "type",
+        "expression",
+        "arithmetic_expression",
+        "term",
+        "factor",
+        "op1",
+        "op2",
+        "boolean_expression",
+        "or_expression",
+        "fact_bool"};
 
-typedef enum  {
-   INTEGER,
-   REAL,
-   BOOLEAN, 
-   TYPE_ERROR
-}primitive;
-char string_primitive[3][10] = {
-                         "Integer",
-                         "Real",
-                         "Boolean"
-                     };
-typedef enum  {
-   PRIMITIVE,
-   ARRAY,
-   J_ARRAY,
-   NA
-}declaration_type;
-char string_dec[4][20]= {
-   "PRIMITIVE",
-   "ARRAY",
-   "JAGGED_ARRAY",
-   "NA"
-};
+typedef enum
+{
+    PROGRAM,
+    BROP,
+    BRCL,
+    CURLYOP,
+    CURLYCL,
+    EQUALS,
+    DECLARE,
+    ID,
+    COLON,
+    LIST,
+    OF,
+    VARIABLES,
+    SEMICOLON,
+    ARRAY,
+    INTEGER,
+    SQOP,
+    DD,
+    SQCL,
+    JAGGED,
+    R1,
+    NUM,
+    REAL,
+    BOOLEAN,
+    PLUS,
+    MINUS,
+    DIVIDE,
+    MUL,
+    TRE,
+    FAL,
+    SIZE,
+    VALUES,
+    AND,
+    OR,
+    EPSILON
+} Terminal;
+
+typedef enum
+{
+    s,
+    start,
+    declaration,
+    declaration_stmt,
+    assignment,
+    assignment_stmt,
+    primitive,
+    single_primitive,
+    multi_primitive,
+    array,
+    array_dim,
+    jagged_array,
+    jagged_2d_array,
+    jagged_3d_array,
+    jagged_2d_dim,
+    jagged_3d_dim,
+    jag_lines,
+    jag_line,
+    jag_list,
+    num_list,
+    num_id,
+    var_list,
+    arr_pid,
+    idx,
+    type,
+    expression,
+    arithmetic_expression,
+    term,
+    factor,
+    op1,
+    op2,
+    boolean_expression,
+    or_expression,
+    fact_bool
+} NonTerminal;
+
+// typedef enum  {
+//    INTEGER,
+//    REAL,
+//    BOOLEAN, 
+//    TYPE_ERROR
+// }primitive;
+// char string_primitive[3][10] = {
+//                          "Integer",
+//                          "Real",
+//                          "Boolean"
+//                      };
+// typedef enum  {
+//    PRIMITIVE,
+//    ARRAY,
+//    J_ARRAY,
+//    NA
+// }NonTerminal;
+// char string_dec[4][20]= {
+//    "PRIMITIVE",
+//    "ARRAY",
+//    "JAGGED_ARRAY",
+//    "NA"
+// };
 typedef enum{
     Static,
     Dynamic,
@@ -43,8 +192,8 @@ typedef struct {
     int dim;//--4
     int ** dim_bound;//(7,4),(3,4),(),() 4X2
     //store array of strings for var_names if dynamic
-    char * upar[];          //NA if not -1;
-    char * down[];      //array of STRINGS; //NA if not -1;
+    char ** upar;          //NA if not -1;
+    char ** down;      //array of STRINGS; //NA if not -1;
 }array_record;
 
 typedef union {
@@ -61,19 +210,19 @@ typedef struct  {
 }jagged_array_record;
 
 typedef union type_Expression_record{
-     primitive primitive_type;
+     Terminal primitive_type;
      array_record arr_record;
      jagged_array_record j_arr_record;
 } type_Expression_record;
 
 typedef struct TypeExpression{      //neeche wala hi use kare!
-    declaration_type tag;
+    NonTerminal tag;
     type_Expression_record record;
 }TypeExpression;
 
 typedef struct TypeExpressionTable{
     char var_name[200];
-    declaration_type tag;
+    NonTerminal tag;
     bind_info info;
     type_Expression_record record;
 
@@ -91,18 +240,18 @@ void printTypeExpressionsTable(TypeExpressionTable T[],int m,char *filename){
         strcpy(var_name,T[i].var_name);//field1
         bind_info info=T[i].info;
         strcpy(bind_name,string_bind[T[i].info]);//field2
-        declaration_type tag=T[i].tag;
-        strcpy(dec_name,string_dec[T[i].tag]);//field3
+        NonTerminal tag=T[i].tag;
+        strcpy(dec_name,NonTerminalMap[T[i].tag]);//field3
         
         fprintf(fp,"%10.10s %15.15s %15.15s ", var_name,dec_name,bind_name);
 
         //field4 here on
-        if(tag==0){ //Primitive
-            fprintf(fp," <basicType=%s>",string_primitive[T[i].record.primitive_type]);
+        if(tag==primitive){ //Primitive
+            fprintf(fp," <basicType=%s>",TerminalMap[T[i].record.primitive_type]);
             
             //print name, dec_type, bind_info, typeExpression
         }
-        else if(tag==1){  
+        else if(tag==array){  
             //Array
             int dim=T[i].record.arr_record.dim;
             fprintf(fp," <type=rectangularArray, dimensions=%d, " ,dim);
@@ -120,7 +269,7 @@ void printTypeExpressionsTable(TypeExpressionTable T[],int m,char *filename){
             //basic=Integer by def
 
         }
-        else if(tag==2){    //Jagged_ARRAY
+        else if(tag==jagged_array){    //Jagged_ARRAY
             int dim=T[i].record.j_arr_record.dim;
             
             fprintf(fp," <type =jaggedArray, dimensions=%d, ",dim);
@@ -160,7 +309,11 @@ void printTypeExpressionsTable(TypeExpressionTable T[],int m,char *filename){
            
        //basic=Integer by def
         }
+        else{
+            fprintf(fp," NOT A VALID TYPE EXPRESSION");
+        }
          fprintf(fp,"\n");
+
     }
     fclose(fp);
 }
@@ -169,7 +322,7 @@ int main(){
     TypeExpressionTable t[5];
     strcpy(t[0].var_name,"var_a");
     t[0].info=Static;
-    t[0].tag=ARRAY;
+    t[0].tag=array;
     t[0].record.arr_record.dim=3;
     t[0].record.arr_record.dim_bound=(int **)malloc(sizeof(int *)*3);
     t[0].record.arr_record.dim_bound[0]=(int *)malloc(sizeof(int)*2);
@@ -184,13 +337,13 @@ int main(){
    // printf("tag: %s\n",string_dec[t[0].tag]);
     strcpy(t[1].var_name,"var_p");
     t[1].info=N_A;
-    t[1].tag=PRIMITIVE;
+    t[1].tag=primitive;
     t[1].record.primitive_type=INTEGER;
     //printf("tag: %s\n",string_dec[t[1].tag]);
     
     strcpy(t[2].var_name,"var_2d_j");
     t[2].info=N_A;
-    t[2].tag=J_ARRAY;
+    t[2].tag=jagged_array;
     t[2].record.j_arr_record.dim=2;
     t[2].record.j_arr_record.r1_low=3;
     t[2].record.j_arr_record.r1_high=8;
@@ -201,7 +354,7 @@ int main(){
 int arr[]={ 5,4, 3,  5, 4, 4,1,6,0};
     strcpy(t[3].var_name,"var_3d_j");
     t[3].info=N_A;
-    t[3].tag=J_ARRAY;
+    t[3].tag=assignment_stmt;
     t[3].record.j_arr_record.dim=3;
     t[3].record.j_arr_record.r1_low=2;
     t[3].record.j_arr_record.r1_high=4;
@@ -215,7 +368,7 @@ int arr[]={ 5,4, 3,  5, 4, 4,1,6,0};
     }
     strcpy(t[4].var_name,"var_p");
     t[4].info=N_A;
-    t[4].tag=PRIMITIVE;
+    t[4].tag=primitive;
     t[4].record.primitive_type=BOOLEAN;
     printTypeExpressionsTable(t,5,"new.txt");
     return 0;
