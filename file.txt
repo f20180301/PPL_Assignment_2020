@@ -1,10 +1,10 @@
 program ( ) {
-declare list of variables a1 a2 a3 b1 b2 b3 : integer ;
+declare list of variables a1 a2 a3 b1 b2 b3 : real ;
 declare list of variables b1 b2 b3 : integer ;
 declare list of variables a1 a2 a3 b1 b2 b3 : integer ;
 declare list of variables b1 b2 b3 : integer ;
 declare list of variables a1 a2 a3 b1 b2 b3 : integer ;
-declare list of variables b1 b2 b3 : integer ;
+declare list of variables b1 b2 b3 : boolean ;
 q1 = q2 + q3 ;
 }
 
