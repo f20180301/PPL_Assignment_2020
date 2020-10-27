@@ -43,6 +43,8 @@ typedef struct {
     int dim;//--4
     int ** dim_bound;//(7,4),(3,4),(),() 4X2
     //store array of strings for var_names if dynamic
+    char * upar[];          //NA if not -1;
+    char * down[];      //array of STRINGS; //NA if not -1;
 }array_record;
 
 typedef union {

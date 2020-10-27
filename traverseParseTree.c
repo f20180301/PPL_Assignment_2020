@@ -64,7 +64,7 @@ void traverse_parse_tree(/*receive params t, T*/){
        if(temp->=="Primitive"){
            temp.tag=PRIMITIVE;
            temp=temp->firstchild; 
-           * varlist_pointer;   .//pointing to var_list  //moving into single/multiple_primitive node
+           * varlist_pointer;   //pointing to var_list  //moving into single/multiple_primitive node
            if(SINGLE){
                varlist_pointer=temp=temp->firstChild->sibling;
                temp=temp->sibling->sibling;//moving into colon ke baad wala node
@@ -75,14 +75,17 @@ void traverse_parse_tree(/*receive params t, T*/){
            }
            //
            exp_table_record.record.primitive_type=temp->child->value(int, real or bool);
+           //daalnaa
          }
        else if(temp->=="Array"){
            temp.tag=ARRAY;
+           ///temp2=temp
            temp=temp->fiirstchild; 
            * varlist_pointer; 
             if(SINGLE){
                varlist_pointer=temp=temp->fiirstchild->sibling;
                temp=temp->sibling->sibling;//moving into colon ke baad wala node
+               //daalte hue hi nikalo.
            }
            else{
                varlist_pointer=temp=temp->fiirstchild->sibling->sibling->sibling->sibling;
@@ -101,8 +104,9 @@ void traverse_parse_tree(/*receive params t, T*/){
                 //chk type(dynamic), dimension(lower<upper), read, and error report, maintain counter for Dimension Count, dimension=count;
                 store to type_Expression_record.record.arr_record;
             }while(temp!=NULL);
-
+//temp2=daalde
        }
+       //while exiting put in node
 
        else if(temp->=="Jagged_Array"){
            temp=temp->firstChild;
