@@ -123,9 +123,10 @@ void tokeniseSourcecode(char a[100],token *head){       //Function for File Reda
 /**************************END TOKEN FUNC IMPORTS***********************************************/
 
 /**********************GRAMMAR STRUCT IMPORTS************************/
-#define TOTAL_TERMINALS 34
-#define TOTAL_NON_TERMINALS 34
-#define NON_TERMINALS 34
+#define TOTAL_TERMINALS 35
+#define TOTAL_NON_TERMINALS 37
+#define NON_TERMINALS 37
+
 char *TerminalMap[] =
     {
         "PROGRAM",
@@ -155,14 +156,11 @@ char *TerminalMap[] =
         "MINUS",
         "DIVIDE",
         "MUL",
-        "TRE",
-        "FAL",
         "SIZE",
         "VALUES",
         "AND",
         "OR",
-        "EPSILON"
-        };
+        "EPSILON"};
 char *NonTerminalMap[] =
     {
         "s",
@@ -175,10 +173,16 @@ char *NonTerminalMap[] =
         "single_primitive",
         "multi_primitive",
         "array",
+        "single_array",
+        "multi_array",
         "array_dim",
         "jagged_array",
         "jagged_2d_array",
+        "single_jagged_2d_array",
+        "multi_jagged_2d_array",
         "jagged_3d_array",
+        "single_jagged_3d_array",
+        "multi_jagged_3d_array",
         "jagged_2d_dim",
         "jagged_3d_dim",
         "jag_lines",
@@ -199,7 +203,7 @@ char *NonTerminalMap[] =
         "boolean_expression",
         "or_expression",
         "fact_bool",
-        "Not_applicable"};
+        "not_app"};
 
 typedef enum
 {
@@ -230,8 +234,6 @@ typedef enum
     MINUS,
     DIVIDE,
     MUL,
-    TRE,
-    FAL,
     SIZE,
     VALUES,
     AND,
@@ -251,10 +253,16 @@ typedef enum
     single_primitive,
     multi_primitive,
     array,
+    single_array,
+    multi_array,
     array_dim,
     jagged_array,
     jagged_2d_array,
+    single_jagged_2d_array,
+    multi_jagged_2d_array,
     jagged_3d_array,
+    single_jagged_3d_array,
+    multi_jagged_3d_array,
     jagged_2d_dim,
     jagged_3d_dim,
     jag_lines,
