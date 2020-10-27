@@ -217,6 +217,7 @@ typedef union type_Expression_record{
 
 typedef struct TypeExpression{      //neeche wala hi use kare!
     NonTerminal tag;
+    bind_info info;
     type_Expression_record record;
 }TypeExpression;
 
@@ -228,12 +229,15 @@ typedef struct TypeExpressionTable{
 
 }TypeExpressionTable;
 
-void printTypeExpressionsTable(TypeExpressionTable T[],int m,char *filename){
+int CAPACITY=0;
+int m=0;
+void printTypeExpressionsTable(TypeExpressionTable T[],char *filename){
     FILE *fp=fopen(filename,"w");
     if(fp==NULL){
         printf("Error opening");
         return;
     }
+    printf("%d\n",m);
     fprintf(fp,"%10.10s %15.15s %15.15s  %15.15s \n","Variable","Type","Bind_type","Type_Expression");
     for(int i=0;i<m;i++){
         char var_name[200],dec_name[200],bind_name[200];
@@ -317,59 +321,87 @@ void printTypeExpressionsTable(TypeExpressionTable T[],int m,char *filename){
     }
     fclose(fp);
 }
+            /********PARSE TREE NODE*********/
+
+TypeExpressionTable * append_to_table(TypeExpressionTable * table,TypeExpression type,char * var){
+    if(CAPACITY==0){
+        table=(TypeExpressionTable *)malloc(sizeof(TypeExpressionTable)*1);
+        CAPACITY=1;
+    }
+    else if(m==CAPACITY){
+        table=(TypeExpressionTable *)realloc(table,sizeof(TypeExpressionTable)*CAPACITY*2);
+        CAPACITY=CAPACITY*2;
+        printf("reallocated %d %d\n",CAPACITY,m);
+    }
+    
+       
+        strcpy(table[m].var_name,var);
+        table[m].tag=type.tag;
+        table[m].info=type.info;
+        table[m].record=type.record;
+       
+        m++;
+    
+    return table;
+}
 
 int main(){
-    TypeExpressionTable t[5];
-    strcpy(t[0].var_name,"var_a");
-    t[0].info=Static;
-    t[0].tag=array;
-    t[0].record.arr_record.dim=3;
-    t[0].record.arr_record.dim_bound=(int **)malloc(sizeof(int *)*3);
-    t[0].record.arr_record.dim_bound[0]=(int *)malloc(sizeof(int)*2);
-    t[0].record.arr_record.dim_bound[0][0]=9;
-    t[0].record.arr_record.dim_bound[0][1]=11;
-    t[0].record.arr_record.dim_bound[1]=(int *)malloc(sizeof(int)*2);
-    t[0].record.arr_record.dim_bound[1][0]=9;
-    t[0].record.arr_record.dim_bound[1][1]=12;
-    t[0].record.arr_record.dim_bound[2]=(int *)malloc(sizeof(int)*2);
-    t[0].record.arr_record.dim_bound[2][0]=0;
-    t[0].record.arr_record.dim_bound[2][1]=11;
+    TypeExpressionTable *temp;
+    TypeExpression t;
+    //strcpy(t[0].var_name,"var_a");
+    t.info=Static;
+    t.tag=array;
+    t.record.arr_record.dim=3;
+    t.record.arr_record.dim_bound=(int **)malloc(sizeof(int *)*3);
+    t.record.arr_record.dim_bound[0]=(int *)malloc(sizeof(int)*2);
+    t.record.arr_record.dim_bound[0][0]=9;
+    t.record.arr_record.dim_bound[0][1]=11;
+    t.record.arr_record.dim_bound[1]=(int *)malloc(sizeof(int)*2);
+    t.record.arr_record.dim_bound[1][0]=9;
+    t.record.arr_record.dim_bound[1][1]=12;
+    t.record.arr_record.dim_bound[2]=(int *)malloc(sizeof(int)*2);
+    t.record.arr_record.dim_bound[2][0]=0;
+    t.record.arr_record.dim_bound[2][1]=11;
    // printf("tag: %s\n",string_dec[t[0].tag]);
-    strcpy(t[1].var_name,"var_p");
-    t[1].info=N_A;
-    t[1].tag=primitive;
-    t[1].record.primitive_type=INTEGER;
+   temp=append_to_table(temp,t,"var_a");
+   // strcpy(t[1].var_name,"var_p");
+    t.info=N_A;
+    t.tag=primitive;
+    t.record.primitive_type=INTEGER;
     //printf("tag: %s\n",string_dec[t[1].tag]);
-    
-    strcpy(t[2].var_name,"var_2d_j");
-    t[2].info=N_A;
-    t[2].tag=jagged_array;
-    t[2].record.j_arr_record.dim=2;
-    t[2].record.j_arr_record.r1_low=3;
-    t[2].record.j_arr_record.r1_high=8;
-    t[2].record.j_arr_record.dim_bound._line=(int *)malloc(sizeof(int)*(8-3+1));
+    temp=append_to_table(temp,t,"var_b");
+//     strcpy(t[2].var_name,"var_2d_j");
+    t.info=N_A;
+    t.tag=jagged_array;
+    t.record.j_arr_record.dim=2;
+    t.record.j_arr_record.r1_low=3;
+    t.record.j_arr_record.r1_high=8;
+    t.record.j_arr_record.dim_bound._line=(int *)malloc(sizeof(int)*(8-3+1));
     for(int i=0;i<8-3+1;i++){
-          t[2].record.j_arr_record.dim_bound._line[i]=i+8;
+          t.record.j_arr_record.dim_bound._line[i]=i+8;
     }
+    temp=append_to_table(temp,t,"var_c");
 int arr[]={ 5,4, 3,  5, 4, 4,1,6,0};
-    strcpy(t[3].var_name,"var_3d_j");
-    t[3].info=N_A;
-    t[3].tag=jagged_array;
-    t[3].record.j_arr_record.dim=3;
-    t[3].record.j_arr_record.r1_low=2;
-    t[3].record.j_arr_record.r1_high=4;
-    t[3].record.j_arr_record.dim_bound.jag_line=(int * *)malloc(sizeof(int *)*(4-2+1));
+    //strcpy(t[3].var_name,"var_3d_j");
+    t.info=N_A;
+    t.tag=jagged_array;
+    t.record.j_arr_record.dim=3;
+    t.record.j_arr_record.r1_low=2;
+    t.record.j_arr_record.r1_high=4;
+    t.record.j_arr_record.dim_bound.jag_line=(int * *)malloc(sizeof(int *)*(4-2+1));
     for(int i=0;i<4-2+1;i++){
-          t[3].record.j_arr_record.dim_bound.jag_line[i]=(int  *)malloc(sizeof(int )*(i+3));
-          t[3].record.j_arr_record.dim_bound.jag_line[i][0]=i+2; //2,3,4->1,2,3 elements and size is stored as 1, 2,3 for size i+1->make i+2
+          t.record.j_arr_record.dim_bound.jag_line[i]=(int  *)malloc(sizeof(int )*(i+3));
+          t.record.j_arr_record.dim_bound.jag_line[i][0]=i+2; //2,3,4->1,2,3 elements and size is stored as 1, 2,3 for size i+1->make i+2
           for(int k=1;k<i+3;k++){
-              t[3].record.j_arr_record.dim_bound.jag_line[i][k]=arr[k-1];
+              t.record.j_arr_record.dim_bound.jag_line[i][k]=arr[k-1];
           }
     }
-    strcpy(t[4].var_name,"var_p");
-    t[4].info=N_A;
-    t[4].tag=primitive;
-    t[4].record.primitive_type=BOOLEAN;
-    printTypeExpressionsTable(t,5,"new.txt");
+    temp=append_to_table(temp,t,"var_d");
+    //strcpy(t[4].var_name,"var_p");
+    t.info=N_A;
+    t.tag=primitive;
+    t.record.primitive_type=BOOLEAN;
+    temp=append_to_table(temp,t,"var_e");
+    printTypeExpressionsTable(temp,"new.txt");
     return 0;
 }

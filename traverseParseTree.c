@@ -315,7 +315,7 @@ typedef struct treeNode
 	TypeExpression exp_type;
 } parseTree;
             /********PARSE TREE NODE*********/
-int CAPACITY=1;
+int CAPACITY=0;
 int m=0;
 TypeExpressionTable * append_to_table(TypeExpressionTable * table,TypeExpression type,char * var){
     if(CAPACITY==0){
