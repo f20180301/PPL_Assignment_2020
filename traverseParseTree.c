@@ -387,7 +387,8 @@ void traverse_parse_tree(parseTree *t,TypeExpressionTable * table){
          }
 
        else if(temp->isTerm==0&&temp->Node.nonTerminal.nt==array){
-           exp_table_record.tag=array;
+           exp_table_record.tag=rectangularArray;
+              exp_table_record.info=Static;
            temp=temp->firstChild; 
             if(temp->isTerm==0&&temp->Node.nonTerminal.nt==single_array){
                varlist_pointer=temp=temp->firstChild->sibling;
@@ -401,16 +402,47 @@ void traverse_parse_tree(parseTree *t,TypeExpressionTable * table){
             //<array_dim> hai aab, in temp
             parseTree * store=temp;//at <array_dim>
             
-            do{
-                temp=temp->firstChild ;//(moving into the child of  <array_dim>)
-                temp=temp->sibling;
-                ////id or num =temp->firstChild;
-                temp=temp->sibling->sibling;
-               //// id or num =temp->firstChild; 
-                temp=temp->sibling->sibling;//reaches <array_dim>
+            int count = 0;
+            int** tem = (int**)malloc(2 * sizeof(int*));
+            int g = 1, b = 2;
+            do {
+                temp = temp->firstChild;//(moving into the child of  <array_dim>)
+                temp = temp->sibling;
+                //id or num =temp->firstChild;
+                char d=temp->firstChild->Node.terminal.lexeme[0]; //Checking the first character of lexeme for static and dynanic type
+                if(d=='_'||(d>=65&&d<=90)||(d>=97&&d<=122)) //if first character of lexeme is either  _ | [a-z] | [A-Z] then it will be ID.
+                 exp_table_record.info=Dynamic;
+                int r1 = temp->firstChild;
+                temp = temp->sibling->sibling;  //ignoring .. (DD)
+
+                d=temp->firstChild->Node.terminal.lexeme[0]; //Checking the first character of lexeme for static and dynanic type
+                if(d=='_'||(d>=65&&d<=90)||(d>=97&&d<=122)) //if first character of lexeme is either  _ | [a-z] | [A-Z] then it will be ID.
+                  exp_table_record.info=Dynamic;
+                int r2 = temp->firstChild;
+                temp = temp->sibling->sibling;//reaches <array_dim>
                 //chk type(dynamic), dimension(lower<upper), read, and error report, maintain counter for Dimension Count, dimension=count;
                 //store to type_Expression_record.record.arr_record;
-            }while(temp!=NULL);
+                if(r1<=r2)
+                {
+                    count++;
+                   exp_table_record.record.arr_record.dim = count;
+                    if (count > g * b)
+                    {
+                    tem = (int **)realloc(tem, 2 * count * sizeof(int*));
+                    g++;
+                    }
+                    tem[count - 1] = (int*)malloc(2 * sizeof(int)); //allocating space to store left and right index
+                    tem[count - 1][0] = r1;
+                    tem[count - 1][1] = r2;
+                    exp_table_record.record.arr_record.dim_bound = tem;
+                }
+                else   //if lower dimension is greater than higher dimension
+                {
+                    printf("RectangularArray Size Mismatch\n");
+                   // break;
+                }
+                
+            } while (temp != NULL);
             //storing to sinle_array and array
             store->parent->exp_type=exp_table_record;
             store->parent->parent->exp_type=exp_table_record;
