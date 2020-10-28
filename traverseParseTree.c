@@ -327,6 +327,8 @@ typedef struct treeNode
 int CAPACITY = 1;
 int m = 0;
 
+// FUNCTION FOR JAG LINE CHECKING//
+
 TypeExpression jagged(int lo, int hi, parseTree *jagLines, int dimen, TypeExpression expr)
 {
     expr.record.j_arr_record.dim = dimen;
@@ -336,10 +338,10 @@ TypeExpression jagged(int lo, int hi, parseTree *jagLines, int dimen, TypeExpres
     int szchk = lo;   // TO CHECK INDEX
     int sz = 0;       // TO RECORD SIZE IN EACH JAGLINE
     int numcount = 0; // TO TRACK SIZE
-    int idxcount = 0; // For Jagged_3d array to track no. of elemets in 3rd dimension
+    int idxcount = 0; // For Jagged_3d_array to track no. of elemets in 3rd dimension
     int *line = NULL;
     int **jagl = NULL;
-    parseTree *dpnumList;
+    parseTree *dpnumList = NULL;
     if (dimen == 2)
     {
         line = (int *)malloc(sizeof(int) * (hi - lo + 1));
@@ -349,10 +351,10 @@ TypeExpression jagged(int lo, int hi, parseTree *jagLines, int dimen, TypeExpres
         jagl = (int **)malloc(sizeof(int *) * (hi - lo + 1));
     }
 
-    parseTree *jagLine = jagLines->firstChild; //Being Safe, Creating a copy
+    parseTree *jagLine = jagLines->firstChild; //Pointing to a Jagline
     do
     {
-        parseTree *jagList = jagLine->firstChild->sibling->sibling; //Pointing to Num
+        parseTree *jagList = jagLine->firstChild->sibling->sibling; //Pointing to Num like R1[NUM]
         indx = atoi(jagList->Node.terminal.lexeme);
         if (szchk != indx) // Checking index value
         {
@@ -360,15 +362,15 @@ TypeExpression jagged(int lo, int hi, parseTree *jagLines, int dimen, TypeExpres
             break;
         }
         szchk++;
-        jagList = jagList->sibling->sibling->sibling;          // Pointing to next Num sixe(NUM)
+        jagList = jagList->sibling->sibling->sibling->sibling; // Pointing to next Num sixe(NUM)
         sz = atoi(jagList->Node.terminal.lexeme);              //Receiving the size of the array
-        jagList = jagList->sibling->sibling->sibling->sibling; // Pointing to JagList
+        jagList = jagList->sibling->sibling->sibling->sibling; // Pointing to REAL JagList
         parseTree *numList = jagList->firstChild;              // Pointing to a numlist of rule <jag_list> => <num_list> SEMICOLON <jag_list> ||  <num_list>
         if (dimen == 2)
         {
             while (numList->sibling != NULL)
             {
-                dpnumList = numList->firstChild;                                     // Pointing to NUM of rule <num_list> => NUM <num_list> || NUM
+                dpnumList = numList->firstChild;                                     // Pointing to NUM or EPSILON of rule <num_list> => NUM <num_list> || NUM || EPSILON
                 if (dpnumList->Node.terminal.t == NUM && dpnumList->sibling == NULL) // Not more than two in a numList and single NUM to be present b/w semicolons
                 {
                     numcount++;
@@ -383,10 +385,16 @@ TypeExpression jagged(int lo, int hi, parseTree *jagLines, int dimen, TypeExpres
                     //error Empty
                 }
                 numList = numList->sibling->sibling->firstChild;
+                //numList=numList->firstChild->sibling; // Moving to next numList
             }
-            if (numList->firstChild->Node.terminal.t == EPSILON)
+            if (numList->firstChild->Node.terminal.t == EPSILON) //EPSILON IN LAST
             {
                 //error Last element is EPSILON
+            }
+            else if (numList->firstChild->sibling != NULL)
+            {
+                // Like 3d array
+                //error
             }
             numcount++;
             if (sz != numcount) // Matchng size with no. of elements counted
@@ -419,7 +427,7 @@ TypeExpression jagged(int lo, int hi, parseTree *jagLines, int dimen, TypeExpres
                 numList = numList->sibling->sibling->firstChild;
             }
             dpnumList = numList->firstChild;
-            idxcount = 0;
+
             while (dpnumList->sibling != NULL) // TRAVERSING THE RULE to eat all NUM in <num_list>
             {
                 idxcount++;
@@ -448,6 +456,8 @@ TypeExpression jagged(int lo, int hi, parseTree *jagLines, int dimen, TypeExpres
     }
     return expr;
 }
+
+//**********APPEND********************//
 
 TypeExpressionTable *append_to_table(TypeExpressionTable *table, TypeExpression type, char *var)
 {
@@ -632,7 +642,7 @@ void traverse_parse_tree(parseTree *t, TypeExpressionTable *table)
 
         else if (temp->isTerm == 0 && temp->Node.nonTerminal.nt == jagged_array)
         {
-            temp = temp->firstChild; //jagged_2d or jagged_3d
+            temp = temp->firstChild; //jagged_2d_array or jagged_3d_array
             if (temp->isTerm == 0 && temp->Node.nonTerminal.nt == jagged_2d_array)
             {
                 exp_table_record.tag = jagged_array;
@@ -650,56 +660,16 @@ void traverse_parse_tree(parseTree *t, TypeExpressionTable *table)
                 }
                 temp = temp->sibling->sibling; //(ignore just after colon, jagged and arrray written)
                 //<jagged_2d_dim> hai , in temp
-                parseTree *store = temp;                 //at <jagged_2d_dim>
-                int l_bound = temp->firstChild->sibling; //at NUM
-                int u_bound = temp->firstChild->sibling->sibling->sibling;
+                parseTree *store = temp;                                             //at <jagged_2d_dim>
+                int l_bound = atoi(temp->firstChild->sibling->Node.terminal.lexeme); //at NUM
+                int u_bound = atoi(temp->firstChild->sibling->sibling->sibling->Node.terminal.lexeme);
                 int dimension = 2;
-                //temp <jagged_dim> pe hi hai
+                //temp <jagged_2d_dim> pe hi hai
                 if (l_bound <= u_bound)
                 { //chk =
                     //traverse for jaglines
                     temp = temp->sibling->sibling->sibling->sibling; //reach <jag_lines>
-                    exp_table_record = jagged(l_bound, u_bound, temp, 2, exp_table_record);
-
-                    //read all jag_lines one by one upto, NULL
-                    // do
-                    // {
-                    //     temp = temp->firstChild;                //temp pointing on <jag_line>
-                    //     parseTree *temp_jag = temp->firstChild; //point to R1
-                    //     temp_jag = temp_jag->sibling->sibling;  //pointing on NUM
-                    //     int indx = atoi(temp_jag->Node.terminal.lexeme);
-                    //     if (idx != szchk)
-                    //     {
-                    //         //error
-                    //         break;
-                    //     }
-                    //     szchk++;
-                    //     //chk index in l_bound,u_bound and particularly increasing//#######TO BE DONE
-                    //     temp_jag = temp_jag->sibling->sibling->sibling->sibling; //pointing to size NUM(size NUM)
-                    //     int sz = atoi(temp_jag->Node.terminal.lexeme);           //Recording the no. of elements in this jag_line
-                    //     //store in the cnt of jagged_R2_type
-                    //     temp_jag = temp_jag->sibling->sibling->sibling->sibling; //pointing to jag_list;
-                    //     temp_jag = temp_jag->firstChild;                         //pointing to num list
-                    //     parseTree *num_temp_jag = temp_jag;                      //pointed to num list
-                    //     do
-                    //     {
-                    //         num_temp_jag = num_temp_jag->firstChild; // Pointing to NUM or EPSILON
-                    //         if (num_temp_jag->isTerm == 1 && num_temp_jag->Node.terminal.t == EPSILON)
-                    //         {
-                    //             //error
-                    //             break;
-                    //         }
-                    //         else if (num_temp_jag->isTerm == 1 && num_temp_jag->Node.terminal.t == NUM)
-
-                    //     } while (num_temp != NULL); // Reading a num_list
-
-                    //     //read all <jag_list(initialisation wala values)>
-                    //     //validity CHK ACCORDING TO SZ variable me size kya ha
-                    //     //epsion empty ; ; checking required
-
-                    //     //moving temp to <jag_lines>
-                    //     temp = temp->sibling;
-                    // } while (temp != NULL);
+                    exp_table_record = jagged(l_bound, u_bound, temp, dimension, exp_table_record);
                 }
                 else
                 {
@@ -708,8 +678,6 @@ void traverse_parse_tree(parseTree *t, TypeExpressionTable *table)
                 store->parent->exp_type = exp_table_record;
                 store->parent->parent->exp_type = exp_table_record;
                 store->parent->parent->parent->exp_type = exp_table_record;
-
-                // exp_table_record.record.j_arr_record=temp->child->value;
             }
             else if (temp->isTerm == 0 && temp->Node.nonTerminal.nt == jagged_3d_array)
             {
@@ -727,16 +695,15 @@ void traverse_parse_tree(parseTree *t, TypeExpressionTable *table)
                     temp = temp->sibling->sibling; //moving into colon ke baad wala node
                 }
                 temp = temp->sibling->sibling; //(ignore just after colon, jagged and arrray written)
-                                               //<jagged_dim> hai , in temp
+                                               //<jagged_3d_dim> hai , in temp
                 parseTree *store = temp;       //at <jagged_2d/3d_dim>
-                                               //CONTINUE THIS WORK//CONTINUE THIS WORK//CONTINUE THIS WORK
-                int l_bound = temp->firstChild->sibling->firstChild;
-                int u_bound = temp->firstChild->sibling->sibling->sibling->firstChild;
+                int l_bound = atoi(temp->firstChild->sibling->Node.terminal.lexeme);
+                int u_bound = atoi(temp->firstChild->sibling->sibling->sibling->Node.terminal.lexeme);
                 int dimension = 3;
                 if (l_bound <= u_bound)
                 { //chk =
                     //kamm alag hoga.
-                    exp_table_record = jagged(l_bound, u_bound, temp, 3, exp_table_record);
+                    exp_table_record = jagged(l_bound, u_bound, temp, dimension, exp_table_record);
                 }
                 else
                 {
@@ -745,7 +712,6 @@ void traverse_parse_tree(parseTree *t, TypeExpressionTable *table)
                 store->parent->exp_type = exp_table_record;
                 store->parent->parent->exp_type = exp_table_record;
                 store->parent->parent->parent->exp_type = exp_table_record;
-                //   exp_table_record.record.j_arr_record=temp->firstChild;
             }
         }
         //reach, type expression record ready,
