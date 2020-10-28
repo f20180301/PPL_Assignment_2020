@@ -794,7 +794,7 @@ void printParseTreeUtil(parseTree *t, FILE *fp, int depth)
                     for(int j=0;j<dim;j++){
                             int a= t->exp_type.record.arr_record.dim_bound[j][0];
                             int b= t->exp_type.record.arr_record.dim_bound[j][1];
-
+                           // printf("%s\n",t->exp_type.record.arr_record.l_indexes[0]);
                             //case for var_name in d_bind
                             if(a!=-1&&b!=-1)fprintf(fp,"range_R%d= (%d, %d), ",j+1,a,b);
                             else if(a==-1&&b!=-1)fprintf(fp,"range_R%d= (%s, %d), ",j+1,t->exp_type.record.arr_record.l_indexes[j],b);
@@ -987,10 +987,13 @@ else if (temp->isTerm == 0 && temp->Node.nonTerminal.nt == array)
 
             int count = 0;
             int strcount=0;
+             int strcount2=0;
             int r1 = -1, r2 = -1;
             int **tem = (int **)malloc(2 * sizeof(int *));
             int s_g=1;
-            exp_table_record.record.arr_record.l_indexes = (char **)malloc(sizeof(char *));
+            int s_g2=1;
+           char **l_indexes = (char **)malloc(sizeof(char *));
+            char **u_indexes = (char **)malloc(sizeof(char *));
 
             // int strCount=0;
             // char **indexes;
@@ -1018,30 +1021,32 @@ else if (temp->isTerm == 0 && temp->Node.nonTerminal.nt == array)
 
                 //
             if(r1==-1){
-                    if (strcount > s_g )
+                    if (strcount >= s_g )
                     {
-                        exp_table_record.record.arr_record.l_indexes = (char **)realloc(exp_table_record.record.arr_record.l_indexes,  (strcount - 1) * sizeof(char *));
-                        s_g++;
+                        l_indexes = (char **)realloc(l_indexes,  (s_g*2) * sizeof(char *));
+                        s_g=s_g*2;
                     }
+                   // printf("here\n");
                     int len=strlen(temp->firstChild->Node.terminal.lexeme);
-                    exp_table_record.record.arr_record.l_indexes[strcount] = (char *)malloc(len*sizeof(char)); //allocating space to store left and right index
-                    strcpy(exp_table_record.record.arr_record.l_indexes[strcount] ,temp->firstChild->Node.terminal.lexeme);
+                    l_indexes[strcount] = (char *)malloc(len*sizeof(char)); //allocating space to store left and right index
+                    strcpy(l_indexes[strcount] ,temp->firstChild->Node.terminal.lexeme);
                      // Storing ID in form of string
-                   // printf("%s\n",temp->firstChild->Node.terminal.lexeme);
-                    //strcount++;
+                    //printf("l-> %s  :  %s %d\n",temp->firstChild->Node.terminal.lexeme,l_indexes[strcount],strcount );
+                  strcount++;
                     
                 }
                 else{
-                    if (strcount > s_g )
+                    if (strcount >= s_g )
                     {
-                        exp_table_record.record.arr_record.l_indexes = (char **)realloc(exp_table_record.record.arr_record.l_indexes,  (strcount - 1) * sizeof(char *));
-                        s_g++;
+                        l_indexes = (char **)realloc(l_indexes,  (s_g*2) * sizeof(char *));
+                        s_g=s_g*2;
                     }
                     int len=12;
-                    exp_table_record.record.arr_record.l_indexes[strcount ] = (char *)malloc(len*sizeof(char)); //allocating space to store left and right index
-                    strcpy(exp_table_record.record.arr_record.l_indexes[strcount ] ,"NumericValue");
+                    l_indexes[strcount ] = (char *)malloc(len*sizeof(char)); //allocating space to store left and right index
+                    strcpy(l_indexes[strcount ] ,"NumericValue");
                      // Storing ID in form of string
-                    //strcount++;
+                    // printf("l-> %s %s %d\n",temp->firstChild->Node.terminal.lexeme,l_indexes[strcount],strcount );
+                      strcount++;
                 }
 
                 temp = temp->sibling->sibling; //ignoring .. (DD)
@@ -1049,40 +1054,42 @@ else if (temp->isTerm == 0 && temp->Node.nonTerminal.nt == array)
                 if (temp->firstChild->Node.terminal.t == ID) // checking if dimension is ID
                 {
                     exp_table_record.info = Dynamic;
-                   exp_table_record.record.arr_record.u_indexes = (char **)malloc(sizeof(char *));
-                    exp_table_record.record.arr_record.u_indexes[strcount] = temp->firstChild->Node.terminal.lexeme; // Storing ID in form of string
-                     strcount++;
+                  
                     r2 = -1;
                 }
                 else{ // If dimension is NUM
                     r2 = atoi(temp->firstChild->Node.terminal.lexeme);
-                    if(r1==-1)r1=-100;
+                    if(r2==-1)r2=-100;
                 }
                 if(r2==-1){
-                    if (strcount > s_g )
+                   // printf("here2\n");
+                    if (strcount2 >= s_g2 )
                     {
-                        exp_table_record.record.arr_record.u_indexes = (char **)realloc(exp_table_record.record.arr_record.u_indexes,  (strcount - 1) * sizeof(char *));
-                        s_g++;
+                        u_indexes = (char **)realloc(u_indexes,  (s_g2*2) * sizeof(char *));
+                        s_g2=s_g2*2;
                     }
                     int len=strlen(temp->firstChild->Node.terminal.lexeme);
-                    exp_table_record.record.arr_record.u_indexes[strcount ] = (char *)malloc(len*sizeof(char)); //allocating space to store left and right index
-                    strcpy(exp_table_record.record.arr_record.u_indexes[strcount ] ,temp->firstChild->Node.terminal.lexeme);
+                    u_indexes[strcount2 ] = (char *)malloc(len*sizeof(char)); //allocating space to store left and right index
+                    strcpy(u_indexes[strcount2 ] ,temp->firstChild->Node.terminal.lexeme);
                      // Storing ID in form of string
-                     //printf("%s\n\n",temp->firstChild->Node.terminal.lexeme);
-                    strcount++;
+                   // printf("u-> %s : %s %d\n",temp->firstChild->Node.terminal.lexeme,u_indexes[strcount2],strcount2 );
+                    strcount2++;
                     
                 }
                 else{
-                    if (strcount > s_g )
+                   // printf("here2\n");
+                    if (strcount2 >= s_g2 )
                     {
-                        exp_table_record.record.arr_record.l_indexes = (char **)realloc(exp_table_record.record.arr_record.l_indexes,  (strcount - 1) * sizeof(char *));
-                        s_g++;
+                       // printf("here2\n");
+                        u_indexes = (char **)realloc(u_indexes,  (s_g2*2) * sizeof(char *));
+                        s_g2=s_g2*2;
                     }
                     int len=12;
-                    exp_table_record.record.arr_record.l_indexes[strcount] = (char *)malloc(len*sizeof(char)); //allocating space to store left and right index
-                    strcpy(exp_table_record.record.arr_record.l_indexes[strcount] ,"NumericValue");
-                     // Storing ID in form of string
-                    strcount++;
+                    u_indexes[strcount2] = (char *)malloc(len*sizeof(char)); //allocating space to store left and right index
+                    strcpy(u_indexes[strcount2] ,"NumericValue");
+                    //printf("u -> %s %s %d\n",temp->firstChild->Node.terminal.lexeme,u_indexes[strcount2],strcount2 );
+                     //Storing ID in form of string
+                    strcount2++;
                 }
                 
                    temp = temp->sibling->sibling; //reaches <array_dim>
@@ -1104,6 +1111,9 @@ else if (temp->isTerm == 0 && temp->Node.nonTerminal.nt == array)
                     tem[count - 1][0] = r1;
                     tem[count - 1][1] = r2;
                     exp_table_record.record.arr_record.dim_bound = tem;
+                    exp_table_record.record.arr_record.l_indexes=l_indexes;
+                    exp_table_record.record.arr_record.u_indexes=u_indexes;
+                    
                     store->parent->exp_type = exp_table_record;
                     store->parent->parent->exp_type = exp_table_record;
                 }
