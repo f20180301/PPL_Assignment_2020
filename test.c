@@ -26,7 +26,7 @@ char * getToken(char *lexeme){
     char c=lexeme[0];
     int flag=0;
    
-    if((c>=48&&c<=57)||strcmp(lexeme,"true")==0||strcmp(lexeme,"false")==0)
+    if(c>=48&&c<=57)
     return "NUM";
     else if(flag==0)
     {
