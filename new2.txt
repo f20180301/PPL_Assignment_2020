@@ -1,4 +1,7 @@
   Variable            Type       Bind_type  Type_Expression 
+      abcd           array         Dynamic  <type=rectangularArray, dimensions=1, range_R1= (-1, -1), basicElementType = Integer>
+    ghd2_1           array         Dynamic  <type=rectangularArray, dimensions=1, range_R1= (-1, -1), basicElementType = Integer>
+   ssd_2_3           array         Dynamic  <type=rectangularArray, dimensions=1, range_R1= (-1, -1), basicElementType = Integer>
        new       primitive   NotApplicable  <basicType=INTEGER>
          d       primitive   NotApplicable  <basicType=INTEGER>
          w       primitive   NotApplicable  <basicType=INTEGER>
@@ -11,6 +14,11 @@
         b3       primitive   NotApplicable  <basicType=BOOLEAN>
         c1       primitive   NotApplicable  <basicType=REAL>
         c2       primitive   NotApplicable  <basicType=REAL>
+         u         not_app   NotApplicable  NOT A VALID TYPE EXPRESSION
+         v         not_app   NotApplicable  NOT A VALID TYPE EXPRESSION
         m1       primitive   NotApplicable  <basicType=REAL>
         m2       primitive   NotApplicable  <basicType=REAL>
         m3       primitive   NotApplicable  <basicType=REAL>
+        h1         not_app   NotApplicable  NOT A VALID TYPE EXPRESSION
+        h2         not_app   NotApplicable  NOT A VALID TYPE EXPRESSION
+        h3         not_app   NotApplicable  NOT A VALID TYPE EXPRESSION

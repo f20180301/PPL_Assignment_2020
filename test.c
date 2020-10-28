@@ -495,6 +495,8 @@ typedef union {
 typedef struct {
     int dim;//--4
     int ** dim_bound;//(7,4),(3,4),(),() 4X2
+    char **l_indexes;
+    char **u_indexes;
 }array_record;
 
 typedef struct  {
@@ -557,7 +559,7 @@ typedef struct treeNode
 	int isTerm; // tag for term/non_term and leaf / non_leaf
 	NodeType Node;	// Details corresponding to a Terminal or a NonTerminal Node
 	
-	//TypeExpression t; // to be done
+	//TypeExpression t; // to be done//done
 	// only for NonTerminal or Both ??
 	
 	struct treeNode * parent; // parent of the node
@@ -779,7 +781,7 @@ void printParseTreeUtil(parseTree *t, FILE *fp, int depth)
 			fprintf(fp, "%-25s", NonTerminalMap[t->Node.nonTerminal.nt] ); // print the symbol
 			fprintf(fp, "%-25s", ter);
 			if(t->exp_type.tag==not_app){
-                fprintf(fp, "%-50s", "Not_Valid");
+                fprintf(fp, "%-50s", "--Ignored--");
             }
             else{
                 if(t->exp_type.tag==primitive){ //Primitive
@@ -792,8 +794,13 @@ void printParseTreeUtil(parseTree *t, FILE *fp, int depth)
                     for(int j=0;j<dim;j++){
                             int a= t->exp_type.record.arr_record.dim_bound[j][0];
                             int b= t->exp_type.record.arr_record.dim_bound[j][1];
+
                             //case for var_name in d_bind
-                            fprintf(fp,"range_R%d= (%d, %d), ",j+1,a,b);
+                            if(a!=-1&&b!=-1)fprintf(fp,"range_R%d= (%d, %d), ",j+1,a,b);
+                            else if(a==-1&&b!=-1)fprintf(fp,"range_R%d= (%s, %d), ",j+1,t->exp_type.record.arr_record.l_indexes[j],b);
+                            else if(a!=-1&&b==-1)fprintf(fp,"range_R%d= (%d, %s), ",j+1,a,t->exp_type.record.arr_record.u_indexes[j]);
+                            else if(a==-1&&b==-1)fprintf(fp,"range_R%d= (%s, %s), ",j+1,t->exp_type.record.arr_record.l_indexes[j],t->exp_type.record.arr_record.u_indexes[j]);
+                            
                          }
                             fprintf(fp,"basicElementType = Integer>");
                       }
@@ -953,70 +960,166 @@ void traverse_parse_tree(parseTree *t){
            temp->parent->exp_type=exp_table_record;
            temp->parent->parent->exp_type=exp_table_record;
          }
-
-//        else if(temp->isTerm==0&&temp->Node.nonTerminal.nt==array){
-//            exp_table_record.tag=rectangularArray;
-//               exp_table_record.info=Static;
-//            temp=temp->firstChild; 
-//             if(temp->isTerm==0&&temp->Node.nonTerminal.nt==single_array){
-//                varlist_pointer=temp=temp->firstChild->sibling;
-//                temp=temp->sibling->sibling;//moving into colon ke baad wala node
-//            }
-//            else{
-//                varlist_pointer=temp=temp->firstChild->sibling->sibling->sibling->sibling;
-//                temp=temp->sibling->sibling;//moving into colon ke baad wala node
-//            }
-//             temp=temp->sibling;//(ignore just after colon, arrray written)
-//             //<array_dim> hai aab, in temp
-//             parseTree * store=temp;//at <array_dim>
+else if (temp->isTerm == 0 && temp->Node.nonTerminal.nt == array)
+        {
+            exp_table_record.tag = array;
+            exp_table_record.info = Static;
+            temp = temp->firstChild;
             
-//             int count = 0;
-//             int** tem = (int**)malloc(2 * sizeof(int*));
-//             int g = 1, b = 2;
-//             do {
-//                 temp = temp->firstChild;//(moving into the child of  <array_dim>)
-//                 temp = temp->sibling;
-//                 //id or num =temp->firstChild;
-//                 char d=temp->firstChild->Node.terminal.lexeme[0]; //Checking the first character of lexeme for static and dynanic type
-//                 if(d=='_'||(d>=65&&d<=90)||(d>=97&&d<=122)) //if first character of lexeme is either  _ | [a-z] | [A-Z] then it will be ID.
-//                  exp_table_record.info=Dynamic;
-//                 int r1 = temp->firstChild;
-//                 temp = temp->sibling->sibling;  //ignoring .. (DD)
-
-//                 d=temp->firstChild->Node.terminal.lexeme[0]; //Checking the first character of lexeme for static and dynanic type
-//                 if(d=='_'||(d>=65&&d<=90)||(d>=97&&d<=122)) //if first character of lexeme is either  _ | [a-z] | [A-Z] then it will be ID.
-//                   exp_table_record.info=Dynamic;
-//                 int r2 = temp->firstChild;
-//                 temp = temp->sibling->sibling;//reaches <array_dim>
-//                 //chk type(dynamic), dimension(lower<upper), read, and error report, maintain counter for Dimension Count, dimension=count;
-//                 //store to type_Expression_record.record.arr_record;
-//                 if(r1<=r2)
-//                 {
-//                     count++;
-//                    exp_table_record.record.arr_record.dim = count;
-//                     if (count > g * b)
-//                     {
-//                     tem = (int **)realloc(tem, 2 * count * sizeof(int*));
-//                     g++;
-//                     }
-//                     tem[count - 1] = (int*)malloc(2 * sizeof(int)); //allocating space to store left and right index
-//                     tem[count - 1][0] = r1;
-//                     tem[count - 1][1] = r2;
-//                     exp_table_record.record.arr_record.dim_bound = tem;
-//                 }
-//                 else   //if lower dimension is greater than higher dimension
-//                 {
-//                     printf("RectangularArray Size Mismatch\n");
-//                    // break;
-//                 }
+            int line = temp->firstChild->Node.terminal.line_num;
+            if (temp->isTerm == 0 && temp->Node.nonTerminal.nt == single_array)
+            {
+                varlist_pointer = temp = temp->firstChild->sibling;
+                temp = temp->sibling->sibling; //moving into colon ke baad wala node
+              
+            }
+            else
+            {
+                varlist_pointer = temp = temp->firstChild->sibling->sibling->sibling->sibling;
+                temp = temp->sibling->sibling; //moving into colon ke baad wala node
                 
-//             } while (temp != NULL);
-//             //storing to sinle_array and array
-//             store->parent->exp_type=exp_table_record;
-//             store->parent->parent->exp_type=exp_table_record;
-// //temp2=daalde
-//        }
-       //while exiting put in node
+            }
+            
+            temp = temp->sibling; //(ignore just after colon, arrray written)
+            
+            //<array_dim> hai aab, in temp
+            parseTree *store = temp; //at <array_dim>
+
+            int count = 0;
+            int strcount=0;
+            int r1 = -1, r2 = -1;
+            int **tem = (int **)malloc(2 * sizeof(int *));
+            int s_g=1;
+            exp_table_record.record.arr_record.l_indexes = (char **)malloc(sizeof(char *));
+
+            // int strCount=0;
+            // char **indexes;
+            int g = 1, b = 2;
+            //char ** indexes = (char **)malloc(sizeof(char *));
+            
+            do
+            {
+                
+                temp = temp->firstChild; //(moving into the child of  <array_dim>)
+                temp = temp->sibling;
+                
+                
+                //id or num =temp->firstChild;
+
+                if (temp->firstChild->Node.terminal.t == ID) //checking if dimension is ID.
+                {
+                    exp_table_record.info = Dynamic;
+                    r1 = -1;
+                }
+                else // If dimension is NUM
+                    r1 = atoi(temp->firstChild->Node.terminal.lexeme);
+
+                //
+            if(r1==-1){
+                    if (strcount > s_g )
+                    {
+                        exp_table_record.record.arr_record.l_indexes = (char **)realloc(exp_table_record.record.arr_record.l_indexes,  (strcount - 1) * sizeof(char *));
+                        s_g++;
+                    }
+                    int len=strlen(temp->firstChild->Node.terminal.lexeme);
+                    exp_table_record.record.arr_record.l_indexes[strcount] = (char *)malloc(len*sizeof(char)); //allocating space to store left and right index
+                    strcpy(exp_table_record.record.arr_record.l_indexes[strcount] ,temp->firstChild->Node.terminal.lexeme);
+                     // Storing ID in form of string
+                   // printf("%s\n",temp->firstChild->Node.terminal.lexeme);
+                    //strcount++;
+                    
+                }
+                else{
+                    if (strcount > s_g )
+                    {
+                        exp_table_record.record.arr_record.l_indexes = (char **)realloc(exp_table_record.record.arr_record.l_indexes,  (strcount - 1) * sizeof(char *));
+                        s_g++;
+                    }
+                    int len=12;
+                    exp_table_record.record.arr_record.l_indexes[strcount ] = (char *)malloc(len*sizeof(char)); //allocating space to store left and right index
+                    strcpy(exp_table_record.record.arr_record.l_indexes[strcount ] ,"NumericValue");
+                     // Storing ID in form of string
+                    //strcount++;
+                }
+
+                temp = temp->sibling->sibling; //ignoring .. (DD)
+
+                if (temp->firstChild->Node.terminal.t == ID) // checking if dimension is ID
+                {
+                    exp_table_record.info = Dynamic;
+                   exp_table_record.record.arr_record.u_indexes = (char **)malloc(sizeof(char *));
+                    exp_table_record.record.arr_record.u_indexes[strcount] = temp->firstChild->Node.terminal.lexeme; // Storing ID in form of string
+                     strcount++;
+                    r2 = -1;
+                }
+                else // If dimension is NUM
+                    r2 = atoi(temp->firstChild->Node.terminal.lexeme);
+                if(r2==-1){
+                    if (strcount > s_g )
+                    {
+                        exp_table_record.record.arr_record.u_indexes = (char **)realloc(exp_table_record.record.arr_record.u_indexes,  (strcount - 1) * sizeof(char *));
+                        s_g++;
+                    }
+                    int len=strlen(temp->firstChild->Node.terminal.lexeme);
+                    exp_table_record.record.arr_record.u_indexes[strcount ] = (char *)malloc(len*sizeof(char)); //allocating space to store left and right index
+                    strcpy(exp_table_record.record.arr_record.u_indexes[strcount ] ,temp->firstChild->Node.terminal.lexeme);
+                     // Storing ID in form of string
+                     //printf("%s\n\n",temp->firstChild->Node.terminal.lexeme);
+                    strcount++;
+                    
+                }
+                else{
+                    if (strcount > s_g )
+                    {
+                        exp_table_record.record.arr_record.l_indexes = (char **)realloc(exp_table_record.record.arr_record.l_indexes,  (strcount - 1) * sizeof(char *));
+                        s_g++;
+                    }
+                    int len=12;
+                    exp_table_record.record.arr_record.l_indexes[strcount] = (char *)malloc(len*sizeof(char)); //allocating space to store left and right index
+                    strcpy(exp_table_record.record.arr_record.l_indexes[strcount] ,"NumericValue");
+                     // Storing ID in form of string
+                    strcount++;
+                }
+                
+                   temp = temp->sibling->sibling; //reaches <array_dim>
+                
+             
+                //chk type(dynamic), dimension(lower<upper), read, and error report, maintain counter for Dimension Count, dimension=count;
+                //store to type_Expression_record.record.arr_record;
+                if ((r1 == -1 && r2 >= 0) || (r1 >= 0 && r2 == -1) || (r1 >= 0 && r2 >= 0 && r1 <= r2) || (r1 == -1 && r2 == -1)) //(-1 for ID)
+                //checking if lower_index < higher_index and ignore if one (or both) index are ID and NUM should be >= 0
+                {
+                    count++;
+                    exp_table_record.record.arr_record.dim = count;
+                    if (count > g * b)
+                    {
+                        tem = (int **)realloc(tem, 2 * (count - 1) * sizeof(int *));
+                        g++;
+                    }
+                    tem[count - 1] = (int *)malloc(2 * sizeof(int)); //allocating space to store left and right index
+                    tem[count - 1][0] = r1;
+                    tem[count - 1][1] = r2;
+                    exp_table_record.record.arr_record.dim_bound = tem;
+                    store->parent->exp_type = exp_table_record;
+                    store->parent->parent->exp_type = exp_table_record;
+                }
+                else //if lower_range becomes greater than higher_range
+                {
+                    exp_table_record.tag=not_app;
+                    exp_table_record.info = N_A;
+                    
+                    
+                    int dep = 0 ;
+                    printf("%d   DECLARATION   ***   ***   ***   ***   ***   %d   Array_Range_Mismatch \n", line, dep);
+                    break;
+                }
+
+            } while (temp != NULL);
+            //storing to single_array and array
+            
+            //temp2=daalde
+        }
+        //while exiting put in node
 
     //    else if(temp->isTerm==0&&temp->Node.nonTerminal.nt==jagged_array){
     //        temp=temp->firstChild;
