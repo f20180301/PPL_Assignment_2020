@@ -642,7 +642,7 @@ parseTree *createParseTree(parseTree *p, grammar *G)
         else if ((p->Node).terminal.t == find(posToken->token, 1))
         {
             // PRINTING
-            printf("TERMINAL: %s %s\n", p->Node.terminal.lexeme, TerminalMap[p->Node.terminal.t]);
+            //printf("TERMINAL: %s %s\n", p->Node.terminal.lexeme, TerminalMap[p->Node.terminal.t]);
             //printf("TERMINAL: %s \n", TerminalMap[p->Node.terminal.t]);
             posToken = posToken->next;
             return p;
@@ -925,8 +925,6 @@ int m = 0;
 
 TypeExpression jagged(int lo, int hi, parseTree *jagLines, int dimen, TypeExpression expr)
 {
-    //printf("%s\n", NonTerminalMap[jagLines->Node.nonTerminal.nt]);
-    //printf("5d\n");
     expr.record.j_arr_record.dim = dimen;
     expr.record.j_arr_record.r1_high = hi;
     expr.record.j_arr_record.r1_low = lo;
@@ -944,21 +942,14 @@ TypeExpression jagged(int lo, int hi, parseTree *jagLines, int dimen, TypeExpres
     }
     else
     {
-        //printf("5jd\n");
         jagl = (int **)malloc(sizeof(int *) * (hi - lo + 1));
     }
 
     parseTree *jagLine = jagLines->firstChild; //Pointing to a Jagline
-    //printf("%s\n", NonTerminalMap[jagLine->Node.nonTerminal.nt]);
     do
     {
-        //printf("5dijfgfg lololllo\n");
-        //printf("%s\n", NonTerminalMap[jagLine->Node.nonTerminal.nt]);
         parseTree *jagList = jagLine->firstChild->sibling->sibling; //Pointing to Num like R1[NUM]
-        //printf("%s\n", TerminalMap[jagList->Node.terminal.t]);
-        //printf("5dijfgfg\n");
         indx = atoi(jagList->Node.terminal.lexeme);
-        //printf("% d \n", indx);
         if (szchk != indx) // Checking index value
         {
             int dep = 0;
@@ -970,139 +961,131 @@ TypeExpression jagged(int lo, int hi, parseTree *jagLines, int dimen, TypeExpres
             {
                 printf("%d   DECLARATION   ***   ***   ***   ***   ***   %d   3D_Jagged_Array_Index_Mismatch \n", jagList->Node.terminal.line_num, dep);
             }
-
-            //error IF R1[VALUE] IS CORRECT OR NOT
-            //printf("in break\n");
             expr.tag = not_app;
             return expr;
         }
         szchk++;
-        //printf("5dij\n");
         jagList = jagList->sibling->sibling->sibling->sibling; // Pointing to next Num sixe(NUM)
         sz = atoi(jagList->Node.terminal.lexeme);              //Receiving the size of the array
+        numcount = 0;
         jagList = jagList->sibling->sibling->sibling->sibling; // Pointing to REAL JagList
-        parseTree *numList = jagList->firstChild;              // Pointing to a numlist of rule <jag_list> => <num_list> SEMICOLON <jag_list> ||  <num_list> || EPSILON
-        //printf("%s thththth\n", NonTerminalMap[numList->Node.nonTerminal.nt]);
-        //printf("5dij\n");
+        parseTree *numList = jagList->firstChild;              // Pointing to a numlist of rule <jag_list> => <num_list> SEMICOLON <jag_list> ||  <num_list>
         if (dimen == 2)
         {
-            if (jagList->Node.terminal.t == EPSILON)
-            {
-                printf("JJJJ\n");
-            }
             while (numList->sibling != NULL)
             {
-                dpnumList = numList->firstChild;                                     // Pointing to NUM or EPSILON of rule <num_list> => NUM <num_list> || NUM || EPSILON
-                if (dpnumList->Node.terminal.t == NUM && dpnumList->sibling == NULL) // Not more than two in a numList and single NUM to be present b/w semicolons
+                dpnumList = numList->firstChild;       // Pointing to NUM or EPSILON of rule <num_list> => NUM <num_list> || EPSILON
+                if (dpnumList->Node.terminal.t == NUM) // Not more than two in a numList and single NUM to be present b/w semicolons
                 {
                     numcount++;
+                    //printf("%s \n", dpnumList->Node.terminal.lexeme);
                 }
-                else if (dpnumList->sibling != NULL)
+                if (dpnumList->Node.terminal.t == EPSILON)
                 {
-                    printf("%s\n", NonTerminalMap[dpnumList->sibling->Node.nonTerminal.nt]);
-                    printf("%s\n", TerminalMap[dpnumList->sibling->firstChild->Node.nonTerminal.nt]);
                     int dep = 0;
-                    printf("YY\n");
+                    printf("%d   DECLARATION   ***   ***   ***   ***   ***   %d   2D_Jagged_Array_No_Element_In_Row \n", dpnumList->Node.terminal.line_num, dep);
+                    expr.tag = not_app;
+                    return expr;
+                }
+                //printf("%s %s y\n", TerminalMap[dpnumList->sibling->firstChild->Node.terminal.t], dpnumList->sibling->firstChild->Node.terminal.lexeme);
+                if (dpnumList->sibling->firstChild->Node.terminal.t != EPSILON)
+                {
+                    // error 3d type
+                    int dep = 0;
                     printf("%d   DECLARATION   ***   ***   ***   ***   ***   %d   2D_Jagged_Array_Multiple_Element_In_Row \n", dpnumList->Node.terminal.line_num, dep);
                     expr.tag = not_app;
                     return expr;
-                    // Like 3d array
-                    //error
                 }
-                else if (dpnumList->Node.terminal.t == EPSILON)
-                {
-                    // int dep = 0;
-                    // printf("%d   DECLARATION   ***   ***   ***   ***   ***   %d   2D_Jagged_Array_No_Element_In_Row \n", dpnumList->Node.terminal.line_num, dep);
-                    // expr.tag = not_app;
-                    // return expr;
-                    //error Empty
-                }
-                numList = numList->sibling->sibling->firstChild;
-                //numList=numList->firstChild->sibling; // Moving to next numList
+                numList = numList->sibling->sibling->firstChild; // Moving to next numList
             }
-            if (numList->firstChild->Node.terminal.t == EPSILON) //EPSILON IN LAST
+            if (numList->firstChild->Node.terminal.t == EPSILON)
             {
-                //error Last element is EPSILON
-            }
-            else if (numList->firstChild->sibling != NULL)
-            {
-
                 int dep = 0;
-                printf("%d   DECLARATION   ***   ***   ***   ***   ***   %d   2D_Jagged_Array_Multiple_Element_In_Row \n", numList->firstChild->Node.terminal.line_num, dep);
+                printf("%d   DECLARATION   ***   ***   ***   ***   ***   %d   2D_Jagged_Array_No_Element_In_Row \n", dpnumList->Node.terminal.line_num, dep);
                 expr.tag = not_app;
                 return expr;
-                // Like 3d array
-                //error
+                // Empty
+            }
+            if (numList->firstChild->sibling->firstChild->Node.terminal.t != EPSILON) //MORE THAN TWO
+            {
+                int dep = 0;
+                printf("%d   DECLARATION   ***   ***   ***   ***   ***   %d   2D_Jagged_Array_Multiple_Element_In_Row \n", dpnumList->Node.terminal.line_num, dep);
+                expr.tag = not_app;
+                return expr;
+                // 3d type
             }
             numcount++;
             if (sz != numcount) // Matchng size with no. of elements counted
             {
+                int dep = 0;
+                printf("%d   DECLARATION   ***   ***   ***   ***   ***   %d   2D_Jagged_Array_Size_Mismatch \n", dpnumList->Node.terminal.line_num, dep);
+                expr.tag = not_app;
+                return expr;
                 //error No. of elements do not match size
             }
             line[szchk - lo - 1] = sz;
         }
         else
         {
-            //printf("5d3d\n");
-            int counter = 1;
-            //printf("%d %d \n\n", szchk, lo);
+            int counter = 0;
             jagl[szchk - lo - 1] = (int *)malloc(sizeof(int) * (sz + 1));
-            jagl[szchk - lo - 1][0] = sz;
+            jagl[szchk - lo - 1][counter] = sz;
             while (numList->sibling != NULL) // Pointing to a numlist of rule <jag_list> => <num_list> SEMICOLON <jag_list> ||  <num_list>
             {
-                //printf("HELELELEl\n");
                 idxcount = 0;
-                //printf("%s thththth\n", NonTerminalMap[numList->Node.nonTerminal.nt]);
-                dpnumList = numList->firstChild; // Pointing to NUM of rule <num_list> => NUM <num_list> || NUM
-                //printf("%s thththlklklklk\n", dpnumList->Node.terminal.lexeme);
-                while (dpnumList->sibling != NULL) // TRAVERSING THE RULE to eat all NUM in <num_list>
+                dpnumList = numList->firstChild;              // Pointing to NUM or EPSILON of rule <num_list> => NUM <num_list> || EPSILON
+                while (dpnumList->Node.terminal.t != EPSILON) // TRAVERSING THE RULE to eat all NUM in <num_list>
                 {
                     idxcount++;
                     dpnumList = dpnumList->sibling->firstChild;
-                    //printf("%s \n", dpnumList->Node.terminal.lexeme);
                 }
-                if (dpnumList->Node.terminal.t == EPSILON)
+                if (dpnumList->Node.terminal.t == EPSILON && idxcount == 0)
                 {
+                    int dep = 0;
+                    printf("%d   DECLARATION   ***   ***   ***   ***   ***   %d   3D_Jagged_Array_No_Element_In_Row \n", dpnumList->Node.terminal.line_num, dep);
+                    expr.tag = not_app;
+                    return expr;
                     // error EPSILON ENCOUNTERED
                 }
-                idxcount++;
+                counter++;
                 jagl[szchk - lo - 1][counter] = idxcount;
                 //printf("%d idxid\n", idxcount);
-                counter++;
                 numList = numList->sibling->sibling->firstChild;
             }
-            //printf("HSAHILSAHIKl\n");
             idxcount = 0;
             dpnumList = numList->firstChild;
-            //printf("%s \n", dpnumList->Node.terminal.lexeme);
-            while (dpnumList->sibling != NULL) // TRAVERSING THE RULE to eat all NUM in <num_list>
+            while (dpnumList->Node.terminal.t != EPSILON) // TRAVERSING THE RULE to eat all NUM in <num_list>
             {
                 idxcount++;
                 dpnumList = dpnumList->sibling->firstChild;
-                //printf("%s raj\n", dpnumList->Node.terminal.lexeme);
             }
-            if (dpnumList->Node.terminal.t == EPSILON)
+            if (dpnumList->Node.terminal.t == EPSILON && idxcount == 0)
             {
+                int dep = 0;
+                printf("%d   DECLARATION   ***   ***   ***   ***   ***   %d   3D_Jagged_Array_No_Element_In_Row \n", dpnumList->Node.terminal.line_num, dep);
+                expr.tag = not_app;
+                return expr;
                 // error EPSILON ENCOUNTERED
             }
-            idxcount++;
-            //printf("%d mmnmnmn\n", idxcount);
+            counter++;
             jagl[szchk - lo - 1][counter] = idxcount;
             if (counter != sz)
             {
+                int dep = 0;
+                printf("%d   DECLARATION   ***   ***   ***   ***   ***   %d   3D_Jagged_Array_Size_Mismatch \n", dpnumList->Node.terminal.line_num, dep);
+                expr.tag = not_app;
+                return expr;
                 //error Size don't match
             }
         }
         if (jagLine->sibling == NULL)
         {
-            //printf("ijhgrsihjgs\n");
-            jagLine = jagLine->sibling;
+            jagLine = NULL;
         }
         else
         {
             jagLine = jagLine->sibling->firstChild; // Move to next Jagline after Traversing a single Jagline
         }
-
     } while (jagLine != NULL);
     if (dimen == 2)
     {

@@ -36,7 +36,6 @@
 <jag_list> => <num_list> SEMICOLON <jag_list>
 <jag_list> => <num_list>
 <num_list> => NUM <num_list>
-<num_list> => NUM
 <num_list> => EPSILON
 <num_id> => NUM
 <num_id> => ID
@@ -45,7 +44,6 @@
 <arr_pid> => ID SQOP <idx> SQCL
 <arr_pid> => ID
 <idx> => <num_id> <idx>
-<idx> => <num_id>
 <idx> => EPSILON
 <type> => INTEGER
 <type> => REAL
