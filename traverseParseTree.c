@@ -1,22 +1,22 @@
-#include<stdio.h>
-#include<string.h>
-#include<stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 /*************************TOKEN STRUCT IMPORTS******************************/
 #define MAX 100
 
-char *ha[13][2];  
+char *ha[13][2];
 char *op[16][2]; //FOR KEYWORD
 
-
-typedef struct token{       //TOKEN STRUCTURE
+typedef struct token
+{ //TOKEN STRUCTURE
     char lexeme[200];
     char token[200];
     int lineno;
-    struct token* next;
-}token;
+    struct token *next;
+} token;
 
-token * head=NULL;
-token * tail=NULL;      //Head, Tail of LinkedList for TokenStream
+token *head = NULL;
+token *tail = NULL; //Head, Tail of LinkedList for TokenStream
 
 /**************************END TOKEN STRUCT***************************************/
 
@@ -59,8 +59,7 @@ char *TerminalMap[] =
         "VALUES",
         "AND",
         "OR",
-        "EPSILON"
-        };
+        "EPSILON"};
 char *NonTerminalMap[] =
     {
         "s",
@@ -174,8 +173,8 @@ typedef enum
     fact_bool
 } NonTerminal;
 
-
-typedef union SYMBOL {
+typedef union SYMBOL
+{
     Terminal t;
     NonTerminal nt;
 } symbol;
@@ -202,15 +201,12 @@ typedef struct // Derivation of a particular single LHS
 } grammar;
 /***********GRAMMAR STRUCT IMPORTS END***************/
 
-
-
-
 /***************TYPE EXPRESSION TABLE AND STRUCTS**********************/
 
 // typedef enum  {
 //    INTEGER,
 //    REAL,
-//    BOOLEAN, 
+//    BOOLEAN,
 //    TYPE_ERROR
 // }primitive;
 
@@ -221,56 +217,60 @@ typedef struct // Derivation of a particular single LHS
 //    NA
 // }declaration_type;
 
-typedef enum{
+typedef enum
+{
     Static,
     Dynamic,
     N_A
-}bind_info;
+} bind_info;
 
 char string_bind[3][25] = {
-                        "Static",
-                        "Dynamic",
-                        "NotApplicable"
-                     };
+    "Static",
+    "Dynamic",
+    "NotApplicable"};
 
-
-
-typedef union {
+typedef union
+{
     int *_line;
-    int **jag_line;//jagged
-}jagged_type;
+    int **jag_line; //jagged
+} jagged_type;
 
-typedef struct {
-    int dim;//--4
-    int ** dim_bound;//(7,4),(3,4),(),() 4X2
-}array_record;
+typedef struct
+{
+    int dim;         //--4
+    int **dim_bound; //(7,4),(3,4),(),() 4X2
+} array_record;
 
-typedef struct  {
-    int dim;//2d or 3d ke liye tagg--
+typedef struct
+{
+    int dim; //2d or 3d ke liye tagg--
     int r1_low;
-    int r1_high;    
+    int r1_high;
     jagged_type dim_bound;
 
-}jagged_array_record;
+} jagged_array_record;
 
-typedef union type_Expression_record{
-     Terminal primitive_type;//INT<BOOL<REAL
-     array_record arr_record;
-     jagged_array_record j_arr_record;
+typedef union type_Expression_record
+{
+    Terminal primitive_type; //INT<BOOL<REAL
+    array_record arr_record;
+    jagged_array_record j_arr_record;
 } type_Expression_record;
 
-typedef struct TypeExpression{
-    NonTerminal tag;///primitive,array,jagged
-    bind_info info;//static dyanmic
+typedef struct TypeExpression
+{
+    NonTerminal tag; ///primitive,array,jagged
+    bind_info info;  //static dyanmic
     type_Expression_record record;
-}TypeExpression;
+} TypeExpression;
 
-typedef struct TypeExpressionTable{
-    char var_name[200];     //extra
+typedef struct TypeExpressionTable
+{
+    char var_name[200]; //extra
     NonTerminal tag;
     bind_info info;
     type_Expression_record record;
-}TypeExpressionTable;
+} TypeExpressionTable;
 
 /***************TYPE EXPRESSION TABLE AND STRUCTS**********************/
 
@@ -278,338 +278,371 @@ typedef struct TypeExpressionTable{
 // Terminal Nodes
 typedef struct terminalNode
 {
-	Terminal t;
-	char lexeme[100];
-	int line_num;
+    Terminal t;
+    char lexeme[100];
+    int line_num;
 } TerminalNode;
 
 // NonTerminal Nodes
 typedef struct nonTerminalNode
-{	
-	NonTerminal nt;
-	grules * expRule; // for getting the rule used in parsing
+{
+    NonTerminal nt;
+    grules *expRule; // for getting the rule used in parsing
 } NonTerminalNode;
 
 // Union for Term / NonTerm Nodes
 typedef union nodeType
 {
-	TerminalNode terminal;
-	NonTerminalNode nonTerminal;
+    TerminalNode terminal;
+    NonTerminalNode nonTerminal;
 } NodeType;
-
 
 // ParseTree Node
 typedef struct treeNode
 {
-	int isTerm; // tag for term/non_term and leaf / non_leaf
-	NodeType Node;	// Details corresponding to a Terminal or a NonTerminal Node
-	
-	//TypeExpression t; // to be done
-	// only for NonTerminal or Both ??
-	
-	struct treeNode * parent; // parent of the node
-	struct treeNode * sibling; // right sibling of the node
-	
-	//for linkedlist of children
-	struct treeNode* firstChild;
-	TypeExpression exp_type;
+    int isTerm;    // tag for term/non_term and leaf / non_leaf
+    NodeType Node; // Details corresponding to a Terminal or a NonTerminal Node
+
+    //TypeExpression t; // to be done
+    // only for NonTerminal or Both ??
+
+    struct treeNode *parent;  // parent of the node
+    struct treeNode *sibling; // right sibling of the node
+
+    //for linkedlist of children
+    struct treeNode *firstChild;
+    TypeExpression exp_type;
 } parseTree;
-            /********PARSE TREE NODE*********/
-int CAPACITY=1;
-int m=0;
-TypeExpressionTable * append_to_table(TypeExpressionTable * table,TypeExpression type,char * var){
-    if(CAPACITY==0){
-        table=(TypeExpressionTable *)malloc(sizeof(TypeExpressionTable)*10);
-        CAPACITY=10;
+/********PARSE TREE NODE*********/
+int CAPACITY = 1;
+int m = 0;
+TypeExpressionTable *append_to_table(TypeExpressionTable *table, TypeExpression type, char *var)
+{
+    if (CAPACITY == 0)
+    {
+        table = (TypeExpressionTable *)malloc(sizeof(TypeExpressionTable) * 10);
+        CAPACITY = 10;
     }
-    else if(m==CAPACITY){
-        table=(TypeExpressionTable *)realloc(table,sizeof(TypeExpressionTable)*CAPACITY*2);
-        CAPACITY=CAPACITY*2;
+    else if (m == CAPACITY)
+    {
+        table = (TypeExpressionTable *)realloc(table, sizeof(TypeExpressionTable) * CAPACITY * 2);
+        CAPACITY = CAPACITY * 2;
     }
-    else{
-       
-        strcpy(table[m].var_name,var);
-        table[m].tag=type.tag;
-        table[m].info=type.info;
-        table[m].record=type.record;
-       
+    else
+    {
+
+        strcpy(table[m].var_name, var);
+        table[m].tag = type.tag;
+        table[m].info = type.info;
+        table[m].record = type.record;
+
         m++;
     }
     return table;
 }
 
-int strCount=0;
+int strCount = 0;
 char **indexes;
 
-void traverse_parse_tree(parseTree *t,TypeExpressionTable * table){
+void traverse_parse_tree(parseTree *t, TypeExpressionTable *table)
+{
 
-    if(t->isTerm==0&&t->Node.nonTerminal.nt==s){
-        t=t->firstChild->sibling->sibling->sibling->sibling;   
-        traverse_parse_tree(t,table);
+    if (t->isTerm == 0 && t->Node.nonTerminal.nt == s)
+    {
+        t = t->firstChild->sibling->sibling->sibling->sibling;
+        traverse_parse_tree(t, table);
         //pointer t is pointing/moving to <start>
         return;
     }
-     //pointer t is pointing/moving to <start>
-    else if(t->isTerm==0&&t->Node.nonTerminal.nt==start){
-        traverse_parse_tree(t->firstChild,table);
-        traverse_parse_tree(t->firstChild->sibling,table);
+    //pointer t is pointing/moving to <start>
+    else if (t->isTerm == 0 && t->Node.nonTerminal.nt == start)
+    {
+        traverse_parse_tree(t->firstChild, table);
+        traverse_parse_tree(t->firstChild->sibling, table);
         return;
     }
-    
-    else if(t->isTerm==0&&t->Node.nonTerminal.nt==declaration){
-        traverse_parse_tree(t->firstChild,table); //to dec_stmnt
-        if(t->firstChild->sibling!=NULL){
-        traverse_parse_tree(t->firstChild->sibling,table);//to declarations or null
+
+    else if (t->isTerm == 0 && t->Node.nonTerminal.nt == declaration)
+    {
+        traverse_parse_tree(t->firstChild, table); //to dec_stmnt
+        if (t->firstChild->sibling != NULL)
+        {
+            traverse_parse_tree(t->firstChild->sibling, table); //to declarations or null
         }
         return;
-   }
-   else if(t->isTerm==0&&t->Node.nonTerminal.nt==declaration_stmt){
-       //build for the "typeExpression" of this declarartion statement, error reporting
-       TypeExpression exp_table_record;
-        parseTree* varlist_pointer=NULL; 
-       parseTree * temp=t;    //just being safe, making copy
-       temp=temp->firstChild;
+    }
+    else if (t->isTerm == 0 && t->Node.nonTerminal.nt == declaration_stmt)
+    {
+        //build for the "typeExpression" of this declarartion statement, error reporting
+        TypeExpression exp_table_record;
+        parseTree *varlist_pointer = NULL;
+        parseTree *temp = t; //just being safe, making copy
+        temp = temp->firstChild;
 
-       if(temp->isTerm==0&&temp->Node.nonTerminal.nt==primitive){
-           exp_table_record.tag=primitive;          //primitive/jagged_array/array//terminal
-           exp_table_record.info=N_A;
-           temp=temp->firstChild;   //pointing to var_list  //moving into single/multiple_primitive node //populate type expressions
-           if(temp->isTerm==0&&temp->Node.nonTerminal.nt==single_primitive){
-               varlist_pointer=temp=temp->firstChild->sibling;
-               temp=temp->sibling->sibling;//moving into colon ke baad wala node
-           }
-           else{//multiple
-               varlist_pointer=temp=temp->firstChild->sibling->sibling->sibling->sibling;
-               temp=temp->sibling->sibling;//moving into colon ke baad wala node
-           }
-           //
-           exp_table_record.record.primitive_type=temp->firstChild->Node.terminal.t; //INT/BOOl/REAL(terminal)
-           //daalnaa
-           //storing to <single_primitive> and <primitive>
-           temp->parent->exp_type=exp_table_record;
-           temp->parent->parent->exp_type=exp_table_record;
-         }
+        if (temp->isTerm == 0 && temp->Node.nonTerminal.nt == primitive)
+        {
+            exp_table_record.tag = primitive; //primitive/jagged_array/array//terminal
+            exp_table_record.info = N_A;
+            temp = temp->firstChild; //pointing to var_list  //moving into single/multiple_primitive node //populate type expressions
+            if (temp->isTerm == 0 && temp->Node.nonTerminal.nt == single_primitive)
+            {
+                varlist_pointer = temp = temp->firstChild->sibling;
+                temp = temp->sibling->sibling; //moving into colon ke baad wala node
+            }
+            else
+            { //multiple
+                varlist_pointer = temp = temp->firstChild->sibling->sibling->sibling->sibling;
+                temp = temp->sibling->sibling; //moving into colon ke baad wala node
+            }
+            //
+            exp_table_record.record.primitive_type = temp->firstChild->Node.terminal.t; //INT/BOOl/REAL(terminal)
+            //daalnaa
+            //storing to <single_primitive> and <primitive>
+            temp->parent->exp_type = exp_table_record;
+            temp->parent->parent->exp_type = exp_table_record;
+        }
 
-       else if(temp->isTerm==0&&temp->Node.nonTerminal.nt==array){
-           exp_table_record.tag=array;
-              exp_table_record.info=Static;
-           temp=temp->firstChild; 
-            if(temp->isTerm==0&&temp->Node.nonTerminal.nt==single_array){
-               varlist_pointer=temp=temp->firstChild->sibling;
-               temp=temp->sibling->sibling;//moving into colon ke baad wala node
-           }
-           else{
-               varlist_pointer=temp=temp->firstChild->sibling->sibling->sibling->sibling;
-               temp=temp->sibling->sibling;//moving into colon ke baad wala node
-           }
-            temp=temp->sibling;//(ignore just after colon, arrray written)
+        else if (temp->isTerm == 0 && temp->Node.nonTerminal.nt == array)
+        {
+            exp_table_record.tag = array;
+            exp_table_record.info = Static;
+            temp = temp->firstChild;
+            if (temp->isTerm == 0 && temp->Node.nonTerminal.nt == single_array)
+            {
+                varlist_pointer = temp = temp->firstChild->sibling;
+                temp = temp->sibling->sibling; //moving into colon ke baad wala node
+            }
+            else
+            {
+                varlist_pointer = temp = temp->firstChild->sibling->sibling->sibling->sibling;
+                temp = temp->sibling->sibling; //moving into colon ke baad wala node
+            }
+            temp = temp->sibling; //(ignore just after colon, arrray written)
             //<array_dim> hai aab, in temp
-            parseTree * store=temp;//at <array_dim>
-            
+            parseTree *store = temp; //at <array_dim>
+
             int count = 0;
-            int r1=-1,r2=-1;
+            int r1 = -1, r2 = -1;
             int **tem = (int **)malloc(2 * sizeof(int *));
-           // int strCount=0;
-           // char **indexes;
+            // int strCount=0;
+            // char **indexes;
             int g = 1, b = 2;
-            do {
-                temp = temp->firstChild;//(moving into the child of  <array_dim>)
+            do
+            {
+                temp = temp->firstChild; //(moving into the child of  <array_dim>)
                 temp = temp->sibling;
                 //id or num =temp->firstChild;
-              
-                if(temp->firstChild->Node.terminal.t=="ID") //checking if dimension is ID.
-                 {exp_table_record.info=Dynamic;
-                  indexes=(char **)malloc(sizeof(char *));  
-                  indexes[strcount]=temp->firstChild;    // Storing ID in form of string
-                  strcount++;
-                  r1=-1;
-                 }
-                 else    // If dimension is NUM
-                 r1 = temp->firstChild;
 
-               temp = temp->sibling->sibling;  //ignoring .. (DD)
+                if (temp->firstChild->Node.terminal.t == "ID") //checking if dimension is ID.
+                {
+                    exp_table_record.info = Dynamic;
+                    indexes = (char **)malloc(sizeof(char *));
+                    indexes[strcount] = temp->firstChild; // Storing ID in form of string
+                    strcount++;
+                    r1 = -1;
+                }
+                else // If dimension is NUM
+                    r1 = temp->firstChild;
 
-               if(temp->firstChild->Node.terminal.t=="ID") // checking if dimension is ID
-               {exp_table_record.info=Dynamic;
-                indexes=(char **)malloc(sizeof(char *));
-                indexes[strcount]=temp->firstChild;        // Storing ID in form of string
-                 strcount++;
-                 r2=-1;
-               }
-               else                      // If dimension is NUM
-               r2 = temp->firstChild;
-               temp = temp->sibling->sibling;//reaches <array_dim>
+                temp = temp->sibling->sibling; //ignoring .. (DD)
+
+                if (temp->firstChild->Node.terminal.t == "ID") // checking if dimension is ID
+                {
+                    exp_table_record.info = Dynamic;
+                    indexes = (char **)malloc(sizeof(char *));
+                    indexes[strcount] = temp->firstChild; // Storing ID in form of string
+                    strcount++;
+                    r2 = -1;
+                }
+                else // If dimension is NUM
+                    r2 = temp->firstChild;
+                temp = temp->sibling->sibling; //reaches <array_dim>
                 //chk type(dynamic), dimension(lower<upper), read, and error report, maintain counter for Dimension Count, dimension=count;
                 //store to type_Expression_record.record.arr_record;
-                if((r1==-1&&r2>=0)||(r1>=0&&r2==-1)||(r1>=0&&r2>=0&&r1<=r2)||(r1==-1&&r2==-1)) //(-1 for ID)
-                //checking if lower_index < higher_index and ignore if one (or both) index are ID and NUM should be >= 0 
+                if ((r1 == -1 && r2 >= 0) || (r1 >= 0 && r2 == -1) || (r1 >= 0 && r2 >= 0 && r1 <= r2) || (r1 == -1 && r2 == -1)) //(-1 for ID)
+                //checking if lower_index < higher_index and ignore if one (or both) index are ID and NUM should be >= 0
                 {
-                   count++;
-                   exp_table_record.record.arr_record.dim = count;
+                    count++;
+                    exp_table_record.record.arr_record.dim = count;
                     if (count > g * b)
                     {
-                    tem = (int **)realloc(tem, 2*(count-1)*sizeof(int *));  
-                    g++;
+                        tem = (int **)realloc(tem, 2 * (count - 1) * sizeof(int *));
+                        g++;
                     }
                     tem[count - 1] = (int *)malloc(2 * sizeof(int)); //allocating space to store left and right index
                     tem[count - 1][0] = r1;
                     tem[count - 1][1] = r2;
                     exp_table_record.record.arr_record.dim_bound = tem;
                 }
-                else   //if lower_range becomes greater than higher_range
+                else //if lower_range becomes greater than higher_range
                 {
-                    exp_table_record.info=N_A;
-                    int line=temp->Node.terminal.line_number;
-                    int dep=?;
-                    printf("%d   DECLARATION   ***   ***   ***   ***   ***   %d   Array_Range_Mismatch \n",line,dep);
+                    exp_table_record.info = N_A;
+                    int line = temp->Node.terminal.line_number;
+                    int dep = ? ;
+                    printf("%d   DECLARATION   ***   ***   ***   ***   ***   %d   Array_Range_Mismatch \n", line, dep);
                     break;
                 }
-                
+
             } while (temp != NULL);
             //storing to single_array and array
-            store->parent->exp_type=exp_table_record;
-            store->parent->parent->exp_type=exp_table_record;
-//temp2=daalde
-       }
-       //while exiting put in node
+            store->parent->exp_type = exp_table_record;
+            store->parent->parent->exp_type = exp_table_record;
+            //temp2=daalde
+        }
+        //while exiting put in node
 
-       else if(temp->isTerm==0&&temp->Node.nonTerminal.nt==jagged_array){
-           temp=temp->firstChild;
-           if(temp->isTerm==0&&temp->Node.nonTerminal.nt==jagged_2d_array){
-           exp_table_record.tag=jagged_array;
-           exp_table_record.info=N_A;
-           temp=temp->firstChild; 
-                if(temp->isTerm==0&&temp->Node.nonTerminal.nt==single_jagged2darray){
-                    varlist_pointer=temp=temp->firstChild->sibling;
-                    temp=temp->sibling->sibling;//moving into colon ke baad wala node
+        else if (temp->isTerm == 0 && temp->Node.nonTerminal.nt == jagged_array)
+        {
+            temp = temp->firstChild;
+            if (temp->isTerm == 0 && temp->Node.nonTerminal.nt == jagged_2d_array)
+            {
+                exp_table_record.tag = jagged_array;
+                exp_table_record.info = N_A;
+                temp = temp->firstChild;
+                if (temp->isTerm == 0 && temp->Node.nonTerminal.nt == single_jagged2darray)
+                {
+                    varlist_pointer = temp = temp->firstChild->sibling;
+                    temp = temp->sibling->sibling; //moving into colon ke baad wala node
                 }
-                else{
-                    varlist_pointer=temp=temp->firstChild->sibling->sibling->sibling->sibling;
-                    temp=temp->sibling->sibling;//moving into colon ke baad wala node
+                else
+                {
+                    varlist_pointer = temp = temp->firstChild->sibling->sibling->sibling->sibling;
+                    temp = temp->sibling->sibling; //moving into colon ke baad wala node
                 }
-           temp=temp->sibling->sibling;//(ignore just after colon, jagged and arrray written)
-            //<jagged_2d_dim> hai , in temp
-            parseTree * store=temp;//at <jagged_2d/3d_dim>
-            int l_bound=temp->firstChild->sibling->firstChild;
-            int u_bound=temp->firstChild->sibling->sibling->sibling->firstChild;
-            int dimension=2;
-            //temp <jagged_dim> pe hi hai
-            if(l_bound<=u_bound){//chk =
-                //traverse for jaglines
-                temp=temp->sibling->sibling->sibling->sibling; //reach <jag_lines>
-                //read all jag_lines one by one upto, NULL
-                do{
-                //temp pointing on <jag_line>
-                temp=temp->firstChild;
-                parseTree* temp_jag=temp->firstChild;  //point to R1             
-                temp_jag=temp_jag->sibling->sibling;//pointing on NUM
-                int indx=temp_jag;
-                //chk index in l_bound,u_bound and particularly increasing//#######TO BE DONE
-                temp_jag=temp_jag->sibling->sibling->sibling->sibling;//pointing to size NUM(size NUM)
-                int sz=temp_jag;
-                //store in the cnt of jagged_R2_type
-                temp_jag=temp_jag->sibling->sibling->sibling->sibling;//pointing to jag_list;
-                //read all <jag_list(initialisation wala values)>
-                //validity CHK ACCORDING TO SZ variable me size kya ha
-                //epsion empty ; ; checking required
+                temp = temp->sibling->sibling; //(ignore just after colon, jagged and arrray written)
+                //<jagged_2d_dim> hai , in temp
+                parseTree *store = temp; //at <jagged_2d/3d_dim>
+                int l_bound = temp->firstChild->sibling->firstChild;
+                int u_bound = temp->firstChild->sibling->sibling->sibling->firstChild;
+                int dimension = 2;
+                //temp <jagged_dim> pe hi hai
+                if (l_bound <= u_bound)
+                { //chk =
+                    //traverse for jaglines
+                    temp = temp->sibling->sibling->sibling->sibling; //reach <jag_lines>
+                    //read all jag_lines one by one upto, NULL
+                    do
+                    {
+                        //temp pointing on <jag_line>
+                        temp = temp->firstChild;
+                        parseTree *temp_jag = temp->firstChild; //point to R1
+                        temp_jag = temp_jag->sibling->sibling;  //pointing on NUM
+                        int indx = temp_jag;
+                        //chk index in l_bound,u_bound and particularly increasing//#######TO BE DONE
+                        temp_jag = temp_jag->sibling->sibling->sibling->sibling; //pointing to size NUM(size NUM)
+                        int sz = temp_jag;
+                        //store in the cnt of jagged_R2_type
+                        temp_jag = temp_jag->sibling->sibling->sibling->sibling; //pointing to jag_list;
+                        //read all <jag_list(initialisation wala values)>
+                        //validity CHK ACCORDING TO SZ variable me size kya ha
+                        //epsion empty ; ; checking required
 
+                        //moving temp to <jag_lines>
+                        temp = temp->sibling;
+                    } while (temp != NULL);
+                }
+                else
+                {
+                    //error
+                }
+                store->parent->exp_type = exp_table_record;
+                store->parent->parent->exp_type = exp_table_record;
+                store->parent->parent->parent->exp_type = exp_table_record;
 
-                //moving temp to <jag_lines>
-                temp=temp->sibling;
-                }while(temp!=NULL);
-
+                // exp_table_record.record.j_arr_record=temp->child->value;
             }
-            else{
-                //error
+            else if (temp->isTerm == 0 && temp->Node.nonTerminal.nt == jagged_3d_array)
+            {
+                exp_table_record.tag = jagged_array;
+                exp_table_record.info = N_A;
+                temp = temp->firstChild;
+                if (temp->isTerm == 0 && temp->Node.nonTerminal.nt == single_jagged3darray)
+                {
+                    varlist_pointer = temp = temp->firstChild->sibling;
+                    temp = temp->sibling->sibling; //moving into colon ke baad wala node
+                }
+                else
+                {
+                    varlist_pointer = temp = temp->firstChild->sibling->sibling->sibling->sibling;
+                    temp = temp->sibling->sibling; //moving into colon ke baad wala node
+                }
+                temp = temp->sibling->sibling; //(ignore just after colon, jagged and arrray written)
+                                               //<jagged_dim> hai , in temp
+                parseTree *store = temp;       //at <jagged_2d/3d_dim>
+                                               //CONTINUE THIS WORK//CONTINUE THIS WORK//CONTINUE THIS WORK
+                int l_bound = temp->firstChild->sibling->firstChild;
+                int u_bound = temp->firstChild->sibling->sibling->sibling->firstChild;
+                int dimension = 3;
+                if (l_bound <= u_bound)
+                { //chk =
+                    //kamm alag hoga.
+                }
+                else
+                {
+                    //error
+                }
+                store->parent->exp_type = exp_table_record;
+                store->parent->parent->exp_type = exp_table_record;
+                store->parent->parent->parent->exp_type = exp_table_record;
+                //   exp_table_record.record.j_arr_record=temp->firstChild;
             }
-            store->parent->exp_type=exp_table_record;
-            store->parent->parent->exp_type=exp_table_record;
-            store->parent->parent->parent->exp_type=exp_table_record;
-            
-          // exp_table_record.record.j_arr_record=temp->child->value;
-
-       }
-       else if(temp->isTerm==0&&temp->Node.nonTerminal.nt==jagged_3d_array){
-           exp_table_record.tag=jagged_array;
-           exp_table_record.info=N_A;
-           temp=temp->firstChild; 
-           if(temp->isTerm==0&&temp->Node.nonTerminal.nt==single_jagged3darray){
-               varlist_pointer=temp=temp->firstChild->sibling;
-               temp=temp->sibling->sibling;//moving into colon ke baad wala node
-           }
-           else{
-               varlist_pointer=temp=temp->firstChild->sibling->sibling->sibling->sibling;
-               temp=temp->sibling->sibling;//moving into colon ke baad wala node
-           }
-           temp=temp->sibling->sibling;//(ignore just after colon, jagged and arrray written)
-            //<jagged_dim> hai , in temp
-             parseTree * store=temp;//at <jagged_2d/3d_dim>
-        //CONTINUE THIS WORK//CONTINUE THIS WORK//CONTINUE THIS WORK
-            int l_bound=temp->firstChild->sibling->firstChild;
-            int u_bound=temp->firstChild->sibling->sibling->sibling->firstChild;
-            int dimension=3;
-            if(l_bound<=u_bound){//chk =
-                //kamm alag hoga.
-            }
-            else{
-                //error
-            }
-            store->parent->exp_type=exp_table_record;
-            store->parent->parent->exp_type=exp_table_record;
-            store->parent->parent->parent->exp_type=exp_table_record;
-        //   exp_table_record.record.j_arr_record=temp->firstChild;
-       }
-       }
-       //reach, type expression record ready,
-       //populate varlist_pointer, with typeexpression,
-       //populate typeExpressionTable with variable created.
-       if(varlist_pointer->isTerm==1&&varlist_pointer->Node.terminal.t==ID){
-            varlist_pointer->exp_type=exp_table_record;
+        }
+        //reach, type expression record ready,
+        //populate varlist_pointer, with typeexpression,
+        //populate typeExpressionTable with variable created.
+        if (varlist_pointer->isTerm == 1 && varlist_pointer->Node.terminal.t == ID)
+        {
+            varlist_pointer->exp_type = exp_table_record;
             //append to typeExpression Table
-            table=append_to_table(table,exp_table_record,varlist_pointer->Node.terminal.lexeme);
-       }
-       else{
-           //traverse all IDs
-           do{
-               varlist_pointer->exp_type=exp_table_record;
-               varlist_pointer=varlist_pointer->firstChild;
-               varlist_pointer->exp_type=exp_table_record;
-//append to typeExpression Table
-               table=append_to_table(table,exp_table_record,varlist_pointer->Node.terminal.lexeme);
-               varlist_pointer=varlist_pointer->sibling;
-           }while(varlist_pointer!=NULL);
-       }
-       return;
-   }
-
-   
-   
-   
-   /*********///RAJAT/************/
-   
-   
-    else if(t->isTerm==0&&t->Node.nonTerminal.nt==assignment){
-        traverse_parse_tree(t->firstChild,table);
-        if(t->firstChild->sibling!=NULL){
-        traverse_parse_tree(t->firstChild->sibling,table);
+            table = append_to_table(table, exp_table_record, varlist_pointer->Node.terminal.lexeme);
+        }
+        else
+        {
+            //traverse all IDs
+            do
+            {
+                varlist_pointer->exp_type = exp_table_record;
+                varlist_pointer = varlist_pointer->firstChild;
+                varlist_pointer->exp_type = exp_table_record;
+                //append to typeExpression Table
+                table = append_to_table(table, exp_table_record, varlist_pointer->Node.terminal.lexeme);
+                varlist_pointer = varlist_pointer->sibling;
+            } while (varlist_pointer != NULL);
         }
         return;
+    }
+
+    /*********/ //RAJAT/************/
+
+    else if (t->isTerm == 0 && t->Node.nonTerminal.nt == assignment)
+    {
+        traverse_parse_tree(t->firstChild, table);
+        if (t->firstChild->sibling != NULL)
+        {
+            traverse_parse_tree(t->firstChild->sibling, table);
+        }
+        return;
+    }
+
+    else if (t->isTerm == 0 && t->Node.nonTerminal.nt == assignment_stmt)
+    { //<assignment_stmt>
+        //=> <arr_pid> EQUALS <expression> SEMICOLON
+        type_left;
+        type_right;
+        //CONTINUE THIS WORK//CONTINUE THIS WORK//CONTINUE THIS WORK
+        t = t->firstChild;
+        (check validity)             //-->boundck, etc if array type var                   int a = 2 + 3.7 + 5;
+            t = t->sibling->sibling; //move to expree(send to function, find return type) -- , + , &&
+        if (type_left != type_right)
+        {
+            // ERROR //otherwise no isseus
+        }
+        return;
+    }
 }
 
-else if(t->isTerm==0&&t->Node.nonTerminal.nt==assignment_stmt){//<assignment_stmt> 
-//=> <arr_pid> EQUALS <expression> SEMICOLON
-type_left;type_right;
-//CONTINUE THIS WORK//CONTINUE THIS WORK//CONTINUE THIS WORK
-t=t->firstChild;(check validity)//-->boundck, etc if array type var                   int a = 2 + 3.7 + 5;
-t=t->sibling->sibling;//move to expree(send to function, find return type) -- , + , &&
-if(type_left!=type_right){
-   // ERROR //otherwise no isseus
-}
-return;
-}
-}
-
-int main(){
+int main()
+{
 
     return 0;
 }
