@@ -123,9 +123,10 @@ void tokeniseSourcecode(char a[100],token *head){       //Function for File Reda
 /**************************END TOKEN FUNC IMPORTS***********************************************/
 
 /**********************GRAMMAR STRUCT IMPORTS************************/
-#define TOTAL_TERMINALS 34
-#define TOTAL_NON_TERMINALS 34
-#define NON_TERMINALS 34
+#define TOTAL_TERMINALS 35
+#define TOTAL_NON_TERMINALS 37
+#define NON_TERMINALS 37
+
 char *TerminalMap[] =
     {
         "PROGRAM",
@@ -155,14 +156,11 @@ char *TerminalMap[] =
         "MINUS",
         "DIVIDE",
         "MUL",
-        "TRE",
-        "FAL",
         "SIZE",
         "VALUES",
         "AND",
         "OR",
-        "EPSILON"
-        };
+        "EPSILON"};
 char *NonTerminalMap[] =
     {
         "s",
@@ -175,10 +173,16 @@ char *NonTerminalMap[] =
         "single_primitive",
         "multi_primitive",
         "array",
+        "single_array",
+        "multi_array",
         "array_dim",
         "jagged_array",
         "jagged_2d_array",
+        "single_jagged_2d_array",
+        "multi_jagged_2d_array",
         "jagged_3d_array",
+        "single_jagged_3d_array",
+        "multi_jagged_3d_array",
         "jagged_2d_dim",
         "jagged_3d_dim",
         "jag_lines",
@@ -199,7 +203,7 @@ char *NonTerminalMap[] =
         "boolean_expression",
         "or_expression",
         "fact_bool",
-        "Not_applicable"};
+        "not_app"};
 
 typedef enum
 {
@@ -230,8 +234,6 @@ typedef enum
     MINUS,
     DIVIDE,
     MUL,
-    TRE,
-    FAL,
     SIZE,
     VALUES,
     AND,
@@ -251,10 +253,16 @@ typedef enum
     single_primitive,
     multi_primitive,
     array,
+    single_array,
+    multi_array,
     array_dim,
     jagged_array,
     jagged_2d_array,
+    single_jagged_2d_array,
+    multi_jagged_2d_array,
     jagged_3d_array,
+    single_jagged_3d_array,
+    multi_jagged_3d_array,
     jagged_2d_dim,
     jagged_3d_dim,
     jag_lines,
@@ -275,7 +283,7 @@ typedef enum
     boolean_expression,
     or_expression,
     fact_bool,
-    Not_App
+    not_app
 } NonTerminal;
 
 
@@ -763,89 +771,88 @@ void printParseTreeUtil(parseTree *t, FILE *fp, int depth)
 			fprintf(fp, "%-100s", "NULL");
 			fprintf(fp, "%-10d\n", depth);
 	}
+
 	else
 	{
+        
 		char * ter = "NON TERMINAL";
 			fprintf(fp, "%-25s", NonTerminalMap[t->Node.nonTerminal.nt] ); // print the symbol
 			fprintf(fp, "%-25s", ter);
-            if(t->exp_type.tag!=Not_App){
-			 
-              if(t->exp_type.tag==primitive){ //Primitive
-            fprintf(fp," %s<basicType=%s>","",TerminalMap[t->exp_type.record.primitive_type]);
-            
-            //print name, dec_type, bind_info, typeExpression
-        }
-
-        else if(t->exp_type.tag==array){  
-            //Array
-            int dim=t->exp_type.record.arr_record.dim;
-            fprintf(fp," <type=rectangularArray, dimensions=%d, " ,dim);
-            
-            for(int j=0;j<dim;j++){
-                int a= t->exp_type.record.arr_record.dim_bound[j][0];
-                int b= t->exp_type.record.arr_record.dim_bound[j][1];
-                //case for var_name in d_bind
-                
-                 fprintf(fp,"range_R%d= (%d, %d), ",j+1,a,b);
-                
-        
+			if(t->exp_type.tag==not_app){
+                fprintf(fp, "%-50s", "Not_Valid");
             }
-            fprintf(fp,"basicElementType = Integer>");
-            //basic=Integer by def
-
-        }
-        else if(t->exp_type.tag==jagged_array){    //Jagged_ARRAY
-            int dim=t->exp_type.record.j_arr_record.dim;
+            else{
+                if(t->exp_type.tag==primitive){ //Primitive
+                fprintf(fp,"<basicType=%s>%-31s",TerminalMap[t->exp_type.record.primitive_type],"");
+                }  
+                else if(t->exp_type.tag==array){
+                     int dim=t->exp_type.record.arr_record.dim;
+                     fprintf(fp," <type=rectangularArray, dimensions=%d, " ,dim);
             
-            fprintf(fp," <type =jaggedArray, dimensions=%d, ",dim);
-          
-            if(dim==2){
-                     int  high=t->exp_type.record.j_arr_record.r1_high;
-                     int low=t->exp_type.record.j_arr_record.r1_low   ;
-                      fprintf(fp,"range_R1=(%d, %d) range_R2 = (",low,high);
-                        
-                      for(int j=0;j<high-low+1;j++){
-                         fprintf(fp," %d ",t->exp_type.record.j_arr_record.dim_bound._line[j]);
-                         if(j!=high-low)fprintf(fp,",");
-                        //from (low,high) gives size  , 0 index 
-                      }
-                     
-            }
-            else{   //dim==3
-                      int  high=t->exp_type.record.j_arr_record.r1_high;
-                     int low=t->exp_type.record.j_arr_record.r1_low   ;
-                     fprintf(fp,"range_R1=(%d, %d) range_R2 = ( ",low,high);
-                    //  <type =jaggedArray, dimensions=3, range_R1=(4, 7), 
-                    //3 [ 5, 3, 5] , 
-                     //1 [  5], 2 [ 4, 3] ,3 [ 5, 4, 4]
-                     for(int j=0;j<high-low+1;j++){
-                         int m=t->exp_type.record.j_arr_record.dim_bound.jag_line[j][0];
-                         fprintf(fp,"%d [",m);
-                         for(int k=0;k<m;k++){
-                             fprintf(fp," %d", t->exp_type.record.j_arr_record.dim_bound.jag_line[j][k+1]);
-                             if(k!=m-1)fprintf(fp,",");
+                    for(int j=0;j<dim;j++){
+                            int a= t->exp_type.record.arr_record.dim_bound[j][0];
+                            int b= t->exp_type.record.arr_record.dim_bound[j][1];
+                            //case for var_name in d_bind
+                            fprintf(fp,"range_R%d= (%d, %d), ",j+1,a,b);
                          }
-                          fprintf(fp," ]");
-                          if(j!=high-low)fprintf(fp,", ");
-                     }
+                            fprintf(fp,"basicElementType = Integer>");
+                      }
+                else if(t->exp_type.tag==jagged_array){    //Jagged_ARRAY
+                    int dim=t->exp_type.record.j_arr_record.dim;
+                    
+                    fprintf(fp," <type =jaggedArray, dimensions=%d, ",dim);
+                
+                    if(dim==2){
+                            int  high=t->exp_type.record.j_arr_record.r1_high;
+                            int low=t->exp_type.record.j_arr_record.r1_low   ;
+                            fprintf(fp,"range_R1=(%d, %d) range_R2 = (",low,high);
+                                
+                            for(int j=0;j<high-low+1;j++){
+                                fprintf(fp," %d ",t->exp_type.record.j_arr_record.dim_bound._line[j]);
+                                if(j!=high-low)fprintf(fp,",");
+                                //from (low,high) gives size  , 0 index 
+                            }
+                            
+                    }
+                    else{   //dim==3
+                            int  high=t->exp_type.record.j_arr_record.r1_high;
+                            int low=t->exp_type.record.j_arr_record.r1_low   ;
+                            fprintf(fp,"range_R1=(%d, %d) range_R2 = ( ",low,high);
+                            //  <type =jaggedArray, dimensions=3, range_R1=(4, 7), 
+                            //3 [ 5, 3, 5] , 
+                            //1 [  5], 2 [ 4, 3] ,3 [ 5, 4, 4]
+                            for(int j=0;j<high-low+1;j++){
+                                int m=t->exp_type.record.j_arr_record.dim_bound.jag_line[j][0];
+                                fprintf(fp,"%d [",m);
+                                for(int k=0;k<m;k++){
+                                    fprintf(fp," %d", t->exp_type.record.j_arr_record.dim_bound.jag_line[j][k+1]);
+                                    if(k!=m-1)fprintf(fp,",");
+                                }
+                                fprintf(fp," ]");
+                                if(j!=high-low)fprintf(fp,", ");
+                            }
                    
             }
             fprintf(fp,"), basicElementType = integer>");
-         
-            }
-            else{
-            fprintf(fp, "%-50s","----" ); 
-            }
-            // print the tyeExpression
+           
+       //basic=Integer by def
+        }
+        }
+                
+            
+
+             // print the tyeExpression
+
 			fprintf(fp, "%-30s", "NULL");
 			fprintf(fp, "%-10s", "NULL");
 			//fprintf(fp, "%-100s", "NULL"); // print The rule here
 			printRule(t->Node.nonTerminal.expRule, t->Node.nonTerminal.nt, fp);
 			fprintf(fp, "%-10d\n", depth);
-            }
-	}
+    }
+    
 	parseTree *child = t->firstChild;
-	while(child != NULL)
+	
+    while(child != NULL)
 	{
 		printParseTreeUtil(child, fp, depth + 1);
 		child = child->sibling;
