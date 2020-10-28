@@ -61,7 +61,7 @@ char * getToken(char *lexeme){
     }
     else if(strcmp(lexeme,"true")==0||strcmp(lexeme,"false")==0)
     return "Boolean";*/
-    if((c>=48&&c<=57)||strcmp(lexeme,"true")==0||strcmp(lexeme,"false")==0)
+  if((c>='0'&&c<='9')||(c=='-'))
     return "NUM";
     else if(flag==0)
     {
