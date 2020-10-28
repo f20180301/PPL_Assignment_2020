@@ -1,4 +1,11 @@
 program ( ) {
+<<<<<<< HEAD
+declare yash : jagged array [ 4 .. 7 ] [ ] of integer ;
+R1 [ 4 ] : size 3 : values { 21 ; 54 ; 287 }
+R1 [ 5 ] : size 2 : values { 12 ; 76 }
+R1 [ 6 ] : size 3 : values { 17 ; 334 ; 32 }
+R1 [ 7 ] : size 4 : values { 210 ; 90 ;  ; 44 }
+=======
 declare list of variables abcd ghd2_1 ssd_2_3 : array [ 90 .. 5 ] [ v .. x ] [ v .. x ] [ v .. x ] [ v .. x ] [ v .. x ] [ v .. x ] of integer ; declare list of variables new d w e2 : integer ;
 declare v1 : integer ;
 declare list of variables a1 a2 : integer ;
@@ -15,6 +22,6 @@ declare list of variables h1 h2 h3 : array [ 12 .. 34 ] [ 11 .. 20 ] [ 18 .. 33 
 abcd = ghd2 + ssd_2_3 ;
 new = d * e2 + w - 76875 ;
 h1 = h2 + h3 * h1 - h2 * h3 ;
+>>>>>>> b5201d7a1fdbe88476c185ec4c82aa191e8e0159
 q1 = q2 + q3 ;
 }
-

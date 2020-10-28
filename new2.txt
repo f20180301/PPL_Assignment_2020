@@ -1,4 +1,9 @@
   Variable            Type       Bind_type  Type_Expression 
+<<<<<<< HEAD
+        s1    jagged_array   NotApplicable  <type =jaggedArray, dimensions=3, range_R1=(4, 7) range_R2 = ( 3 [ 6, 4, 6 ], 2 [ 4, 6 ], 3 [ 6, 5, 4 ], 4 [ 3, 6, 1, 5 ]), basicElementType = integer>
+        s2    jagged_array   NotApplicable  <type =jaggedArray, dimensions=3, range_R1=(4, 7) range_R2 = ( 3 [ 6, 4, 6 ], 2 [ 4, 6 ], 3 [ 6, 5, 4 ], 4 [ 3, 6, 1, 5 ]), basicElementType = integer>
+        s3    jagged_array   NotApplicable  <type =jaggedArray, dimensions=3, range_R1=(4, 7) range_R2 = ( 3 [ 6, 4, 6 ], 2 [ 4, 6 ], 3 [ 6, 5, 4 ], 4 [ 3, 6, 1, 5 ]), basicElementType = integer>
+=======
       abcd         not_app   NotApplicable  NOT A VALID TYPE EXPRESSION
     ghd2_1         not_app   NotApplicable  NOT A VALID TYPE EXPRESSION
    ssd_2_3         not_app   NotApplicable  NOT A VALID TYPE EXPRESSION
@@ -22,3 +27,4 @@
         h1           array          Static  <type=rectangularArray, dimensions=3, range_R1= (12, 34), range_R2= (11, 20), range_R3= (18, 33), basicElementType = Integer>
         h2           array          Static  <type=rectangularArray, dimensions=3, range_R1= (12, 34), range_R2= (11, 20), range_R3= (18, 33), basicElementType = Integer>
         h3           array          Static  <type=rectangularArray, dimensions=3, range_R1= (12, 34), range_R2= (11, 20), range_R3= (18, 33), basicElementType = Integer>
+>>>>>>> b5201d7a1fdbe88476c185ec4c82aa191e8e0159

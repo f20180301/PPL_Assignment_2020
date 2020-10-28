@@ -12,8 +12,11 @@
 <primitive> => <multi_primitive>
 <single_primitive> => DECLARE ID COLON <type> SEMICOLON
 <multi_primitive> => DECLARE LIST OF VARIABLES <var_list> COLON <type> SEMICOLON
-<array> => <multi_array>
 <array> => <single_array>
+<<<<<<< HEAD
+<array> => <multi_array>
+=======
+>>>>>>> b5201d7a1fdbe88476c185ec4c82aa191e8e0159
 <single_array> =>  DECLARE ID COLON ARRAY <array_dim> OF INTEGER SEMICOLON
 <multi_array> =>  DECLARE LIST OF VARIABLES <var_list> COLON ARRAY <array_dim> OF INTEGER SEMICOLON
 <array_dim> => SQOP <num_id> DD <num_id> SQCL <array_dim>
@@ -37,6 +40,7 @@
 <jag_list> => <num_list>
 <num_list> => NUM <num_list>
 <num_list> => NUM
+<num_list> => EPSILON
 <num_id> => NUM
 <num_id> => ID
 <var_list> => ID  <var_list>

@@ -1,20 +1,5 @@
 program ( ) {
-declare list of variables abcd ghd2_1 ssd_2_3 : array [ 2 .. 5 ] of integer ; declare list of variables new d w e2 : integer ;
-declare v1 : integer ;
-declare list of variables a1 a2 : integer ;
-declare list of variables b1 b2 b3 : boolean ;      
-declare list of variables c1 c2 : real ;
-declare list of variables u v : array [ 2 .. 5 ] [ 3 .. 6 ] of integer ;
-declare list of variables s1 s2 s3 : jagged array [ 4 .. 7 ] [ ] [ ] of integer ;
-R1 [ 4 ] : size 3 : values { 21 641 23 36 125 ; 54 221 43 ; 287 501 453 334 23 }
-R1 [ 5 ] : size 2 : values { 12 10 100 ; 76 15 8 54 432 }
-R1 [ 6 ] : size 3 : values { 17 61 928 785 875 ; 334 121 61 9 ; 32 465 123 }
-R1 [ 7 ] : size 4 : values { 210 71 ; 90 47 32 10 93 ; 332 453 12 634 ; 44 53 55 134 }
-declare list of variables m1 m2 m3 : real ;
-declare list of variables h1 h2 h3 : array [ 12 .. 34 ] [ 11 .. 20 ] [ 18 .. 33 ] of integer ;
-abcd = ghd2 + ssd_2_3 ;
-new = d * e2 + w - 76875 ;
-h1 = h2 + h3 * h1 - h2 * h3 ;
+declare list of variables abcd ghd2_1 ssd_2_3 : array [ 2 .. 5 ] of integer ;
+declare list of variables new d w e2 : integer ;
 q1 = q2 + q3 ;
 }
-
