@@ -26,7 +26,7 @@ char * getToken(char *lexeme){
     char c=lexeme[0];
     int flag=0;
    
-    if((c>='0'&&c<='9')||(c=='-'))
+    if((c>='0'&&c<='9')||strlen(lexeme)>1&&c=='-'&&(lexeme[1]>='0'&&lexeme[1]<='9'))
     return "NUM";
     else if(flag==0)
     {
@@ -767,10 +767,10 @@ void printParseTreeUtil(parseTree *t, FILE *fp, int depth)
 		char * ter = "TERMINAL";
 			fprintf(fp, "%-25s", TerminalMap[t->Node.terminal.t] ); // print the symbol
 			fprintf(fp, "%-25s", ter);
-			fprintf(fp, "%-50s", "NULL");
+			fprintf(fp, "%-300s", "NULL");
 			fprintf(fp, "%-30s", t->Node.terminal.lexeme);
 			fprintf(fp, "%-10d", t->Node.terminal.line_num);
-			fprintf(fp, "%-100s", "NULL");
+			fprintf(fp, "%-10s", "NULL");
 			fprintf(fp, "%-10d\n", depth);
 	}
 
@@ -781,11 +781,11 @@ void printParseTreeUtil(parseTree *t, FILE *fp, int depth)
 			fprintf(fp, "%-25s", NonTerminalMap[t->Node.nonTerminal.nt] ); // print the symbol
 			fprintf(fp, "%-25s", ter);
 			if(t->exp_type.tag==not_app){
-                fprintf(fp, "%-50s", "--Ignored--");
+                fprintf(fp, "%-300s", "--Ignored--");
             }
             else{
                 if(t->exp_type.tag==primitive){ //Primitive
-                fprintf(fp,"<basicType=%s>%-31s",TerminalMap[t->exp_type.record.primitive_type],"");
+                fprintf(fp,"<basicType=%s>%-200s",TerminalMap[t->exp_type.record.primitive_type],"");
                 }  
                 else if(t->exp_type.tag==array){
                      int dim=t->exp_type.record.arr_record.dim;
@@ -875,7 +875,7 @@ void printParseTree(parseTree *t)
 	//printf("\n------------------------------------------------------Printing Parse Tree On the Console-----------------------------------------------\n\n");
 	//fprintf(fp, "HELLO\n\n");
 	//fprintf(fp, "%-25s %-10s %-15s %-15s %-30s %-5s %s\n\n\n", "LEXEME","LINE","TOKEN","VALUE","PARENT","LEAF","NODE");
-	fprintf(fp,"%-25s %-25s %-50s %-30s %-10s %-100s %-10s\n\n\n", " SYMBOL"," TERMINAL / NON TERMINAL"," TYPE EXPRESSION", " LEXEME"," LINE"," GRAMMAR RULE", " DEPTH");
+	fprintf(fp,"%-25s %-25s %-300s %-30s %-10s %-100s %-10s\n\n\n", " SYMBOL"," TERMINAL / NON TERMINAL"," TYPE EXPRESSION", " LEXEME"," LINE"," GRAMMAR RULE", " DEPTH");
 
 	printParseTreeUtil(t,fp, 0);
 	
@@ -1011,8 +1011,10 @@ else if (temp->isTerm == 0 && temp->Node.nonTerminal.nt == array)
                     exp_table_record.info = Dynamic;
                     r1 = -1;
                 }
-                else // If dimension is NUM
+                else{ // If dimension is NUM
                     r1 = atoi(temp->firstChild->Node.terminal.lexeme);
+                    if(r1==-1)r1=-100;
+                }
 
                 //
             if(r1==-1){
@@ -1052,8 +1054,10 @@ else if (temp->isTerm == 0 && temp->Node.nonTerminal.nt == array)
                      strcount++;
                     r2 = -1;
                 }
-                else // If dimension is NUM
+                else{ // If dimension is NUM
                     r2 = atoi(temp->firstChild->Node.terminal.lexeme);
+                    if(r1==-1)r1=-100;
+                }
                 if(r2==-1){
                     if (strcount > s_g )
                     {
@@ -1106,7 +1110,7 @@ else if (temp->isTerm == 0 && temp->Node.nonTerminal.nt == array)
                 else //if lower_range becomes greater than higher_range
                 {
                     exp_table_record.tag=not_app;
-                    exp_table_record.info = N_A;
+                    exp_table_record.info = N_A;        //erroneous type declaration, storing N_A in the field in node.
                     
                     
                     int dep = 0 ;
