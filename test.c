@@ -22,7 +22,6 @@ token *tail = NULL; //Head, Tail of LinkedList for TokenStream
 /**************************END TOKEN STRUCT***************************************/
 
 /**************************TOKEN FUNC IMPORTS*****************************************************/
-<<<<<<< HEAD
 char *getToken(char *lexeme)
 {
     char c = lexeme[0];
@@ -31,15 +30,6 @@ char *getToken(char *lexeme)
     if ((c >= '0' && c <= '9') || strlen(lexeme) > 1 && c == '-' && (lexeme[1] >= '0' && lexeme[1] <= '9'))
         return "NUM";
     else if (flag == 0)
-=======
-char * getToken(char *lexeme){
-    char c=lexeme[0];
-    int flag=0;
-   
-    if((c>='0'&&c<='9')||strlen(lexeme)>1&&c=='-'&&(lexeme[1]>='0'&&lexeme[1]<='9'))
-    return "NUM";
-    else if(flag==0)
->>>>>>> b5201d7a1fdbe88476c185ec4c82aa191e8e0159
     {
         for (int i = 0; i < 13; i++)
             if (strcmp(lexeme, ha[i][0]) == 0)
@@ -512,7 +502,6 @@ typedef union
     int **jag_line; //jagged
 } jagged_type;
 
-<<<<<<< HEAD
 typedef struct
 {
     int dim;         //--4
@@ -520,14 +509,6 @@ typedef struct
     char **l_indexes;
     char **u_indexes;
 } array_record;
-=======
-typedef struct {
-    int dim;//--4
-    int ** dim_bound;//(7,4),(3,4),(),() 4X2
-    char **l_indexes;
-    char **u_indexes;
-}array_record;
->>>>>>> b5201d7a1fdbe88476c185ec4c82aa191e8e0159
 
 typedef struct
 {
@@ -589,7 +570,6 @@ typedef union nodeType
 // ParseTree Node
 typedef struct treeNode
 {
-<<<<<<< HEAD
     int isTerm;    // tag for term/non_term and leaf / non_leaf
     NodeType Node; // Details corresponding to a Terminal or a NonTerminal Node
 
@@ -601,19 +581,6 @@ typedef struct treeNode
 
     //for linkedlist of children
     struct treeNode *firstChild;
-=======
-	int isTerm; // tag for term/non_term and leaf / non_leaf
-	NodeType Node;	// Details corresponding to a Terminal or a NonTerminal Node
-	
-	//TypeExpression t; // to be done//done
-	// only for NonTerminal or Both ??
-	
-	struct treeNode * parent; // parent of the node
-	struct treeNode * sibling; // right sibling of the node
-	
-	//for linkedlist of children
-	struct treeNode* firstChild;
->>>>>>> b5201d7a1fdbe88476c185ec4c82aa191e8e0159
     TypeExpression exp_type;
 
 } parseTree;
@@ -785,7 +752,6 @@ parseTree *createParseTree(parseTree *p, grammar *G)
 
 void printRule(grules *expRule, NonTerminal nt, FILE *fp)
 {
-<<<<<<< HEAD
     char buff[200] = "\0";
     strcat(buff, NonTerminalMap[nt]);
     strcat(buff, " =>");
@@ -811,38 +777,10 @@ void printRule(grules *expRule, NonTerminal nt, FILE *fp)
         curr = curr->next;
     }
     fprintf(fp, "%-200s", buff);
-=======
-	char buff[200] = "\0";
-	strcat(buff, NonTerminalMap[nt]);
-	strcat(buff, " =>");
-	//fprintf(fp, "%s => ", NonTerminalMap[nt]);
-	rule * curr = expRule->head;
-	
-	while(curr != NULL)
-	{
-		// print the rule
-		if(curr->isterm)
-		{
-			//fprintf(fp, " %s", TerminalMap[curr->type.t]);
-			strcat(buff, " ");
-			strcat(buff, TerminalMap[curr->type.t]);
-		}
-		else
-		{
-			//fprintf(fp, " <%s>", NonTerminalMap[curr->type.nt]);
-			strcat(buff, " <");
-			strcat(buff, NonTerminalMap[curr->type.nt]);
-			strcat(buff, ">");
-		}
-		curr = curr->next;
-	}
-	fprintf(fp, "%-200s", buff);
->>>>>>> b5201d7a1fdbe88476c185ec4c82aa191e8e0159
 }
 
 void printParseTreeUtil(parseTree *t, FILE *fp, int depth)
 {
-<<<<<<< HEAD
     if (t == NULL)
         return;
     // print here the node and call the function for the children
@@ -937,86 +875,16 @@ void printParseTreeUtil(parseTree *t, FILE *fp, int depth)
                         fprintf(fp, " ]");
                         if (j != high - low)
                             fprintf(fp, ", ");
-=======
-	if(t == NULL) return;
-	// print here the node and call the function for the children
-	if(t->isTerm)
-	{
-		char * ter = "TERMINAL";
-			fprintf(fp, "%-25s", TerminalMap[t->Node.terminal.t] ); // print the symbol
-			fprintf(fp, "%-25s", ter);
-			fprintf(fp, "%-300s", "NULL");
-			fprintf(fp, "%-35s", t->Node.terminal.lexeme);
-			fprintf(fp, "%-10d", t->Node.terminal.line_num);
-			fprintf(fp, "%-250s", "NULL");
-			fprintf(fp, "%-10d\n", depth);
-	}
-
-	else
-	{
-        
-		char * ter = "NON TERMINAL";
-			fprintf(fp, "%-25s", NonTerminalMap[t->Node.nonTerminal.nt] ); // print the symbol
-			fprintf(fp, "%-25s", ter);
-			if(t->exp_type.tag==not_app){
-                fprintf(fp, "%-300s", "--Ignored--");
-            }
-            else{
-                if(t->exp_type.tag==primitive){ //Primitive
-                fprintf(fp,"<basicType=%s>%-200s",TerminalMap[t->exp_type.record.primitive_type],"");
-                }  
-                else if(t->exp_type.tag==array){
-                     int dim=t->exp_type.record.arr_record.dim;
-                     fprintf(fp," <type=rectangularArray, dimensions=%d, " ,dim);
-            
-                    for(int j=0;j<dim;j++){
-                            int a= t->exp_type.record.arr_record.dim_bound[j][0];
-                            int b= t->exp_type.record.arr_record.dim_bound[j][1];
-                           // printf("%s\n",t->exp_type.record.arr_record.l_indexes[0]);
-                            //case for var_name in d_bind
-                            if(a!=-1&&b!=-1)fprintf(fp,"range_R%d= (%d, %d), ",j+1,a,b);
-                            else if(a==-1&&b!=-1)fprintf(fp,"range_R%d= (%s, %d), ",j+1,t->exp_type.record.arr_record.l_indexes[j],b);
-                            else if(a!=-1&&b==-1)fprintf(fp,"range_R%d= (%d, %s), ",j+1,a,t->exp_type.record.arr_record.u_indexes[j]);
-                            else if(a==-1&&b==-1)fprintf(fp,"range_R%d= (%s, %s), ",j+1,t->exp_type.record.arr_record.l_indexes[j],t->exp_type.record.arr_record.u_indexes[j]);
-                            
-                         }
-                            fprintf(fp,"basicElementType = Integer>%-110s","");
-                      }
-                else if(t->exp_type.tag==jagged_array){    //Jagged_ARRAY
-                    int dim=t->exp_type.record.j_arr_record.dim;
-                    
-                    fprintf(fp," <type =jaggedArray, dimensions=%d, ",dim);
-                
-                    if(dim==2){
-                            int  high=t->exp_type.record.j_arr_record.r1_high;
-                            int low=t->exp_type.record.j_arr_record.r1_low   ;
-                            fprintf(fp,"range_R1=(%d, %d) range_R2 = (",low,high);
-                                
-                            for(int j=0;j<high-low+1;j++){
-                                fprintf(fp," %d ",t->exp_type.record.j_arr_record.dim_bound._line[j]);
-                                if(j!=high-low)fprintf(fp,",");
-                                //from (low,high) gives size  , 0 index 
-                            }
-                            
->>>>>>> b5201d7a1fdbe88476c185ec4c82aa191e8e0159
                     }
                 }
                 fprintf(fp, "), basicElementType = integeri> %-10s", "ji");
 
                 //basic=Integer by def
             }
-<<<<<<< HEAD
-=======
-            fprintf(fp,"), basicElementType = integeri> %-10s","ji");
-           
-       //basic=Integer by def
-        }
->>>>>>> b5201d7a1fdbe88476c185ec4c82aa191e8e0159
         }
 
         // print the tyeExpression
 
-<<<<<<< HEAD
         fprintf(fp, "%-35s", "NULL");
         fprintf(fp, "%-10s", "NULL");
         //fprintf(fp, "%-100s", "NULL"); // print The rule here
@@ -1030,19 +898,11 @@ void printParseTreeUtil(parseTree *t, FILE *fp, int depth)
     {
         printParseTreeUtil(child, fp, depth + 1);
         child = child->sibling;
-=======
-			fprintf(fp, "%-35s", "NULL");
-			fprintf(fp, "%-10s", "NULL");
-			//fprintf(fp, "%-100s", "NULL"); // print The rule here
-			printRule(t->Node.nonTerminal.expRule, t->Node.nonTerminal.nt, fp);
-			fprintf(fp, "%-10d\n", depth);
->>>>>>> b5201d7a1fdbe88476c185ec4c82aa191e8e0159
     }
 }
 
 void printParseTree(parseTree *t)
 {
-<<<<<<< HEAD
     // Initial setup.
     FILE *fp = fopen("parseTree.txt", "w");
 
@@ -1253,22 +1113,6 @@ TypeExpression jagged(int lo, int hi, parseTree *jagLines, int dimen, TypeExpres
         expr.record.j_arr_record.dim_bound.jag_line = jagl;
     }
     return expr;
-=======
-	// Initial setup.
-	FILE* fp = fopen("parseTree.txt", "w");
-
-	fprintf(fp,"\n------------------------------------------------------Printing Parse Tree-----------------------------------------------------\n\n");
-	//printf("\n------------------------------------------------------Printing Parse Tree On the Console-----------------------------------------------\n\n");
-	//fprintf(fp, "HELLO\n\n");
-	//fprintf(fp, "%-25s %-10s %-15s %-15s %-30s %-5s %s\n\n\n", "LEXEME","LINE","TOKEN","VALUE","PARENT","LEAF","NODE");
-	fprintf(fp,"%-24s %-25s %-300s %-30s %-10s %-200s %-10s\n\n\n", "SYMBOL","TERMINAL / NON TERMINAL","TYPE EXPRESSION", "LEXEME","LINE","GRAMMAR RULE", "DEPTH");
-
-	printParseTreeUtil(t,fp, 0);
-	
-	
-	fprintf(fp,"\n------------------------------------------------------Parse Tree Printed On the FILE-----------------------------------------------\n\n");
-	fclose(fp);
->>>>>>> b5201d7a1fdbe88476c185ec4c82aa191e8e0159
 }
 
 TypeExpressionTable *table;
@@ -1655,345 +1499,12 @@ void traverse_parse_tree(parseTree *t)
             }
         }
         return;
-<<<<<<< HEAD
     }
 
     /*********/ //RAJAT/************/
 
     else if (t->isTerm == 0 && t->Node.nonTerminal.nt == assignment)
     {
-=======
-   }
-   else if(t->isTerm==0&&t->Node.nonTerminal.nt==declaration_stmt){
-       //build for the "typeExpression" of this declarartion statement, error reporting
-       TypeExpression exp_table_record;
-        parseTree* varlist_pointer=NULL; 
-       parseTree * temp=t;    //just being safe, making copy
-       temp=temp->firstChild;
-
-       if(temp->isTerm==0&&temp->Node.nonTerminal.nt==primitive){
-       ///    printf("herein\n");
-           exp_table_record.tag=primitive;          //primitive/jagged_array/array//terminal
-           exp_table_record.info=N_A;
-           temp=temp->firstChild;   //pointing to var_list  //moving into single/multiple_primitive node //populate type expressions
-           if(temp->isTerm==0&&temp->Node.nonTerminal.nt==single_primitive){
-               varlist_pointer=temp=temp->firstChild->sibling;
-               temp=temp->sibling->sibling;//moving into colon ke baad wala node
-           }
-           else{//multiple
-               varlist_pointer=temp=temp->firstChild->sibling->sibling->sibling->sibling;
-               temp=temp->sibling->sibling;//moving into colon ke baad wala node
-           }
-           //
-           exp_table_record.record.primitive_type=temp->firstChild->Node.terminal.t; //INT/BOOl/REAL(terminal)
-           //daalnaa
-           //storing to <single_primitive> and <primitive>
-           temp->parent->exp_type=exp_table_record;
-           temp->parent->parent->exp_type=exp_table_record;
-         }
-else if (temp->isTerm == 0 && temp->Node.nonTerminal.nt == array)
-        {
-            exp_table_record.tag = array;
-            exp_table_record.info = Static;
-            temp = temp->firstChild;
-            
-            int line = temp->firstChild->Node.terminal.line_num;
-            if (temp->isTerm == 0 && temp->Node.nonTerminal.nt == single_array)
-            {
-                varlist_pointer = temp = temp->firstChild->sibling;
-                temp = temp->sibling->sibling; //moving into colon ke baad wala node
-              
-            }
-            else
-            {
-                varlist_pointer = temp = temp->firstChild->sibling->sibling->sibling->sibling;
-                temp = temp->sibling->sibling; //moving into colon ke baad wala node
-                
-            }
-            
-            temp = temp->sibling; //(ignore just after colon, arrray written)
-            
-            //<array_dim> hai aab, in temp
-            parseTree *store = temp; //at <array_dim>
-
-            int count = 0;
-            int strcount=0;
-             int strcount2=0;
-            int r1 = -1, r2 = -1;
-            int **tem = (int **)malloc(2 * sizeof(int *));
-            int s_g=1;
-            int s_g2=1;
-           char **l_indexes = (char **)malloc(sizeof(char *));
-            char **u_indexes = (char **)malloc(sizeof(char *));
-
-            // int strCount=0;
-            // char **indexes;
-            int g = 1, b = 2;
-            //char ** indexes = (char **)malloc(sizeof(char *));
-            
-            do
-            {
-                
-                temp = temp->firstChild; //(moving into the child of  <array_dim>)
-                temp = temp->sibling;
-                
-                
-                //id or num =temp->firstChild;
-
-                if (temp->firstChild->Node.terminal.t == ID) //checking if dimension is ID.
-                {
-                    exp_table_record.info = Dynamic;
-                    r1 = -1;
-                }
-                else{ // If dimension is NUM
-                    r1 = atoi(temp->firstChild->Node.terminal.lexeme);
-                    if(r1==-1)r1=-100;
-                }
-
-                //
-            if(r1==-1){
-                    if (strcount >= s_g )
-                    {
-                        l_indexes = (char **)realloc(l_indexes,  (s_g*2) * sizeof(char *));
-                        s_g=s_g*2;
-                    }
-                   // printf("here\n");
-                    int len=strlen(temp->firstChild->Node.terminal.lexeme);
-                    l_indexes[strcount] = (char *)malloc(len*sizeof(char)); //allocating space to store left and right index
-                    strcpy(l_indexes[strcount] ,temp->firstChild->Node.terminal.lexeme);
-                     // Storing ID in form of string
-                    //printf("l-> %s  :  %s %d\n",temp->firstChild->Node.terminal.lexeme,l_indexes[strcount],strcount );
-                  strcount++;
-                    
-                }
-                else{
-                    if (strcount >= s_g )
-                    {
-                        l_indexes = (char **)realloc(l_indexes,  (s_g*2) * sizeof(char *));
-                        s_g=s_g*2;
-                    }
-                    int len=12;
-                    l_indexes[strcount ] = (char *)malloc(len*sizeof(char)); //allocating space to store left and right index
-                    strcpy(l_indexes[strcount ] ,"NumericValue");
-                     // Storing ID in form of string
-                    // printf("l-> %s %s %d\n",temp->firstChild->Node.terminal.lexeme,l_indexes[strcount],strcount );
-                      strcount++;
-                }
-
-                temp = temp->sibling->sibling; //ignoring .. (DD)
-
-                if (temp->firstChild->Node.terminal.t == ID) // checking if dimension is ID
-                {
-                    exp_table_record.info = Dynamic;
-                  
-                    r2 = -1;
-                }
-                else{ // If dimension is NUM
-                    r2 = atoi(temp->firstChild->Node.terminal.lexeme);
-                    if(r2==-1)r2=-100;
-                }
-                if(r2==-1){
-                   // printf("here2\n");
-                    if (strcount2 >= s_g2 )
-                    {
-                        u_indexes = (char **)realloc(u_indexes,  (s_g2*2) * sizeof(char *));
-                        s_g2=s_g2*2;
-                    }
-                    int len=strlen(temp->firstChild->Node.terminal.lexeme);
-                    u_indexes[strcount2 ] = (char *)malloc(len*sizeof(char)); //allocating space to store left and right index
-                    strcpy(u_indexes[strcount2 ] ,temp->firstChild->Node.terminal.lexeme);
-                     // Storing ID in form of string
-                   // printf("u-> %s : %s %d\n",temp->firstChild->Node.terminal.lexeme,u_indexes[strcount2],strcount2 );
-                    strcount2++;
-                    
-                }
-                else{
-                   // printf("here2\n");
-                    if (strcount2 >= s_g2 )
-                    {
-                       // printf("here2\n");
-                        u_indexes = (char **)realloc(u_indexes,  (s_g2*2) * sizeof(char *));
-                        s_g2=s_g2*2;
-                    }
-                    int len=12;
-                    u_indexes[strcount2] = (char *)malloc(len*sizeof(char)); //allocating space to store left and right index
-                    strcpy(u_indexes[strcount2] ,"NumericValue");
-                    //printf("u -> %s %s %d\n",temp->firstChild->Node.terminal.lexeme,u_indexes[strcount2],strcount2 );
-                     //Storing ID in form of string
-                    strcount2++;
-                }
-                
-                   temp = temp->sibling->sibling; //reaches <array_dim>
-                
-             
-                //chk type(dynamic), dimension(lower<upper), read, and error report, maintain counter for Dimension Count, dimension=count;
-                //store to type_Expression_record.record.arr_record;
-                if ((r1 == -1 && r2 >= 0) || (r1 >= 0 && r2 == -1) || (r1 >= 0 && r2 >= 0 && r1 <= r2) || (r1 == -1 && r2 == -1)) //(-1 for ID)
-                //checking if lower_index < higher_index and ignore if one (or both) index are ID and NUM should be >= 0
-                {
-                    count++;
-                    exp_table_record.record.arr_record.dim = count;
-                    if (count > g * b)
-                    {
-                        tem = (int **)realloc(tem, 2 * (count - 1) * sizeof(int *));
-                        g++;
-                    }
-                    tem[count - 1] = (int *)malloc(2 * sizeof(int)); //allocating space to store left and right index
-                    tem[count - 1][0] = r1;
-                    tem[count - 1][1] = r2;
-                    exp_table_record.record.arr_record.dim_bound = tem;
-                    exp_table_record.record.arr_record.l_indexes=l_indexes;
-                    exp_table_record.record.arr_record.u_indexes=u_indexes;
-                    
-                    store->parent->exp_type = exp_table_record;
-                    store->parent->parent->exp_type = exp_table_record;
-                }
-                else //if lower_range becomes greater than higher_range
-                {
-                    exp_table_record.tag=not_app;
-                    exp_table_record.info = N_A;        //erroneous type declaration, storing N_A in the field in node.
-                    
-                    
-                    int dep = 0 ;
-                    printf("%d   DECLARATION   ***   ***   ***   ***   ***   %d   Array_Range_Mismatch \n", line, dep);
-                    break;
-                }
-
-            } while (temp != NULL);
-            //storing to single_array and array
-            
-            //temp2=daalde
-        }
-        //while exiting put in node
-
-    //    else if(temp->isTerm==0&&temp->Node.nonTerminal.nt==jagged_array){
-    //        temp=temp->firstChild;
-    //        if(temp->isTerm==0&&temp->Node.nonTerminal.nt==jagged_2d_array){
-    //        exp_table_record.tag=jagged_array;
-    //        exp_table_record.info=N_A;
-    //        temp=temp->firstChild; 
-    //             if(temp->isTerm==0&&temp->Node.nonTerminal.nt==single_jagged2darray){
-    //                 varlist_pointer=temp=temp->firstChild->sibling;
-    //                 temp=temp->sibling->sibling;//moving into colon ke baad wala node
-    //             }
-    //             else{
-    //                 varlist_pointer=temp=temp->firstChild->sibling->sibling->sibling->sibling;
-    //                 temp=temp->sibling->sibling;//moving into colon ke baad wala node
-    //             }
-    //        temp=temp->sibling->sibling;//(ignore just after colon, jagged and arrray written)
-    //         //<jagged_2d_dim> hai , in temp
-    //         parseTree * store=temp;//at <jagged_2d/3d_dim>
-    //         int l_bound=temp->firstChild->sibling->firstChild;
-    //         int u_bound=temp->firstChild->sibling->sibling->sibling->firstChild;
-    //         int dimension=2;
-    //         //temp <jagged_dim> pe hi hai
-    //         if(l_bound<=u_bound){//chk =
-    //             //traverse for jaglines
-    //             temp=temp->sibling->sibling->sibling->sibling; //reach <jag_lines>
-    //             //read all jag_lines one by one upto, NULL
-    //             do{
-    //             //temp pointing on <jag_line>
-    //             temp=temp->firstChild;
-    //             parseTree* temp_jag=temp->firstChild;  //point to R1             
-    //             temp_jag=temp_jag->sibling->sibling;//pointing on NUM
-    //             int indx=temp_jag;
-    //             //chk index in l_bound,u_bound and particularly increasing//#######TO BE DONE
-    //             temp_jag=temp_jag->sibling->sibling->sibling->sibling;//pointing to size NUM(size NUM)
-    //             int sz=temp_jag;
-    //             //store in the cnt of jagged_R2_type
-    //             temp_jag=temp_jag->sibling->sibling->sibling->sibling;//pointing to jag_list;
-    //             //read all <jag_list(initialisation wala values)>
-    //             //validity CHK ACCORDING TO SZ variable me size kya ha
-    //             //epsion empty ; ; checking required
-
-
-    //             //moving temp to <jag_lines>
-    //             temp=temp->sibling;
-    //             }while(temp!=NULL);
-
-    //         }
-    //         else{
-    //             //error
-    //         }
-    //         store->parent->exp_type=exp_table_record;
-    //         store->parent->parent->exp_type=exp_table_record;
-    //         store->parent->parent->parent->exp_type=exp_table_record;
-            
-    //       // exp_table_record.record.j_arr_record=temp->child->value;
-
-    //    }
-    //    else if(temp->isTerm==0&&temp->Node.nonTerminal.nt==jagged_3d_array){
-    //        exp_table_record.tag=jagged_array;
-    //        exp_table_record.info=N_A;
-    //        temp=temp->firstChild; 
-    //        if(temp->isTerm==0&&temp->Node.nonTerminal.nt==single_jagged3darray){
-    //            varlist_pointer=temp=temp->firstChild->sibling;
-    //            temp=temp->sibling->sibling;//moving into colon ke baad wala node
-    //        }
-    //        else{
-    //            varlist_pointer=temp=temp->firstChild->sibling->sibling->sibling->sibling;
-    //            temp=temp->sibling->sibling;//moving into colon ke baad wala node
-    //        }
-    //        temp=temp->sibling->sibling;//(ignore just after colon, jagged and arrray written)
-    //         //<jagged_dim> hai , in temp
-    //          parseTree * store=temp;//at <jagged_2d/3d_dim>
-    //     //CONTINUE THIS WORK//CONTINUE THIS WORK//CONTINUE THIS WORK
-    //         int l_bound=temp->firstChild->sibling->firstChild;
-    //         int u_bound=temp->firstChild->sibling->sibling->sibling->firstChild;
-    //         int dimension=3;
-    //         if(l_bound<=u_bound){//chk =
-    //             //kamm alag hoga.
-    //         }
-    //         else{
-    //             //error
-    //         }
-    //         store->parent->exp_type=exp_table_record;
-    //         store->parent->parent->exp_type=exp_table_record;
-    //         store->parent->parent->parent->exp_type=exp_table_record;
-    //     //   exp_table_record.record.j_arr_record=temp->firstChild;
-    //    }
-    //    }
-       //reach, type expression record ready,
-       //populate varlist_pointer, with typeexpression,
-       //populate typeExpressionTable with variable created.
-       if(varlist_pointer!=NULL){
-       if(varlist_pointer->isTerm==1&&varlist_pointer->Node.terminal.t==ID){
-          // printf("yaha\n");
-            varlist_pointer->exp_type=exp_table_record;
-         //   printf("%d\n\n\n",varlist_pointer->exp_type.tag);
-            //append to typeExpression Table
-          
-            append_to_table(exp_table_record,varlist_pointer->Node.terminal.lexeme);
-       }
-       else{
-           //traverse all IDs
-           //printf("yaha\n");
-           do{
-           //    printf("yahan\n");
-               varlist_pointer->exp_type=exp_table_record;
-               varlist_pointer=varlist_pointer->firstChild;
-                
-               varlist_pointer->exp_type=exp_table_record;
-               
-//append to typeExpression Table
-               append_to_table(exp_table_record,varlist_pointer->Node.terminal.lexeme);
-               
-               varlist_pointer=varlist_pointer->sibling;
-              
-           }while(varlist_pointer!=NULL);
-       }
-       }
-       return;
-   }
-
-   
-   
-   
-   /*********///RAJAT/************/
-   
-   
-    else if(t->isTerm==0&&t->Node.nonTerminal.nt==assignment){
->>>>>>> b5201d7a1fdbe88476c185ec4c82aa191e8e0159
         traverse_parse_tree(t->firstChild);
         if (t->firstChild->sibling != NULL)
         {
@@ -2054,7 +1565,6 @@ void printTypeExpressionsTable(TypeExpressionTable T[], char *filename)
                 int a = T[i].record.arr_record.dim_bound[j][0];
                 int b = T[i].record.arr_record.dim_bound[j][1];
                 //case for var_name in d_bind
-<<<<<<< HEAD
                 if (a != -1 && b != -1)
                     fprintf(fp, "range_R%d= (%d, %d), ", j + 1, a, b);
                 else if (a == -1 && b != -1)
@@ -2063,13 +1573,6 @@ void printTypeExpressionsTable(TypeExpressionTable T[], char *filename)
                     fprintf(fp, "range_R%d= (%d, %s), ", j + 1, a, T[i].record.arr_record.u_indexes[j]);
                 else if (a == -1 && b == -1)
                     fprintf(fp, "range_R%d= (%s, %s), ", j + 1, T[i].record.arr_record.l_indexes[j], T[i].record.arr_record.u_indexes[j]);
-=======
-                      if(a!=-1&&b!=-1)fprintf(fp,"range_R%d= (%d, %d), ",j+1,a,b);
-                            else if(a==-1&&b!=-1)fprintf(fp,"range_R%d= (%s, %d), ",j+1,T[i].record.arr_record.l_indexes[j],b);
-                            else if(a!=-1&&b==-1)fprintf(fp,"range_R%d= (%d, %s), ",j+1,a,T[i].record.arr_record.u_indexes[j]);
-                            else if(a==-1&&b==-1)fprintf(fp,"range_R%d= (%s, %s), ",j+1,T[i].record.arr_record.l_indexes[j],T[i].record.arr_record.u_indexes[j]);
-                 
->>>>>>> b5201d7a1fdbe88476c185ec4c82aa191e8e0159
             }
             fprintf(fp, "basicElementType = Integer>");
             //basic=Integer by def
