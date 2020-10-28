@@ -755,7 +755,7 @@ void printRule(grules * expRule, NonTerminal nt, FILE *fp)
 		}
 		curr = curr->next;
 	}
-	fprintf(fp, "%-100s", buff);
+	fprintf(fp, "%-200s", buff);
 }
 
 void printParseTreeUtil(parseTree *t, FILE *fp, int depth)
@@ -768,9 +768,9 @@ void printParseTreeUtil(parseTree *t, FILE *fp, int depth)
 			fprintf(fp, "%-25s", TerminalMap[t->Node.terminal.t] ); // print the symbol
 			fprintf(fp, "%-25s", ter);
 			fprintf(fp, "%-300s", "NULL");
-			fprintf(fp, "%-30s", t->Node.terminal.lexeme);
+			fprintf(fp, "%-35s", t->Node.terminal.lexeme);
 			fprintf(fp, "%-10d", t->Node.terminal.line_num);
-			fprintf(fp, "%-10s", "NULL");
+			fprintf(fp, "%-250s", "NULL");
 			fprintf(fp, "%-10d\n", depth);
 	}
 
@@ -802,7 +802,7 @@ void printParseTreeUtil(parseTree *t, FILE *fp, int depth)
                             else if(a==-1&&b==-1)fprintf(fp,"range_R%d= (%s, %s), ",j+1,t->exp_type.record.arr_record.l_indexes[j],t->exp_type.record.arr_record.u_indexes[j]);
                             
                          }
-                            fprintf(fp,"basicElementType = Integer>");
+                            fprintf(fp,"basicElementType = Integer>%-110s","");
                       }
                 else if(t->exp_type.tag==jagged_array){    //Jagged_ARRAY
                     int dim=t->exp_type.record.j_arr_record.dim;
@@ -840,7 +840,7 @@ void printParseTreeUtil(parseTree *t, FILE *fp, int depth)
                             }
                    
             }
-            fprintf(fp,"), basicElementType = integer>");
+            fprintf(fp,"), basicElementType = integeri> %-10s","ji");
            
        //basic=Integer by def
         }
@@ -850,7 +850,7 @@ void printParseTreeUtil(parseTree *t, FILE *fp, int depth)
 
              // print the tyeExpression
 
-			fprintf(fp, "%-30s", "NULL");
+			fprintf(fp, "%-35s", "NULL");
 			fprintf(fp, "%-10s", "NULL");
 			//fprintf(fp, "%-100s", "NULL"); // print The rule here
 			printRule(t->Node.nonTerminal.expRule, t->Node.nonTerminal.nt, fp);
@@ -875,7 +875,7 @@ void printParseTree(parseTree *t)
 	//printf("\n------------------------------------------------------Printing Parse Tree On the Console-----------------------------------------------\n\n");
 	//fprintf(fp, "HELLO\n\n");
 	//fprintf(fp, "%-25s %-10s %-15s %-15s %-30s %-5s %s\n\n\n", "LEXEME","LINE","TOKEN","VALUE","PARENT","LEAF","NODE");
-	fprintf(fp,"%-25s %-25s %-300s %-30s %-10s %-100s %-10s\n\n\n", " SYMBOL"," TERMINAL / NON TERMINAL"," TYPE EXPRESSION", " LEXEME"," LINE"," GRAMMAR RULE", " DEPTH");
+	fprintf(fp,"%-24s %-25s %-300s %-30s %-10s %-200s %-10s\n\n\n", "SYMBOL","TERMINAL / NON TERMINAL","TYPE EXPRESSION", "LEXEME","LINE","GRAMMAR RULE", "DEPTH");
 
 	printParseTreeUtil(t,fp, 0);
 	
@@ -1318,11 +1318,7 @@ void printTypeExpressionsTable(TypeExpressionTable T[],char *filename){
                             else if(a==-1&&b!=-1)fprintf(fp,"range_R%d= (%s, %d), ",j+1,T[i].record.arr_record.l_indexes[j],b);
                             else if(a!=-1&&b==-1)fprintf(fp,"range_R%d= (%d, %s), ",j+1,a,T[i].record.arr_record.u_indexes[j]);
                             else if(a==-1&&b==-1)fprintf(fp,"range_R%d= (%s, %s), ",j+1,T[i].record.arr_record.l_indexes[j],T[i].record.arr_record.u_indexes[j]);
-                            
-                       
                  
-                
-        
             }
             fprintf(fp,"basicElementType = Integer>");
             //basic=Integer by def

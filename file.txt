@@ -1,11 +1,11 @@
 program ( ) {
-declare list of variables abcd ghd2_1 ssd_2_3 : array [ a .. 5 ] [ v .. x ] [ v .. x ] [ v .. x ] [ v .. x ] [ v .. x ] [ v .. x ] of integer ; declare list of variables new d w e2 : integer ;
+declare list of variables abcd ghd2_1 ssd_2_3 : array [ 90 .. 5 ] [ v .. x ] [ v .. x ] [ v .. x ] [ v .. x ] [ v .. x ] [ v .. x ] of integer ; declare list of variables new d w e2 : integer ;
 declare v1 : integer ;
 declare list of variables a1 a2 : integer ;
 declare list of variables b1 b2 b3 : boolean ;      
 declare list of variables c1 c2 : real ;
 declare list of variables u v : array [ 10 .. 9 ] [ 3 .. 6 ] of integer ;
-declare list of variables s1 s2 s3 : jagged array [ 4 .. 7 ] [ ] [ ] of integer ;
+declare list of variables s1 s2 s3 : jagged array [ 7 .. 7 ] [ ] [ ] of integer ;
 R1 [ 4 ] : size 3 : values { 21 641 23 36 125 ; 54 221 43 ; 287 501 453 334 23 }
 R1 [ 5 ] : size 2 : values { 12 10 100 ; 76 15 8 54 432 }
 R1 [ 6 ] : size 3 : values { 17 61 928 785 875 ; 334 121 61 9 ; 32 465 123 }
