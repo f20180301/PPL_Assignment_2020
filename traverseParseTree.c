@@ -337,14 +337,16 @@ TypeExpression jagged(int lo, int hi, parseTree *jagLines, int dimen, TypeExpres
     int sz = 0;       // TO RECORD SIZE IN EACH JAGLINE
     int numcount = 0; // TO TRACK SIZE
     int idxcount = 0; // For Jagged_3d array to track no. of elemets in 3rd dimension
+    int *line = NULL;
+    int **jagl = NULL;
     parseTree *dpnumList;
     if (dimen == 2)
     {
-        int *line = (int *)malloc(sizeof(int) * (hi - lo + 1));
+        line = (int *)malloc(sizeof(int) * (hi - lo + 1));
     }
     else
     {
-        int **jagl = (int **)malloc(sizeof(int *) * (hi - lo + 1));
+        jagl = (int **)malloc(sizeof(int *) * (hi - lo + 1));
     }
 
     parseTree *jagLine = jagLines->firstChild; //Being Safe, Creating a copy
