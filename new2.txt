@@ -1,7 +1,7 @@
   Variable            Type       Bind_type  Type_Expression 
-      abcd           array         Dynamic  <type=rectangularArray, dimensions=2, range_R1= (-1, 5), range_R2= (9, 9), basicElementType = Integer>
-    ghd2_1           array         Dynamic  <type=rectangularArray, dimensions=2, range_R1= (-1, 5), range_R2= (9, 9), basicElementType = Integer>
-   ssd_2_3           array         Dynamic  <type=rectangularArray, dimensions=2, range_R1= (-1, 5), range_R2= (9, 9), basicElementType = Integer>
+      abcd           array         Dynamic  <type=rectangularArray, dimensions=7, range_R1= (a, 5), range_R2= (v, x), range_R3= (v, x), range_R4= (v, x), range_R5= (v, x), range_R6= (v, x), range_R7= (v, x), basicElementType = Integer>
+    ghd2_1           array         Dynamic  <type=rectangularArray, dimensions=7, range_R1= (a, 5), range_R2= (v, x), range_R3= (v, x), range_R4= (v, x), range_R5= (v, x), range_R6= (v, x), range_R7= (v, x), basicElementType = Integer>
+   ssd_2_3           array         Dynamic  <type=rectangularArray, dimensions=7, range_R1= (a, 5), range_R2= (v, x), range_R3= (v, x), range_R4= (v, x), range_R5= (v, x), range_R6= (v, x), range_R7= (v, x), basicElementType = Integer>
        new       primitive   NotApplicable  <basicType=INTEGER>
          d       primitive   NotApplicable  <basicType=INTEGER>
          w       primitive   NotApplicable  <basicType=INTEGER>

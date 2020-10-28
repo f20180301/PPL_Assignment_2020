@@ -1314,8 +1314,13 @@ void printTypeExpressionsTable(TypeExpressionTable T[],char *filename){
                 int a= T[i].record.arr_record.dim_bound[j][0];
                 int b= T[i].record.arr_record.dim_bound[j][1];
                 //case for var_name in d_bind
-                
-                 fprintf(fp,"range_R%d= (%d, %d), ",j+1,a,b);
+                      if(a!=-1&&b!=-1)fprintf(fp,"range_R%d= (%d, %d), ",j+1,a,b);
+                            else if(a==-1&&b!=-1)fprintf(fp,"range_R%d= (%s, %d), ",j+1,T[i].record.arr_record.l_indexes[j],b);
+                            else if(a!=-1&&b==-1)fprintf(fp,"range_R%d= (%d, %s), ",j+1,a,T[i].record.arr_record.u_indexes[j]);
+                            else if(a==-1&&b==-1)fprintf(fp,"range_R%d= (%s, %s), ",j+1,T[i].record.arr_record.l_indexes[j],T[i].record.arr_record.u_indexes[j]);
+                            
+                       
+                 
                 
         
             }

@@ -1,5 +1,5 @@
 program ( ) {
-declare list of variables abcd ghd2_1 ssd_2_3 : array [ a .. 5 ] [ 9 .. 9 ] of integer ; declare list of variables new d w e2 : integer ;
+declare list of variables abcd ghd2_1 ssd_2_3 : array [ a .. 5 ] [ v .. x ] [ v .. x ] [ v .. x ] [ v .. x ] [ v .. x ] [ v .. x ] of integer ; declare list of variables new d w e2 : integer ;
 declare v1 : integer ;
 declare list of variables a1 a2 : integer ;
 declare list of variables b1 b2 b3 : boolean ;      
