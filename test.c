@@ -1108,6 +1108,7 @@ void traverse_parse_tree(parseTree *t){
        //reach, type expression record ready,
        //populate varlist_pointer, with typeexpression,
        //populate typeExpressionTable with variable created.
+       if(varlist_pointer!=NULL){
        if(varlist_pointer->isTerm==1&&varlist_pointer->Node.terminal.t==ID){
           // printf("yaha\n");
             varlist_pointer->exp_type=exp_table_record;
@@ -1132,6 +1133,7 @@ void traverse_parse_tree(parseTree *t){
                varlist_pointer=varlist_pointer->sibling;
               
            }while(varlist_pointer!=NULL);
+       }
        }
        return;
    }
