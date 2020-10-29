@@ -3,7 +3,7 @@
 
 Principles of Programming Languages (CS F301)
 
-##Birla Institute of Technology and Science, Pilani, Pilani Campus
+### Birla Institute of Technology and Science, Pilani, Pilani Campus
 
 # Topic: Assignment 1: Language design and type expression computation
 Contributors: Yash Raj Singh, Shubham Agarwal, Agrawal Rajat Ramesh, Sahil Kattna.
