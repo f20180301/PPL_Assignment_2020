@@ -2,7 +2,7 @@ program ( )
 {
 	declare list of variables new d w e2 : integer ;
 	declare v1 : integer ;
-	declare list of variables abcd ghd2_1 ssd_2_3 : array [ 2 .. 5 ] of integer ;
+	declare list of variables abcd ghd2_1 ssd_2_3 : array [ v1 .. 5 ] of integer ;
  	declare list of variables a1 a2 : integer ;
 	declare list of variables s4 s5 s6 : jagged array [ 3 ..  8 ] [ ] of integer ; 
 	R1 [ 3 ]  : size 3 : values { 20 ; 35 ; 54 }

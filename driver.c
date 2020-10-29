@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
     // printTypeExpressionsTable(table, "typeExpressionTable.txt");
     do
     {
-        printf("Please Choose your option : \n");
+        printf("Please Choose your option : ");
         scanf("%d", &n);
         switch (n)
         {
@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
                 return 0;
             }
             traverse_parse_tree(p);
-            printf("Parse Tree Traversal Successfull. Errors if any are Printed\n");
+            printf("Errors if any are Printed.\nParse Tree Traversal Successfull.\n");
             break;
         case 3:
             createParseTree(p, g);
@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
             }
             traverse_parse_tree(p);
             printParseTree(p);
-            printf("Parse Tree Printing in parseTree.txt and Traversal Successfull. Errors if any are Printed\n");
+            printf("Errors if any are Printed.\nParse Tree Printing in parseTree.txt and Traversal Successfull.\n");
             break;
         case 4:
             createParseTree(p, g);
@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
             traverse_parse_tree(p);
             printParseTree(p);
             printTypeExpressionsTable(table, "typeExpressionTable.txt");
-            printf("Parse Tree Printing in parseTree.txt, Traversal and Type Expression Table Printing in typeExpressionTable.txt Successfull. Errors if any are Printed\n");
+            printf("Errors if any are Printed.\nParse Tree Printing in parseTree.txt, Traversal performed and Type Expression Table Printing in typeExpressionTable.txt Successfull.\n");
             break;
         default:
             printf("Sorry! Enter a number between 0-4\n");

@@ -1,28 +1,24 @@
   Variable            Type       Bind_type  Type_Expression 
-      yash         not_app   NotApplicable  NOT A VALID TYPE EXPRESSION
-      abcd         not_app   NotApplicable  NOT A VALID TYPE EXPRESSION
-    ghd2_1         not_app   NotApplicable  NOT A VALID TYPE EXPRESSION
-   ssd_2_3         not_app   NotApplicable  NOT A VALID TYPE EXPRESSION
        new       primitive   NotApplicable  <basicType=INTEGER>
          d       primitive   NotApplicable  <basicType=INTEGER>
          w       primitive   NotApplicable  <basicType=INTEGER>
         e2       primitive   NotApplicable  <basicType=INTEGER>
         v1       primitive   NotApplicable  <basicType=INTEGER>
+      abcd           array         Dynamic  <type=rectangularArray, dimensions=1, range_R1= (v1, 5), basicElementType = Integer>
+    ghd2_1           array         Dynamic  <type=rectangularArray, dimensions=1, range_R1= (v1, 5), basicElementType = Integer>
+   ssd_2_3           array         Dynamic  <type=rectangularArray, dimensions=1, range_R1= (v1, 5), basicElementType = Integer>
         a1       primitive   NotApplicable  <basicType=INTEGER>
         a2       primitive   NotApplicable  <basicType=INTEGER>
+        s4    jagged_array   NotApplicable  <type =jaggedArray, dimensions=2, range_R1=(3, 8) range_R2 = ( 3 , 6 , 2 , 4 , 1 , 5 ), basicElementType = integer>
+        s5    jagged_array   NotApplicable  <type =jaggedArray, dimensions=2, range_R1=(3, 8) range_R2 = ( 3 , 6 , 2 , 4 , 1 , 5 ), basicElementType = integer>
+        s6    jagged_array   NotApplicable  <type =jaggedArray, dimensions=2, range_R1=(3, 8) range_R2 = ( 3 , 6 , 2 , 4 , 1 , 5 ), basicElementType = integer>
         b1       primitive   NotApplicable  <basicType=BOOLEAN>
         b2       primitive   NotApplicable  <basicType=BOOLEAN>
         b3       primitive   NotApplicable  <basicType=BOOLEAN>
+         u           array          Static  <type=rectangularArray, dimensions=2, range_R1= (2, 5), range_R2= (3, 6), basicElementType = Integer>
+         v           array          Static  <type=rectangularArray, dimensions=2, range_R1= (2, 5), range_R2= (3, 6), basicElementType = Integer>
         c1       primitive   NotApplicable  <basicType=REAL>
         c2       primitive   NotApplicable  <basicType=REAL>
-         u         not_app   NotApplicable  NOT A VALID TYPE EXPRESSION
-         v         not_app   NotApplicable  NOT A VALID TYPE EXPRESSION
-        s1         not_app   NotApplicable  NOT A VALID TYPE EXPRESSION
-        s2         not_app   NotApplicable  NOT A VALID TYPE EXPRESSION
-        s3         not_app   NotApplicable  NOT A VALID TYPE EXPRESSION
         m1       primitive   NotApplicable  <basicType=REAL>
         m2       primitive   NotApplicable  <basicType=REAL>
         m3       primitive   NotApplicable  <basicType=REAL>
-        h1           array          Static  <type=rectangularArray, dimensions=3, range_R1= (12, 34), range_R2= (11, 20), range_R3= (18, 33), basicElementType = Integer>
-        h2           array          Static  <type=rectangularArray, dimensions=3, range_R1= (12, 34), range_R2= (11, 20), range_R3= (18, 33), basicElementType = Integer>
-        h3           array          Static  <type=rectangularArray, dimensions=3, range_R1= (12, 34), range_R2= (11, 20), range_R3= (18, 33), basicElementType = Integer>
