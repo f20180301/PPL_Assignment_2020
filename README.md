@@ -1,4 +1,4 @@
-# PPL_Assignement_1
+# PPL_Assignment_1
 (PRIVATE REPO)
 
 Principles of Programming Languages (CS F301)
