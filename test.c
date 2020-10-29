@@ -327,6 +327,8 @@ typedef struct // Derivation of a particular single LHS
 /***********GRAMMAR STRUCT IMPORTS END***************/
 
 /*****************************FUNCTION GRAMMAR IMPORTS**********************/
+
+//*************TO CREATE SUBSTRING OF A STRING************************//
 void substring(char *a, char *b, int str, int end)
 {
     int c = 0;
@@ -336,6 +338,8 @@ void substring(char *a, char *b, int str, int end)
     }
     a[c] = '\0';
 }
+
+//*************HELPER FUNCTION FOR READ GRAMMAR**********************//
 
 int find(char *str, int isterm)
 {
@@ -359,9 +363,12 @@ int find(char *str, int isterm)
                 return i;
         }
     }
-    printf("Error %s\n", str);
+    printf("Error - NOT FOUND || RETURNING START SYMBOL %s\n", str);
     return 0;
 }
+
+//**************************FUNCTION TO READ GRAMMAR FROM TXT FILE********************//
+
 void readGrammar(char a[100], grammar *G)
 {
     FILE *fp;
@@ -373,7 +380,7 @@ void readGrammar(char a[100], grammar *G)
     fp = fopen(a, "r+");
     if (fp == NULL)
     {
-        printf("ERRROR\n");
+        printf("ERROR OPENING FILE TO READ GRAMMAR\n");
         return;
     }
     char *grammar_split = NULL;
@@ -382,18 +389,17 @@ void readGrammar(char a[100], grammar *G)
     rule *rulecurr = NULL;
     while (fscanf(fp, "%[^\n]\n", buff) != EOF)
     {
-        //printf("%s\n", buff);
         count++;
         grammar_split = strtok(buff, " ");
         if (grammar_split == NULL)
         {
-            //printf("NULL\n");
+            printf("ERROR TOKENIZING THE LINE TO READ GRAMMAR\n");
         }
         if (grammar_split != NULL)
         {
-            substring(tmp, grammar_split, 1, strlen(grammar_split) - 2);
+            substring(tmp, grammar_split, 1, strlen(grammar_split) - 2); // REMOVING THE OPENING < AND CLOSING > FROM LHS NON TERMINAL
         }
-        if (count == 1)
+        if (count == 1) // FIRST ITERATION
         {
             //Initialsing grammar
             gramcurr->nt = find(tmp, 0); //Initialised nt
@@ -416,14 +422,13 @@ void readGrammar(char a[100], grammar *G)
             grulescurr = grulescurr->next;
             //Initialsing a new node of grules
             grulescurr->next = NULL;
-            //ruleprev = NULL;
             rulecurr = malloc(sizeof(rule));
             rulecurr->next = NULL;
             grulescurr->head = rulecurr;
         }
         else
         {
-            //Need to go add a new fresh rule for a fresh and juicy new LHS
+            //Need to go add a new fresh rule for a fresh rule new LHS
             gramcurr++;
             //Initialsing grammar
             gramcurr->nt = find(tmp, 0); //Initialised nt
@@ -440,17 +445,17 @@ void readGrammar(char a[100], grammar *G)
             //ruleprev = NULL;
         }
 
-        while (grammar_split != NULL)
+        while (grammar_split != NULL) // TRAVERSIG THE RHS OF A RULE
         {
             grammar_split = strtok(NULL, " ");
             if (grammar_split != NULL)
             {
-                if (strcmp(grammar_split, "=>") == 0)
+                if (strcmp(grammar_split, "=>") == 0) // EATING THE => IN GRAMMAR TXT FILE
                 {
                     continue;
                 }
                 count2++;
-                if (count2 != 1)
+                if (count2 != 1) // IF NOT THE FIRST ITERATION
                 {
                     rulecurr->next = malloc(sizeof(rule));
                     rulecurr = rulecurr->next;
