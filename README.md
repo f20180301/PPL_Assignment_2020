@@ -12,26 +12,33 @@ Assignment  date: 30 October 2020.
 Instructor IC: Prof. Vanadana
 
 ## Steps to Run:
+```
 - Do Git Clone ....
 - In the console,execute "make" command.
 - Execute ./exe <filename>.txt.
+```
 
 ## Inputs: 
+```
 - The Grammar of the accepted language is given as input in grammar.txt
 - The file to be parsed is given as a console argument and test-cases are present as tX.txt.
-  
+  ```
 ## Outputs:
+```
   - ERRORS, IF ANY are console logged
   - The Type Expression Table is printed into typeExpressionTable.txt
   - The parseTree is printed into parseTree.txt
-
+```
 
 ## Files and their Descriptions:
+```
 - parseTree.c
 - readGrammar.c
 - tokeniseSourceCode.c
 - typeExpressionTable.c
 - driver.c
+
         
   and corresponding header file <filename.h> are included.
+  ```
           
