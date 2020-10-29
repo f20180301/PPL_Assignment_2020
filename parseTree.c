@@ -1414,7 +1414,10 @@ int check_idx(parseTree *p_idx, TypeExpression var_exp, int arr_size, char * lex
                         prev_1 = num - low;
                         if (!(num >= low && num <= high))
                         {
-                            printf("ERROR... INDEX OUT OF BOUND JAGGED ARRAY in 1st dimension %d\n", num);
+                            //printf("ERROR... INDEX OUT OF BOUND JAGGED ARRAY in 1st dimension %d\n", num);
+                            char message[100];
+                             sprintf(message, "Jagged Array Index Out of Bounds at index 0, limit %d --- %d", low, high);
+                             printf("%-5d %-15s %-5s %-15s %-15s %-15s %-15s %-5d %-50s\n", line_no, "ASSIGNMENT", "[ ]", lex, NonTerminalMap[var_exp.tag], p_num_id->firstChild->Node.terminal.lexeme, "INTEGER", p_idx->depth, message);
                             return 0;
                         }
                     }
@@ -1425,7 +1428,10 @@ int check_idx(parseTree *p_idx, TypeExpression var_exp, int arr_size, char * lex
 
                         if (!(num >= low && num <= high))
                         {
-                            printf("ERROR... INDEX OUT OF BOUND JAGGED ARRAY in 2nd dimension %d\n", num);
+                            //printf("ERROR... INDEX OUT OF BOUND JAGGED ARRAY in 2nd dimension %d\n", num);
+                             char message[100];
+                             sprintf(message, "Jagged Array Index Out of Bounds at index 1, limit %d --- %d", low, high);
+                             printf("%-5d %-15s %-5s %-15s %-15s %-15s %-15s %-5d %-50s\n", line_no, "ASSIGNMENT", "[ ]", lex, NonTerminalMap[var_exp.tag], p_num_id->firstChild->Node.terminal.lexeme, "INTEGER", p_idx->depth, message);
                             return 0;
                         }
                         prev_2 = num;
@@ -1436,7 +1442,10 @@ int check_idx(parseTree *p_idx, TypeExpression var_exp, int arr_size, char * lex
                         high = var_exp.record.j_arr_record.dim_bound.jag_line[prev_1][prev_2] - 1;
                         if (!(num >= low && num <= high))
                         {
-                            printf("ERROR... INDEX OUT OF BOUND JAGGED ARRAY in 3rd dimension %d\n", num);
+                            //printf("ERROR... INDEX OUT OF BOUND JAGGED ARRAY in 3rd dimension %d\n", num);
+                             char message[100];
+                             sprintf(message, "Jagged Array Index Out of Bounds at index 2, limit %d --- %d", low, high);
+                             printf("%-5d %-15s %-5s %-15s %-15s %-15s %-15s %-5d %-50s\n", line_no, "ASSIGNMENT", "[ ]", lex, NonTerminalMap[var_exp.tag], p_num_id->firstChild->Node.terminal.lexeme, "INTEGER", p_idx->depth, message);
                             return 0;
                         }
                     }
@@ -1450,7 +1459,10 @@ int check_idx(parseTree *p_idx, TypeExpression var_exp, int arr_size, char * lex
                     high = var_exp.record.arr_record.dim_bound[count - 1][1];
                     if (!(num >= low && num <= high))
                     {
-                        printf("ERROR... INDEX OUT OF BOUND STATIC ARRAY at %d st dimension with %d. limit %d --  %d\n", count, num, low, high);
+                        //printf("ERROR... INDEX OUT OF BOUND STATIC ARRAY at %d st dimension with %d. limit %d --  %d\n", count, num, low, high);
+                         char message[100];
+                             sprintf(message, "Array Index Out of Bounds at index %d, limit %d --- %d", count, low, high);
+                             printf("%-5d %-15s %-5s %-15s %-15s %-15s %-15s %-5d %-50s\n", line_no, "ASSIGNMENT", "[ ]", lex, NonTerminalMap[var_exp.tag], p_num_id->firstChild->Node.terminal.lexeme, "INTEGER", p_idx->depth, message);
                         p_num_id->exp_type.tag = not_app;
                         return 0;
                     }
@@ -1468,7 +1480,10 @@ int check_idx(parseTree *p_idx, TypeExpression var_exp, int arr_size, char * lex
     // encountered an epsilon
     if (count == arr_size)
         return 1;
-    printf("ERROR... ARRAY LESS INDICES %d SPECIFIED than dimensions %d\n", count, arr_size);
+    //printf("ERROR... ARRAY LESS INDICES %d SPECIFIED than dimensions %d\n", count, arr_size);
+     char message[100];
+	 sprintf(message,"ERROR Array less indices %d specified than dimensions %d\n", count + 1, arr_size);
+     printf("%-5d %-15s %-5s %-15s %-15s %-15s %-15s %-5d %-50s\n", line_no, "ASSIGNMENT", "[ ]", lex, NonTerminalMap[var_exp.tag], "***", "***", p_idx->depth, message);
     return 0; // dereferenced for lesser dimensions
 }
 /*************************END OF UTIL*******************************************/
