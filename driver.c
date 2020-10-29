@@ -30,7 +30,9 @@ int main()
     p->parent = p;
     p->sibling = NULL;
     p->firstChild = NULL;
-
+	p->exp_type.tag = not_app;
+	p->depth = 0;
+	
     createParseTree(p, g);
 
     if (posToken != NULL)

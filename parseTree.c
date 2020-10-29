@@ -34,6 +34,7 @@ parseTree *createTreeNode(rule *curr, parseTree *p)
     node->firstChild = NULL;
     node->sibling = NULL;
     node->exp_type.tag = not_app;
+    node->depth = p->depth + 1;
 
     if (curr->isterm)
     {
@@ -754,10 +755,10 @@ void printParseTreeUtil(parseTree *t, FILE *fp, int depth)
         char *ter = "TERMINAL";
         fprintf(fp, "%-25s", TerminalMap[t->Node.terminal.t]); // print the symbol
         fprintf(fp, "%-25s", ter);
-        fprintf(fp, "%-300s", "NULL");
+        fprintf(fp, "%-150s", "NULL");
         fprintf(fp, "%-35s", t->Node.terminal.lexeme);
         fprintf(fp, "%-10d", t->Node.terminal.line_num);
-        fprintf(fp, "%-250s", "NULL");
+        fprintf(fp, "%-200s", "NULL");
         fprintf(fp, "%-10d\n", depth);
     }
 
@@ -766,54 +767,59 @@ void printParseTreeUtil(parseTree *t, FILE *fp, int depth)
         char *ter = "NON TERMINAL";
         fprintf(fp, "%-25s", NonTerminalMap[t->Node.nonTerminal.nt]); // print the symbol
         fprintf(fp, "%-25s", ter);
+        char exp[300] = "\0";
+        char exp2[300] = "\0";
         if (t->exp_type.tag == not_app)
         {
-            fprintf(fp, "%-300s", "--Ignored--");
+            sprintf(exp, "%-150s", "--Ignored--");
         }
         else
         {
             if (t->exp_type.tag == primitive)
             { //Primitive
-                fprintf(fp, "<basicType=%s>%-200s", TerminalMap[t->exp_type.record.primitive_type], "");
+                sprintf(exp, "<basicType=%s>", TerminalMap[t->exp_type.record.primitive_type]);
             }
             else if (t->exp_type.tag == array)
             {
                 int dim = t->exp_type.record.arr_record.dim;
-                fprintf(fp, " <type=rectangularArray, dimensions=%d, ", dim);
-
+                sprintf(exp, " <type=rectangularArray, dimensions=%d, ", dim);
                 for (int j = 0; j < dim; j++)
                 {
                     int a = t->exp_type.record.arr_record.dim_bound[j][0];
                     int b = t->exp_type.record.arr_record.dim_bound[j][1];
                     //case for var_name in d_bind
                     if (a != -1 && b != -1)
-                        fprintf(fp, "range_R%d= (%d, %d), ", j + 1, a, b);
+                        sprintf(exp2, "range_R%d= (%d, %d), ", j + 1, a, b);
                     else if (a == -1 && b != -1)
-                        fprintf(fp, "range_R%d= (%s, %d), ", j + 1, t->exp_type.record.arr_record.l_indexes[j], b);
+                        sprintf(exp2, "range_R%d= (%s, %d), ", j + 1, t->exp_type.record.arr_record.l_indexes[j], b);
                     else if (a != -1 && b == -1)
-                        fprintf(fp, "range_R%d= (%d, %s), ", j + 1, a, t->exp_type.record.arr_record.u_indexes[j]);
+                        sprintf(exp2, "range_R%d= (%d, %s), ", j + 1, a, t->exp_type.record.arr_record.u_indexes[j]);
                     else if (a == -1 && b == -1)
-                        fprintf(fp, "range_R%d= (%s, %s), ", j + 1, t->exp_type.record.arr_record.l_indexes[j], t->exp_type.record.arr_record.u_indexes[j]);
+                        sprintf(exp2, "range_R%d= (%s, %s), ", j + 1, t->exp_type.record.arr_record.l_indexes[j], t->exp_type.record.arr_record.u_indexes[j]);
+					strcat(exp, exp2);
                 }
-                fprintf(fp, "basicElementType = Integer>%-110s", "");
+                sprintf(exp2, "basicElementType = Integer>");
+                strcat(exp, exp2);
             }
             else if (t->exp_type.tag == jagged_array)
             { //Jagged_ARRAY
                 int dim = t->exp_type.record.j_arr_record.dim;
-
-                fprintf(fp, " <type =jaggedArray, dimensions=%d, ", dim);
-
+                sprintf(exp, " <type =jaggedArray, dimensions=%d, ", dim);
                 if (dim == 2)
                 {
                     int high = t->exp_type.record.j_arr_record.r1_high;
                     int low = t->exp_type.record.j_arr_record.r1_low;
-                    fprintf(fp, "range_R1=(%d, %d) range_R2 = (", low, high);
-
+                    sprintf(exp2, "range_R1=(%d, %d) range_R2 = (", low, high);
+					strcat(exp, exp2);
                     for (int j = 0; j < high - low + 1; j++)
                     {
-                        fprintf(fp, " %d ", t->exp_type.record.j_arr_record.dim_bound._line[j]);
+                        sprintf(exp2, " %d ", t->exp_type.record.j_arr_record.dim_bound._line[j]);
+                        strcat(exp, exp2);
                         if (j != high - low)
-                            fprintf(fp, ",");
+                        {
+							sprintf(exp2, ",");
+							strcat(exp, exp2);
+						}                            
                         //from (low,high) gives size  , 0 index
                     }
                 }
@@ -821,30 +827,43 @@ void printParseTreeUtil(parseTree *t, FILE *fp, int depth)
                 { //dim==3
                     int high = t->exp_type.record.j_arr_record.r1_high;
                     int low = t->exp_type.record.j_arr_record.r1_low;
-                    fprintf(fp, "range_R1=(%d, %d) range_R2 = ( ", low, high);
+                    sprintf(exp2, "range_R1=(%d, %d) range_R2 = ( ", low, high);
+                    strcat(exp, exp2);
                     for (int j = 0; j < high - low + 1; j++)
                     {
                         int m = t->exp_type.record.j_arr_record.dim_bound.jag_line[j][0];
-                        fprintf(fp, "%d [", m);
+                        sprintf(exp2, "%d [", m);
+                        strcat(exp, exp2);
                         for (int k = 0; k < m; k++)
                         {
-                            fprintf(fp, " %d", t->exp_type.record.j_arr_record.dim_bound.jag_line[j][k + 1]);
+                            sprintf(exp2, " %d", t->exp_type.record.j_arr_record.dim_bound.jag_line[j][k + 1]);
+                            strcat(exp,exp2);
                             if (k != m - 1)
-                                fprintf(fp, ",");
+                            {
+								sprintf(exp2, ",");
+								strcat(exp, exp2);
+							}
+                                
                         }
-                        fprintf(fp, " ]");
+                        sprintf(exp2, " ]");
+                        strcat(exp, exp2);
                         if (j != high - low)
-                            fprintf(fp, ", ");
+                        {
+							sprintf(exp2, ", ");
+							strcat(exp, exp2);
+						}                            
                     }
                 }
-                fprintf(fp, "), basicElementType = integeri> %-10s", "ji");
+                
+                sprintf(exp2, "), basicElementType = integeri> %-10s", "ji");
+                strcat(exp, exp2);
 
                 //basic=Integer by def
             }
         }
 
         // print the tyeExpression
-
+		fprintf(fp, "%-150s", exp);
         fprintf(fp, "%-35s", "NULL");
         fprintf(fp, "%-10s", "NULL");
         printRule(t->Node.nonTerminal.expRule, t->Node.nonTerminal.nt, fp);
@@ -874,7 +893,7 @@ void printParseTree(parseTree *t)
     fprintf(fp, "\n------------------------------------------------------Printing Parse Tree-----------------------------------------------------\n\n");
     //printf("\n------------------------------------------------------Printing Parse Tree On the Console-----------------------------------------------\n\n");
     //fprintf(fp, "%-25s %-10s %-15s %-15s %-30s %-5s %s\n\n\n", "LEXEME","LINE","TOKEN","VALUE","PARENT","LEAF","NODE");
-    fprintf(fp, "%-24s %-25s %-300s %-30s %-10s %-200s %-10s\n\n\n", "SYMBOL", "TERMINAL / NON TERMINAL", "TYPE EXPRESSION", "LEXEME", "LINE", "GRAMMAR RULE", "DEPTH");
+    fprintf(fp, "%-24s %-25s %-150s %-30s %-10s %-200s %-10s\n\n\n", "SYMBOL", "TERMINAL / NON TERMINAL", "TYPE EXPRESSION", "LEXEME", "LINE", "GRAMMAR RULE", "DEPTH");
 
     printParseTreeUtil(t, fp, 0);
 

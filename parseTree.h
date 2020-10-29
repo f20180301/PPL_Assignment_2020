@@ -23,7 +23,7 @@ typedef struct nonTerminalNode
 {
     NonTerminal nt;
     grules *expRule; // for getting the rule used in parsing
-
+	char lex_nt[100];
 } NonTerminalNode;
 
 // Union for Term / NonTerm Nodes
@@ -48,6 +48,7 @@ typedef struct treeNode
     //for linkedlist of children
     struct treeNode *firstChild;
     TypeExpression exp_type;
+    int depth;
 
 } parseTree;
 
