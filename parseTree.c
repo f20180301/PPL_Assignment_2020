@@ -857,6 +857,8 @@ void traverse_parse_tree(parseTree *t)
         {
             // make amends in the parent t node.
             t->exp_type = t->firstChild->exp_type;
+            strcpy(t->Node.nonTerminal.lex_nt, t->firstChild->Node.nonTerminal.lex_nt);
+            return;
         }
         else
         {
@@ -869,7 +871,7 @@ void traverse_parse_tree(parseTree *t)
             // if plus, minus // operands can be primitive integer, real
             // if and, or // operands can be primitive boolean
             
-            int line_no = t->firstChild->sibling->Node.terminal.line_num;
+            int line_no = t->firstChild->sibling->firstChild->Node.terminal.line_num;
 			char left[100], right[100];
 			char message[100];
 			
@@ -888,14 +890,14 @@ void traverse_parse_tree(parseTree *t)
             
             if(t->firstChild->exp_type.tag == not_app || t->firstChild->sibling->sibling->exp_type.tag == not_app)
             {
-				printf("%-5d %-15s %-5s %-15s %-15s %-15s %-15s %-5d %-50s\n", line_no, "ASSIGNMENT", t->firstChild->sibling->firstChild->Node.terminal.lexeme, t->firstChild->Node.nonTerminal.lex_nt, left, t->firstChild->sibling->sibling->Node.nonTerminal.lex_nt, right, t->depth, "TYPE ERROR as both the operands need to be BOOLEAN");
+				printf("%-5d %-15s %-5s %-15s %-15s %-15s %-15s %-5d %-50s\n", line_no, "ASSIGNMENT", t->firstChild->sibling->firstChild->Node.terminal.lexeme, t->firstChild->Node.nonTerminal.lex_nt, left, t->firstChild->sibling->sibling->Node.nonTerminal.lex_nt, right, t->depth, "TYPE ERROR as both Operands are of Different Types");
                         t->exp_type.tag = not_app;
                         return;
 			}
             
             if (t->firstChild->exp_type.tag == t->firstChild->sibling->sibling->exp_type.tag) // operands need to be of same type
             {
-                if (t->firstChild->sibling->Node.terminal.t == AND || t->firstChild->sibling->Node.terminal.t == OR)
+                if (t->firstChild->sibling->firstChild->Node.terminal.t == AND || t->firstChild->sibling->firstChild->Node.terminal.t == OR)
                 {
                     // operands need to boolean
                     if (t->firstChild->exp_type.tag == primitive && t->firstChild->sibling->sibling->exp_type.tag == primitive && t->firstChild->exp_type.record.primitive_type == BOOLEAN)
@@ -983,7 +985,7 @@ void traverse_parse_tree(parseTree *t)
             // both operand real or integer
             // in div integer / integer will give real
 			
-			int line_no = t->firstChild->sibling->Node.terminal.line_num;
+			int line_no = t->firstChild->sibling->firstChild->Node.terminal.line_num;
 			char left[100], right[100];
 			char message[100];
 			
