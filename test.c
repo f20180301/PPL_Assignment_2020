@@ -391,14 +391,11 @@ void readGrammar(char a[100], grammar *G)
         }
         if (grammar_split != NULL)
         {
-            //printf("%s\n", grammar_split);
             substring(tmp, grammar_split, 1, strlen(grammar_split) - 2);
-            //printf("%s %s\n", grammar_split, tmp);
         }
         if (count == 1)
         {
             //Initialsing grammar
-            //printf("%s %s\n", grammar_split, tmp);
             gramcurr->nt = find(tmp, 0); //Initialised nt
             grulescurr = malloc(sizeof(grules));
             gramcurr->head = grulescurr; // Initialised head
@@ -430,7 +427,6 @@ void readGrammar(char a[100], grammar *G)
             gramcurr++;
             //Initialsing grammar
             gramcurr->nt = find(tmp, 0); //Initialised nt
-            //printf("%s <--->\n", NonTerminalMap[gramcurr->nt]);
             grulescurr = malloc(sizeof(grules));
             gramcurr->head = grulescurr; // Initialised head
 
@@ -451,7 +447,6 @@ void readGrammar(char a[100], grammar *G)
             {
                 if (strcmp(grammar_split, "=>") == 0)
                 {
-                    //printf("=>\n");
                     continue;
                 }
                 count2++;
@@ -461,16 +456,14 @@ void readGrammar(char a[100], grammar *G)
                     rulecurr = rulecurr->next;
                     rulecurr->next = NULL;
                 }
-                if (grammar_split[0] == '<')
+                if (grammar_split[0] == '<') // ENCOUNTERED A NON-TERMINAL
                 {
-                    //printf("NONTERMINAL\n");
                     substring(tmp2, grammar_split, 1, strlen(grammar_split) - 2);
                     rulecurr->isterm = 0;
                     rulecurr->type.nt = find(tmp2, 0);
                 }
-                else
+                else // ENCOUNTERED A TERMINAL
                 {
-                    //printf("TERMINAL\n");
                     rulecurr->isterm = 1;
                     rulecurr->type.t = find(grammar_split, 1);
                 }
@@ -798,7 +791,6 @@ void printParseTreeUtil(parseTree *t, FILE *fp, int depth)
 
     else
     {
-
         char *ter = "NON TERMINAL";
         fprintf(fp, "%-25s", NonTerminalMap[t->Node.nonTerminal.nt]); // print the symbol
         fprintf(fp, "%-25s", ter);
@@ -821,7 +813,6 @@ void printParseTreeUtil(parseTree *t, FILE *fp, int depth)
                 {
                     int a = t->exp_type.record.arr_record.dim_bound[j][0];
                     int b = t->exp_type.record.arr_record.dim_bound[j][1];
-                    // printf("%s\n",t->exp_type.record.arr_record.l_indexes[0]);
                     //case for var_name in d_bind
                     if (a != -1 && b != -1)
                         fprintf(fp, "range_R%d= (%d, %d), ", j + 1, a, b);
@@ -978,7 +969,6 @@ TypeExpression jagged(int lo, int hi, parseTree *jagLines, int dimen, TypeExpres
                 if (dpnumList->Node.terminal.t == NUM) // Not more than two in a numList and single NUM to be present b/w semicolons
                 {
                     numcount++;
-                    //printf("%s \n", dpnumList->Node.terminal.lexeme);
                 }
                 if (dpnumList->Node.terminal.t == EPSILON)
                 {
@@ -987,10 +977,8 @@ TypeExpression jagged(int lo, int hi, parseTree *jagLines, int dimen, TypeExpres
                     expr.tag = not_app;
                     return expr;
                 }
-                //printf("%s %s y\n", TerminalMap[dpnumList->sibling->firstChild->Node.terminal.t], dpnumList->sibling->firstChild->Node.terminal.lexeme);
                 if (dpnumList->sibling->firstChild->Node.terminal.t != EPSILON)
                 {
-                    // error 3d type
                     int dep = 0;
                     printf("%d   DECLARATION   ***   ***   ***   ***   ***   %d   2D_Jagged_Array_Multiple_Element_In_Row \n", dpnumList->Node.terminal.line_num, dep);
                     expr.tag = not_app;
@@ -1004,9 +992,8 @@ TypeExpression jagged(int lo, int hi, parseTree *jagLines, int dimen, TypeExpres
                 printf("%d   DECLARATION   ***   ***   ***   ***   ***   %d   2D_Jagged_Array_No_Element_In_Row \n", dpnumList->Node.terminal.line_num, dep);
                 expr.tag = not_app;
                 return expr;
-                // Empty
             }
-            if (numList->firstChild->sibling->firstChild->Node.terminal.t != EPSILON) //MORE THAN TWO
+            if (numList->firstChild->sibling->firstChild->Node.terminal.t != EPSILON)
             {
                 int dep = 0;
                 printf("%d   DECLARATION   ***   ***   ***   ***   ***   %d   2D_Jagged_Array_Multiple_Element_In_Row \n", dpnumList->Node.terminal.line_num, dep);
@@ -1021,7 +1008,6 @@ TypeExpression jagged(int lo, int hi, parseTree *jagLines, int dimen, TypeExpres
                 printf("%d   DECLARATION   ***   ***   ***   ***   ***   %d   2D_Jagged_Array_Size_Mismatch \n", dpnumList->Node.terminal.line_num, dep);
                 expr.tag = not_app;
                 return expr;
-                //error No. of elements do not match size
             }
             line[szchk - lo - 1] = sz;
         }
@@ -1042,14 +1028,12 @@ TypeExpression jagged(int lo, int hi, parseTree *jagLines, int dimen, TypeExpres
                 if (dpnumList->Node.terminal.t == EPSILON && idxcount == 0)
                 {
                     int dep = 0;
-                    printf("%d   DECLARATION   ***   ***   ***   ***   ***   %d   3D_Jagged_Array_No_Element_In_Row \n", dpnumList->Node.terminal.line_num, dep);
+                    printf("%d   DECLARATION   ***   ***   ***   ***   ***   %d   3D_Jagged_Array_No_Element_In_3rd_Dimension \n", dpnumList->Node.terminal.line_num, dep);
                     expr.tag = not_app;
                     return expr;
-                    // error EPSILON ENCOUNTERED
                 }
                 counter++;
                 jagl[szchk - lo - 1][counter] = idxcount;
-                //printf("%d idxid\n", idxcount);
                 numList = numList->sibling->sibling->firstChild;
             }
             idxcount = 0;
@@ -1062,10 +1046,9 @@ TypeExpression jagged(int lo, int hi, parseTree *jagLines, int dimen, TypeExpres
             if (dpnumList->Node.terminal.t == EPSILON && idxcount == 0)
             {
                 int dep = 0;
-                printf("%d   DECLARATION   ***   ***   ***   ***   ***   %d   3D_Jagged_Array_No_Element_In_Row \n", dpnumList->Node.terminal.line_num, dep);
+                printf("%d   DECLARATION   ***   ***   ***   ***   ***   %d   3D_Jagged_Array_No_Element_In_3rd_Dimension \n", dpnumList->Node.terminal.line_num, dep);
                 expr.tag = not_app;
                 return expr;
-                // error EPSILON ENCOUNTERED
             }
             counter++;
             jagl[szchk - lo - 1][counter] = idxcount;
@@ -1075,7 +1058,6 @@ TypeExpression jagged(int lo, int hi, parseTree *jagLines, int dimen, TypeExpres
                 printf("%d   DECLARATION   ***   ***   ***   ***   ***   %d   3D_Jagged_Array_Size_Mismatch \n", dpnumList->Node.terminal.line_num, dep);
                 expr.tag = not_app;
                 return expr;
-                //error Size don't match
             }
         }
         if (jagLine->sibling == NULL)
@@ -1109,12 +1091,9 @@ void append_to_table(TypeExpression type, char *var)
     }
     else if (m == CAPACITY)
     {
-        //  printf("yahani %d %s \n",m,var);
         table = (TypeExpressionTable *)realloc(table, sizeof(TypeExpressionTable) * CAPACITY * 2);
         CAPACITY = CAPACITY * 2;
     }
-
-    //printf("yahani %d %d %s \n",m,CAPACITY,var);
     strcpy(table[m].var_name, var);
 
     table[m].tag = type.tag;
@@ -1128,7 +1107,6 @@ void append_to_table(TypeExpression type, char *var)
 
 void traverse_parse_tree(parseTree *t)
 {
-    //   printf("here\n");
     if (t->isTerm == 0 && t->Node.nonTerminal.nt == s)
     {
         t = t->firstChild->sibling->sibling->sibling->sibling;
@@ -1161,6 +1139,8 @@ void traverse_parse_tree(parseTree *t)
         parseTree *temp = t; //just being safe, making copy
         temp = temp->firstChild;
 
+        //***********PRIMITIVE**********************//
+
         if (temp->isTerm == 0 && temp->Node.nonTerminal.nt == primitive)
         {
             ///    printf("herein\n");
@@ -1179,11 +1159,13 @@ void traverse_parse_tree(parseTree *t)
             }
             //
             exp_table_record.record.primitive_type = temp->firstChild->Node.terminal.t; //INT/BOOl/REAL(terminal)
-            //daalnaa
             //storing to <single_primitive> and <primitive>
             temp->parent->exp_type = exp_table_record;
             temp->parent->parent->exp_type = exp_table_record;
         }
+
+        //***********ARRAY**********************//
+
         else if (temp->isTerm == 0 && temp->Node.nonTerminal.nt == array)
         {
             exp_table_record.tag = array;
@@ -1194,17 +1176,17 @@ void traverse_parse_tree(parseTree *t)
             if (temp->isTerm == 0 && temp->Node.nonTerminal.nt == single_array)
             {
                 varlist_pointer = temp = temp->firstChild->sibling;
-                temp = temp->sibling->sibling; //moving into colon ke baad wala node
+                temp = temp->sibling->sibling; //moving into part after colon
             }
             else
             {
                 varlist_pointer = temp = temp->firstChild->sibling->sibling->sibling->sibling;
-                temp = temp->sibling->sibling; //moving into colon ke baad wala node
+                temp = temp->sibling->sibling; //moving into part after colon
             }
 
             temp = temp->sibling; //(ignore just after colon, arrray written)
 
-            //<array_dim> hai aab, in temp
+            //Now temp at <array_dim>
             parseTree *store = temp; //at <array_dim>
 
             int count = 0;
@@ -1217,10 +1199,7 @@ void traverse_parse_tree(parseTree *t)
             char **l_indexes = (char **)malloc(sizeof(char *));
             char **u_indexes = (char **)malloc(sizeof(char *));
 
-            // int strCount=0;
-            // char **indexes;
             int g = 1, b = 2;
-            //char ** indexes = (char **)malloc(sizeof(char *));
 
             do
             {
@@ -1241,8 +1220,6 @@ void traverse_parse_tree(parseTree *t)
                     if (r1 == -1)
                         r1 = -100;
                 }
-
-                //
                 if (r1 == -1)
                 {
                     if (strcount >= s_g)
@@ -1250,12 +1227,10 @@ void traverse_parse_tree(parseTree *t)
                         l_indexes = (char **)realloc(l_indexes, (s_g * 2) * sizeof(char *));
                         s_g = s_g * 2;
                     }
-                    // printf("here\n");
                     int len = strlen(temp->firstChild->Node.terminal.lexeme);
                     l_indexes[strcount] = (char *)malloc(len * sizeof(char)); //allocating space to store left and right index
                     strcpy(l_indexes[strcount], temp->firstChild->Node.terminal.lexeme);
                     // Storing ID in form of string
-                    //printf("l-> %s  :  %s %d\n",temp->firstChild->Node.terminal.lexeme,l_indexes[strcount],strcount );
                     strcount++;
                 }
                 else
@@ -1289,7 +1264,6 @@ void traverse_parse_tree(parseTree *t)
                 }
                 if (r2 == -1)
                 {
-                    // printf("here2\n");
                     if (strcount2 >= s_g2)
                     {
                         u_indexes = (char **)realloc(u_indexes, (s_g2 * 2) * sizeof(char *));
@@ -1304,10 +1278,8 @@ void traverse_parse_tree(parseTree *t)
                 }
                 else
                 {
-                    // printf("here2\n");
                     if (strcount2 >= s_g2)
                     {
-                        // printf("here2\n");
                         u_indexes = (char **)realloc(u_indexes, (s_g2 * 2) * sizeof(char *));
                         s_g2 = s_g2 * 2;
                     }
@@ -1354,16 +1326,12 @@ void traverse_parse_tree(parseTree *t)
                 }
 
             } while (temp != NULL);
-            //storing to single_array and array
-
-            //temp2=daalde
         }
 
         //**********JAGGED ARRAY**********************//
 
         else if (temp->isTerm == 0 && temp->Node.nonTerminal.nt == jagged_array)
         {
-            //printf("Hell\n");
             temp = temp->firstChild; //jagged_2d_array or jagged_3d_array
             if (temp->isTerm == 0 && temp->Node.nonTerminal.nt == jagged_2d_array)
             {
@@ -1374,12 +1342,12 @@ void traverse_parse_tree(parseTree *t)
                 if (temp->isTerm == 0 && temp->Node.nonTerminal.nt == single_jagged_2d_array)
                 {
                     varlist_pointer = temp = temp->firstChild->sibling;
-                    temp = temp->sibling->sibling; //moving into colon ke baad wala node
+                    temp = temp->sibling->sibling; //moving into part after colon
                 }
                 else
                 {
                     varlist_pointer = temp = temp->firstChild->sibling->sibling->sibling->sibling;
-                    temp = temp->sibling->sibling; //moving into colon ke baad wala node
+                    temp = temp->sibling->sibling; //moving into part after colon
                 }
                 temp = temp->sibling->sibling; //(ignore just after colon, jagged and arrray written)
                 //<jagged_2d_dim> hai , in temp
@@ -1407,42 +1375,33 @@ void traverse_parse_tree(parseTree *t)
             }
             else if (temp->isTerm == 0 && temp->Node.nonTerminal.nt == jagged_3d_array)
             {
-                //printf("%s nh\n", NonTerminalMap[temp->Node.nonTerminal.nt]);
                 exp_table_record.tag = jagged_array;
                 exp_table_record.info = N_A;
-                //printf("3d\n");
                 temp = temp->firstChild;
-                //printf("%s nn\n", NonTerminalMap[temp->Node.nonTerminal.nt]);
                 if (temp->isTerm == 0 && temp->Node.nonTerminal.nt == single_jagged_3d_array)
                 {
                     varlist_pointer = temp = temp->firstChild->sibling;
-                    temp = temp->sibling->sibling; //moving into colon ke baad wala node
+                    temp = temp->sibling->sibling; //moving into part after colon
                 }
                 else
                 {
-                    //printf("3d\n");
                     varlist_pointer = temp = temp->firstChild->sibling->sibling->sibling->sibling;
-                    temp = temp->sibling->sibling; //moving into colon ke baad wala node
+                    temp = temp->sibling->sibling; //moving into part after colon
                 }
                 temp = temp->sibling->sibling; //(ignore just after colon, jagged and arrray written)
-                //printf("%s hhhnlllll\n", NonTerminalMap[temp->Node.nonTerminal.nt]); //<jagged_3d_dim> hai , in temp
-                parseTree *store = temp; //at <jagged_2d/3d_dim>
+                parseTree *store = temp;       //at <jagged_2d/3d_dim>
                 int l_bound = atoi(temp->firstChild->sibling->Node.terminal.lexeme);
                 int u_bound = atoi(temp->firstChild->sibling->sibling->sibling->Node.terminal.lexeme);
                 //printf("%d %d", l_bound, u_bound);
                 int dimension = 3;
                 if (l_bound <= u_bound)
-                { //chk =
-                    //kamm alag hoga.
-                    //printf("%s hhhnyyyy\n", NonTerminalMap[temp->sibling->sibling->sibling->sibling->Node.nonTerminal.nt]);
+                {
                     exp_table_record = jagged(l_bound, u_bound, temp->sibling->sibling->sibling->sibling, dimension, exp_table_record);
-                    //printf("4d\n");
                 }
                 else
                 {
                     int dep = 0;
                     printf("%d   DECLARATION   ***   ***   ***   ***   ***   %d   Jagged_Array_Range_Mismatch \n", temp->firstChild->sibling->Node.terminal.line_num, dep);
-                    //error
                 }
                 store->parent->exp_type = exp_table_record;
                 store->parent->parent->exp_type = exp_table_record;
@@ -1454,30 +1413,21 @@ void traverse_parse_tree(parseTree *t)
         {
             if (varlist_pointer->isTerm == 1 && varlist_pointer->Node.terminal.t == ID)
             {
-                // printf("yaha\n");
                 varlist_pointer->exp_type = exp_table_record;
-                //   printf("%d\n\n\n",varlist_pointer->exp_type.tag);
                 //append to typeExpression Table
-
                 append_to_table(exp_table_record, varlist_pointer->Node.terminal.lexeme);
             }
             else
             {
                 //traverse all IDs
-                //printf("yaha\n");
                 do
                 {
-                    //    printf("yahan\n");
                     varlist_pointer->exp_type = exp_table_record;
                     varlist_pointer = varlist_pointer->firstChild;
-
                     varlist_pointer->exp_type = exp_table_record;
-
                     //append to typeExpression Table
                     append_to_table(exp_table_record, varlist_pointer->Node.terminal.lexeme);
-
                     varlist_pointer = varlist_pointer->sibling;
-
                 } while (varlist_pointer != NULL);
             }
         }
@@ -1700,7 +1650,7 @@ int main()
     createParseTree(p, g);
 
     if (posToken != NULL)
-        printf("ERRRRRRORRRRRRRRRRR\n");
+        printf("ERROR READING INPUT STRING (IT OCCURS USUALLY IF AN UNKNOWN SYMBOLS APPEAR WHICH CANNOT DOEAS NOT MATCH ANY RULE)\n");
     //4. Printing the parse tree
     printParseTree(p);
 

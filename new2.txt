@@ -1,7 +1,7 @@
   Variable            Type       Bind_type  Type_Expression 
-        s1    jagged_array   NotApplicable  <type =jaggedArray, dimensions=3, range_R1=(4, 7) range_R2 = ( 3 [ 5, 3, 5 ], 2 [ 3, 5 ], 3 [ 5, 4, 3 ], 4 [ 1, 1, 1, 1 ]), basicElementType = integer>
-        s2    jagged_array   NotApplicable  <type =jaggedArray, dimensions=3, range_R1=(4, 7) range_R2 = ( 3 [ 5, 3, 5 ], 2 [ 3, 5 ], 3 [ 5, 4, 3 ], 4 [ 1, 1, 1, 1 ]), basicElementType = integer>
-        s3    jagged_array   NotApplicable  <type =jaggedArray, dimensions=3, range_R1=(4, 7) range_R2 = ( 3 [ 5, 3, 5 ], 2 [ 3, 5 ], 3 [ 5, 4, 3 ], 4 [ 1, 1, 1, 1 ]), basicElementType = integer>
-        s1    jagged_array   NotApplicable  <type =jaggedArray, dimensions=2, range_R1=(4, 7) range_R2 = ( 3 , 2 , 3 , 4 ), basicElementType = integer>
-        s2    jagged_array   NotApplicable  <type =jaggedArray, dimensions=2, range_R1=(4, 7) range_R2 = ( 3 , 2 , 3 , 4 ), basicElementType = integer>
-        s3    jagged_array   NotApplicable  <type =jaggedArray, dimensions=2, range_R1=(4, 7) range_R2 = ( 3 , 2 , 3 , 4 ), basicElementType = integer>
+        s1    jagged_array   NotApplicable  <type =jaggedArray, dimensions=3, range_R1=(4, 7) range_R2 = ( 3 [ 5, 3, 5 ], 2 [ 3, 5 ], 3 [ 5, 4, 3 ], 4 [ 2, 5, 1, 4 ]), basicElementType = integer>
+        s2    jagged_array   NotApplicable  <type =jaggedArray, dimensions=3, range_R1=(4, 7) range_R2 = ( 3 [ 5, 3, 5 ], 2 [ 3, 5 ], 3 [ 5, 4, 3 ], 4 [ 2, 5, 1, 4 ]), basicElementType = integer>
+        s3    jagged_array   NotApplicable  <type =jaggedArray, dimensions=3, range_R1=(4, 7) range_R2 = ( 3 [ 5, 3, 5 ], 2 [ 3, 5 ], 3 [ 5, 4, 3 ], 4 [ 2, 5, 1, 4 ]), basicElementType = integer>
+        s1         not_app   NotApplicable  NOT A VALID TYPE EXPRESSION
+        s2         not_app   NotApplicable  NOT A VALID TYPE EXPRESSION
+        s3         not_app   NotApplicable  NOT A VALID TYPE EXPRESSION
