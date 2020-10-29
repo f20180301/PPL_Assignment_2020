@@ -1,5 +1,0 @@
-program ( ) {
-declare list of variables abcd ghd2_1 ssd_2_3 : array [ 2 .. 5 ] of integer ;
-declare list of variables new d w e2 : integer ;
-q1 = q2 + q3 ;
-}
