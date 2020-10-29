@@ -62,5 +62,6 @@ void traverse_parse_tree(parseTree *);
 void printRule(grules *, NonTerminal, FILE *);
 void printParseTreeUtil(parseTree *, FILE *, int);
 void printParseTree(parseTree *);
-
+TypeExpression search_table(char * lex);
+int check_idx(parseTree * p_idx,TypeExpression var_exp,int arr_size);
 #endif

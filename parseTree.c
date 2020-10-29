@@ -691,28 +691,317 @@ void traverse_parse_tree(parseTree *t)
 
     /*********/ //RAJAT/************/
 
-    else if (t->isTerm == 0 && t->Node.nonTerminal.nt == assignment)
-    {
+    else if(t->isTerm==0&&t->Node.nonTerminal.nt==assignment){
+		
+		//<assignment> => <assignment_stmt> <assignment>
+		//<assignment> => <assignment_stmt>
+		
         traverse_parse_tree(t->firstChild);
-        if (t->firstChild->sibling != NULL)
-        {
-            traverse_parse_tree(t->firstChild->sibling);
+        if(t->firstChild->sibling!=NULL){
+        traverse_parse_tree(t->firstChild->sibling);
         }
         return;
-    }
+	}
 
-    else if (t->isTerm == 0 && t->Node.nonTerminal.nt == assignment_stmt)
-    { //<assignment_stmt>
-        // //=> <arr_pid> EQUALS <expression> SEMICOLON
-        // type_left;type_right;
-        // //CONTINUE THIS WORK//CONTINUE THIS WORK//CONTINUE THIS WORK
-        // t=t->firstChild;(check validity)//-->boundck, etc if array type var                   int a = 2 + 3.7 + 5;
-        // t=t->sibling->sibling;//move to expree(send to function, find return type) -- , + , &&
-        // if(type_left!=type_right){
-        //    // ERROR //otherwise no isseus
-        // }
-        return;
-    }
+	else if(t->isTerm==0&&t->Node.nonTerminal.nt==assignment_stmt){
+		
+		//<assignment_stmt> => <arr_pid> EQUALS <expression> SEMICOLON
+		
+		traverse_parse_tree(t->firstChild); // check for the validity of the id on left
+		traverse_parse_tree(t->firstChild->sibling->sibling); // traverse the expression part
+	
+		// Now check the validity of the assignment statement and make changes int the parent t node
+		// both operands need to be of same type
+		if(t->firstChild->exp_type.tag == not_app && t->firstChild->sibling->sibling->exp_type.tag == not_app)
+		{
+			printf("ERROR In assignment\n");
+			// ignoring in original here
+		}
+		else if(t->firstChild->exp_type.tag == t->firstChild->sibling->sibling->exp_type.tag)
+		{
+			if(t->firstChild->exp_type.tag == primitive)
+			{
+				if(t->firstChild->exp_type.record.primitive_type == t->firstChild->sibling->sibling->exp_type.record.primitive_type)
+				{
+					t->exp_type = t->firstChild->exp_type;
+					strcpy(t->Node.nonTerminal.lex_nt, t->firstChild->Node.nonTerminal.lex_nt);
+				}
+				else
+				{
+					printf("ERROR... Operands should be of same Type in = \n");
+					t->exp_type.tag = not_app;
+				}
+			}
+			else if(t->firstChild->exp_type.tag == array)
+				{
+					// check if the dims are equal
+					if(t->firstChild->exp_type.record.arr_record.dim == t->firstChild->sibling->sibling->exp_type.record.arr_record.dim)
+						t->exp_type = t->firstChild->exp_type;
+					else
+					{
+						printf("ERROR... Arrays need to be of same dimension = \n");
+						t->exp_type.tag = not_app;
+					}
+				}
+				else if(t->firstChild->exp_type.tag == jagged_array)
+				{
+					// check the dimensions
+					if(t->firstChild->exp_type.record.j_arr_record.dim == t->firstChild->sibling->sibling->exp_type.record.j_arr_record.dim)
+						t->exp_type = t->firstChild->exp_type;
+					else
+					{
+						printf("ERROR... Arrays need to be of same dimension = \n");
+						t->exp_type.tag = not_app;
+					}
+				}
+		}
+		else
+		{
+			printf("ERROR... Operands Should be of same type in =\n");
+			t->exp_type.tag = not_app;
+		}
+		strcpy(t->Node.nonTerminal.lex_nt,t->firstChild->Node.nonTerminal.lex_nt);
+		return;
+	}
+	else if(t->isTerm == 0 && t->Node.nonTerminal.nt == expression) // expression
+	{
+		//<expression> => <arithmetic_expression>
+		traverse_parse_tree(t->firstChild);
+		// store the info in parent t node.
+		t->exp_type = t->firstChild->exp_type;
+		strcpy(t->Node.nonTerminal.lex_nt, t->firstChild->Node.nonTerminal.lex_nt);
+		return;
+	}
+	else if(t->isTerm == 0 && t->Node.nonTerminal.nt == arithmetic_expression) // arithmetic_expression
+	{
+		// can have only single term or an exp with  operand
+		//<arithmetic_expression> => <term> <op1> <arithmetic_expression>
+		//<arithmetic_expression> => <term>
+		// two cases
+		traverse_parse_tree(t->firstChild);
+		if(t->firstChild->sibling == NULL)
+		{
+			// make amends in the parent t node.
+			t->exp_type = t->firstChild->exp_type;
+			
+		}
+		else
+		{
+			traverse_parse_tree(t->firstChild->sibling->sibling);
+			// Check compatibility from the two statements then make amends in the parent t node.
+			//<op1> => PLUS
+			//<op1> => MINUS
+			//<op1> => AND
+			//<op1> => OR
+			// if plus, minus // operands can be primitive integer, real 
+			// if and, or // operands can be primitive boolean
+			if(t->firstChild->exp_type.tag == t->firstChild->sibling->sibling->exp_type.tag) // operands need to be of same type
+			{
+				if(t->firstChild->sibling->Node.terminal.t == AND || t->firstChild->sibling->Node.terminal.t == OR)
+				{
+					// operands need to boolean
+					if(t->firstChild->exp_type.tag == primitive && t->firstChild->sibling->sibling->exp_type.tag == primitive && t->firstChild->exp_type.record.primitive_type == BOOLEAN)
+					{
+						t->exp_type = t->firstChild->exp_type;
+					}
+					else
+					{
+						printf("ERROR... Operands need to be boolean with %s\n", t->firstChild->sibling->firstChild->Node.terminal.lexeme);
+						t->exp_type.tag = not_app;
+					}
+				}
+				else // operator is mult and div
+				{
+					// operands should not be boolean
+					if(t->firstChild->exp_type.record.primitive_type == BOOLEAN)
+					{
+						printf("ERROR... Operands cannot be boolean with %s\n", t->firstChild->sibling->firstChild->Node.terminal.lexeme);
+						t->exp_type.tag = not_app;
+					}
+					else
+					{
+						// operands are of same type
+						t->exp_type = t->firstChild->exp_type;
+					}										
+				}				
+			}
+			else
+			{
+				printf("ERROR... Operands need to be of same type in %s\n", NonTerminalMap[arithmetic_expression]);
+				t->exp_type.tag = not_app;
+			}		
+			
+		}
+		strcpy(t->Node.nonTerminal.lex_nt,t->firstChild->Node.nonTerminal.lex_nt);
+		return;
+	}
+	else if(t->isTerm == 0 && t->Node.nonTerminal.nt == term) // term
+	{
+		//<term> => <factor> <op2> <term>
+		//<term> => <factor>
+		traverse_parse_tree(t->firstChild);
+		if(t->firstChild->sibling == NULL)
+		{
+			// make amends in the parent t node.	
+			t->exp_type = t->firstChild->exp_type;		
+		}
+		else
+		{
+
+			traverse_parse_tree(t->firstChild->sibling->sibling);
+			// Check compatibility of the two and make amends in the parent t node.
+			//<op2> => DIVIDE
+			//<op2> => MUL
+			// both operand real or integer
+			// in div integer / integer will give real
+			
+			// operands need to be of same type
+			if(t->firstChild->exp_type.tag == t->firstChild->sibling->sibling->exp_type.tag)
+			{
+				if(t->firstChild->exp_type.tag == array)
+				{
+					// check if the dims are equal
+					if(t->firstChild->exp_type.record.arr_record.dim == t->firstChild->sibling->sibling->exp_type.record.arr_record.dim)
+						t->exp_type = t->firstChild->exp_type;
+					else
+					{
+						printf("ERROR... Arrays need to be of same dimension\n");
+						t->exp_type.tag = not_app;
+					}
+				}
+				else if(t->firstChild->exp_type.tag == jagged_array)
+				{
+					// check the dimensions
+					if(t->firstChild->exp_type.record.j_arr_record.dim == t->firstChild->sibling->sibling->exp_type.record.j_arr_record.dim)
+						t->exp_type = t->firstChild->exp_type;
+					else
+					{
+						printf("ERROR... Arrays need to be of same dimension\n");
+						t->exp_type.tag = not_app;
+					}
+				}
+				else if(t->firstChild->exp_type.record.primitive_type == BOOLEAN) // operands cannot be boolean
+				{
+					printf("ERROR... Operands cannot be BOOLEAN with %s\n", t->firstChild->sibling->firstChild->Node.terminal.lexeme);
+					t->exp_type.tag = not_app;
+				}
+				else
+				{
+					// handle seperately the case of primitives
+					t->exp_type = t->firstChild->exp_type;
+					if(t->firstChild->sibling->Node.terminal.t == DIVIDE && t->firstChild->exp_type.record.primitive_type == INTEGER) // both operands are integer
+					{
+						t->exp_type.record.primitive_type = REAL;
+					}
+				}
+			}
+			else
+			{
+				printf("ERROR... Operands need to be of same type in %s\n", t->firstChild->sibling->firstChild->Node.terminal.lexeme);
+			}
+		}
+		strcpy(t->Node.nonTerminal.lex_nt,t->firstChild->Node.nonTerminal.lex_nt);
+		return;
+	}
+	else if(t->isTerm == 0 && t->Node.nonTerminal.nt == factor) // factor
+	{
+		//<factor> => BROP <expression> BRCL
+		//<factor> => NUM
+		//<factor> => <arr_pid>
+		
+		if(t->firstChild->isTerm == 0) // arr_pid
+		{
+				traverse_parse_tree(t->firstChild); // check the arr_pid
+				// Now store the info in the parent tree node t
+				t->exp_type = t->firstChild->exp_type;
+				strcpy(t->Node.nonTerminal.lex_nt,t->firstChild->Node.nonTerminal.lex_nt);
+				return;
+		}
+		else if(t->firstChild->Node.terminal.t == BROP) // go to the expression
+		{
+			traverse_parse_tree(t->firstChild->sibling);
+			// store the info in the parent node t
+			t->exp_type = t->firstChild->sibling->exp_type;
+			strcpy(t->Node.nonTerminal.lex_nt,t->firstChild->sibling->Node.nonTerminal.lex_nt);
+		}
+		else // this is a num
+		{
+			// store the info in the parent node t
+			// can be INTEGER
+			t->exp_type.info = N_A;
+			t->exp_type.tag = primitive;
+			t->exp_type.record.primitive_type = INTEGER;
+			strcpy(t->Node.nonTerminal.lex_nt,t->firstChild->Node.terminal.lexeme);
+		}
+		return;
+	}
+	else if(t->isTerm == 0 && t->Node.nonTerminal.nt == arr_pid) // arr_pid
+	{
+		//<arr_pid> => ID SQOP <idx> SQCL
+		//<arr_pid> => ID
+		if(t->firstChild->sibling == NULL)
+		{
+			// copy the details of this type expression in arr_pid
+			// find the typeExpression int the TypeExpression Table
+			
+			t->exp_type = search_table(t->firstChild->Node.terminal.lexeme);
+		}
+		else
+		{
+			// PRECHECK BEFORE GOING INTO IDX
+			parseTree * p_idx = t->firstChild->sibling->sibling;
+			//if(p_idx->isTerm == 1) // EPSILON PRESENT
+			//{
+				//printf("ERROR...ARRAY NOT DEREFERENCED CORRECTLY\n");
+				//t->exp_type.tag = not_app;
+				//return;
+			//}
+			int arr_size = 0;
+			// get the typeExpression of the variable from the table
+			TypeExpression var_exp = search_table(t->firstChild->Node.terminal.lexeme);
+			if(var_exp.tag == not_app)
+			{
+				printf("ERROR...%s NOT Present in the TypeExpression Table\n", t->firstChild->Node.terminal.lexeme);
+				t->exp_type.tag = not_app;
+				return;
+			}
+			// Now check the size and ranges
+			if(var_exp.tag == primitive)
+			{
+				printf("ERROR... Primitives cannot be Dereferenced\n");
+				t->exp_type.tag = not_app;
+				return;
+			}
+			else if(var_exp.tag == jagged_array)
+			{
+				arr_size = var_exp.record.j_arr_record.dim;
+			}
+			else if(var_exp.tag == array)
+			{
+				arr_size = var_exp.record.arr_record.dim;
+			}
+			// GO INTO IDX
+			// Now recursively check
+			//<idx> => <num_id> <idx>
+			//<idx> => EPSILON
+			// after checking all the idx's
+			if(check_idx(p_idx, var_exp, arr_size)) // all idx's are valid i.e. range and dimensions
+			{
+				// store the info in arr_pid node
+				// The expType will change will no longer be array
+				t->exp_type.info = N_A;
+				t->exp_type.tag = primitive;
+				t->exp_type.record.primitive_type = INTEGER;
+			}
+			else
+			{
+				// store error in the arr_pid node
+				t->exp_type.tag = not_app;
+			}
+		}
+		strcpy(t->Node.nonTerminal.lex_nt,t->firstChild->Node.terminal.lexeme);
+		return;
+	}
 }
 
 //*****************HELPER FUNCTION TO PRINT A PARTICULAR RULE**************//
@@ -878,7 +1167,142 @@ void printParseTreeUtil(parseTree *t, FILE *fp, int depth)
         child = child->sibling;
     }
 }
+/*********************UTILITY FUNCTION FOR TRAVERSING A PARSE TREE***************/
+TypeExpression search_table(char * lex)
+{
+	TypeExpression x;
+	x.tag = not_app;
+	// search till index m for the typeExpression
+	for(int i = 0; i < curr_table_entry; i++)
+	{
+		if(strcmp(lex, table[i].var_name) == 0) // found the variable
+		{
+			x.info = table[i].info;
+			x.tag = table[i].tag;
+			x.record = table[i].record;
+			return x;
+		}
+	}
+	// if not found
+		printf("ERROR!!! TYPE EXPRESSION NOT FOUND IN TABLE, %s NOT PRESENT\n", lex);
+		return x;
+}
 
+int check_idx(parseTree * p_idx,TypeExpression var_exp,int arr_size)
+{
+	//<idx> => <num_id> <idx>
+	//<idx> => EPSILON
+	int count = 0;
+	int prev_1 = -1, prev_2 = -1; // for jagged array
+	// keep going forward in the indexes until I get an epsilon
+	printf("%s\n", NonTerminalMap[p_idx->Node.nonTerminal.nt]);
+	while(!p_idx->firstChild->isTerm) // encountered an epsilon then exit
+	{
+		//<num_id> => NUM
+		//<num_id> => ID
+		printf("%s\n", NonTerminalMap[p_idx->firstChild->Node.nonTerminal.nt]);
+		parseTree * p_num_id = p_idx->firstChild;
+		count++;
+		
+		// do the bound checking and dimension checking
+		if(count > arr_size)
+		{
+			// ERRROR dereferenced greater than the dimension.
+			printf("ERRROR dereferenced greater than the dimension.\n");
+			// print the error here
+			p_idx->exp_type.tag = not_app;
+			return 0;
+		}
+		// handle seperately if num or id
+		if(p_num_id->firstChild->Node.terminal.t == ID) // id
+		{
+			// just check if the index is an integer
+			TypeExpression id_exp = search_table(p_num_id->firstChild->Node.terminal.lexeme);
+			if(id_exp.tag!= primitive || id_exp.record.primitive_type != INTEGER)
+			{
+				printf("ERROR... ARRAY Index needs to be a INTEGER\n");
+				p_num_id->exp_type.tag = not_app;
+				return 0;
+			}	
+			// copy the lexeme in the parent node
+			p_num_id->exp_type = id_exp;
+			strcpy(p_num_id->Node.nonTerminal.lex_nt, p_num_id->firstChild->Node.terminal.lexeme);
+			// no bound checking needed here		
+		}
+		else // NUM
+		{
+			int num = atoi(p_num_id->firstChild->Node.terminal.lexeme);
+			// do bound checking here
+			if(var_exp.info == Static)
+			{
+				if(var_exp.tag == jagged_array)
+				{
+					int low, high;
+					if(count == 1)
+					{
+						low = var_exp.record.j_arr_record.r1_low;
+						high = var_exp.record.j_arr_record.r1_high;
+						prev_1 = num - low;
+						if(!(num >= low && num <= high))
+						{
+							printf("ERROR... INDEX OUT OF BOUND JAGGED ARRAY in 1st dimension %d\n", num);
+							return 0;
+						}
+					}
+					else if(count == 2)
+					{
+							low = 0;
+							high = var_exp.record.j_arr_record.dim_bound._line[prev_1] - 1;
+							
+							if(!(num >= low && num <= high))
+							{
+								printf("ERROR... INDEX OUT OF BOUND JAGGED ARRAY in 2nd dimension %d\n", num);
+								return 0;
+							}
+							prev_2 = num;
+					}
+					else // count is 3
+					{
+						low = 0;
+						high = var_exp.record.j_arr_record.dim_bound.jag_line[prev_1][prev_2] - 1;
+						if(!(num >= low && num <= high))
+						{
+							printf("ERROR... INDEX OUT OF BOUND JAGGED ARRAY in 3rd dimension %d\n", num);
+							return 0;
+						}
+					}
+					strcpy(p_num_id->Node.nonTerminal.lex_nt,p_num_id->firstChild->Node.terminal.lexeme);
+					p_num_id->exp_type = p_num_id->firstChild->exp_type;
+				}
+				else
+				{
+					int low, high;
+					low = var_exp.record.arr_record.dim_bound[count - 1][0];
+					high = var_exp.record.arr_record.dim_bound[count - 1][1];
+					if(!(num >= low && num <= high))
+					{
+						printf("ERROR... INDEX OUT OF BOUND STATIC ARRAY at %d st dimension with %d. limit %d --  %d\n",count , num, low, high);
+						p_num_id->exp_type.tag = not_app;
+						return 0;
+					}
+					else
+					{
+						strcpy(p_num_id->Node.nonTerminal.lex_nt,p_num_id->firstChild->Node.terminal.lexeme);
+						p_num_id->exp_type = p_num_id->firstChild->exp_type;
+					}
+				}
+			}
+		}		
+		// update the node
+		p_idx = p_idx->firstChild->sibling;
+	}
+	// encountered an epsilon
+	if(count == arr_size)
+			return 1;
+	printf("ERROR... ARRAY LESS INDICES %d SPECIFIED than dimensions %d\n", count, arr_size);
+	return 0; // dereferenced for lesser dimensions
+}
+/*************************END OF UTIL*******************************************/
 //*************************PRINTING A PARSE TREE****************************//
 
 void printParseTree(parseTree *t)
