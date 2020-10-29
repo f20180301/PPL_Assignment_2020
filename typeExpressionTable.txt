@@ -26,30 +26,3 @@
         h1           array          Static  <type=rectangularArray, dimensions=3, range_R1= (12, 34), range_R2= (11, 20), range_R3= (18, 33), basicElementType = Integer>
         h2           array          Static  <type=rectangularArray, dimensions=3, range_R1= (12, 34), range_R2= (11, 20), range_R3= (18, 33), basicElementType = Integer>
         h3           array          Static  <type=rectangularArray, dimensions=3, range_R1= (12, 34), range_R2= (11, 20), range_R3= (18, 33), basicElementType = Integer>
-      yash         not_app   NotApplicable  NOT A VALID TYPE EXPRESSION
-      abcd         not_app   NotApplicable  NOT A VALID TYPE EXPRESSION
-    ghd2_1         not_app   NotApplicable  NOT A VALID TYPE EXPRESSION
-   ssd_2_3         not_app   NotApplicable  NOT A VALID TYPE EXPRESSION
-       new       primitive   NotApplicable  <basicType=INTEGER>
-         d       primitive   NotApplicable  <basicType=INTEGER>
-         w       primitive   NotApplicable  <basicType=INTEGER>
-        e2       primitive   NotApplicable  <basicType=INTEGER>
-        v1       primitive   NotApplicable  <basicType=INTEGER>
-        a1       primitive   NotApplicable  <basicType=INTEGER>
-        a2       primitive   NotApplicable  <basicType=INTEGER>
-        b1       primitive   NotApplicable  <basicType=BOOLEAN>
-        b2       primitive   NotApplicable  <basicType=BOOLEAN>
-        b3       primitive   NotApplicable  <basicType=BOOLEAN>
-        c1       primitive   NotApplicable  <basicType=REAL>
-        c2       primitive   NotApplicable  <basicType=REAL>
-         u         not_app   NotApplicable  NOT A VALID TYPE EXPRESSION
-         v         not_app   NotApplicable  NOT A VALID TYPE EXPRESSION
-        s1         not_app   NotApplicable  NOT A VALID TYPE EXPRESSION
-        s2         not_app   NotApplicable  NOT A VALID TYPE EXPRESSION
-        s3         not_app   NotApplicable  NOT A VALID TYPE EXPRESSION
-        m1       primitive   NotApplicable  <basicType=REAL>
-        m2       primitive   NotApplicable  <basicType=REAL>
-        m3       primitive   NotApplicable  <basicType=REAL>
-        h1           array          Static  <type=rectangularArray, dimensions=3, range_R1= (12, 34), range_R2= (11, 20), range_R3= (18, 33), basicElementType = Integer>
-        h2           array          Static  <type=rectangularArray, dimensions=3, range_R1= (12, 34), range_R2= (11, 20), range_R3= (18, 33), basicElementType = Integer>
-        h3           array          Static  <type=rectangularArray, dimensions=3, range_R1= (12, 34), range_R2= (11, 20), range_R3= (18, 33), basicElementType = Integer>
