@@ -11,12 +11,12 @@ Assignment  date: 30 October 2020.
 Instructor IC: Prof. Vanadana
 
 ## Steps to Run:
-- Do Git Clone ...
+- Do Git Clone ....
 - In the console,execute "make" command.
 - Execute ./exe <filename>.txt.
   
 ## Outputs:
-  - ERRORS, IF ANY are console logged..
+  - ERRORS, IF ANY are console logged
   - The Type Expression Table is printed into typeExpressionTable.txt
   - The parseTree is printed into parseTree.txt
 ## Inputs: 
