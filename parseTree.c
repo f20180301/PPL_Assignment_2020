@@ -886,6 +886,12 @@ void traverse_parse_tree(parseTree *t)
 			else
 				strcpy(right, NonTerminalMap[t->firstChild->sibling->sibling->exp_type.tag]);
             
+            if(t->firstChild->exp_type.tag == not_app || t->firstChild->sibling->sibling->exp_type.tag == not_app)
+            {
+				printf("%-5d %-15s %-5s %-15s %-15s %-15s %-15s %-5d %-50s\n", line_no, "ASSIGNMENT", t->firstChild->sibling->firstChild->Node.terminal.lexeme, t->firstChild->Node.nonTerminal.lex_nt, left, t->firstChild->sibling->sibling->Node.nonTerminal.lex_nt, right, t->depth, "TYPE ERROR as both the operands need to be BOOLEAN");
+                        t->exp_type.tag = not_app;
+                        return;
+			}
             
             if (t->firstChild->exp_type.tag == t->firstChild->sibling->sibling->exp_type.tag) // operands need to be of same type
             {
