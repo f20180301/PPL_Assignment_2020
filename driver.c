@@ -12,14 +12,22 @@ AGRAWAL RAJAT RAMESH -- 2018A7PS0182P
 #include "tokeniseSourceCode.c"
 #include "parseTree.c"
 #include "typeExpressionTable.c"
-int main()
+int main(int argc, char *argv[])
 {
+
     // 1. Read the grammar.
     grammar *g = malloc(NON_TERMINALS * sizeof(grammar));
     readGrammar("grammar.txt", g);
 
     // 2. Tokenize the source code
-    tokeniseSourcecode("t0.txt", head);
+    if (argc == 2)
+        tokeniseSourcecode(argv[1], head);
+    else
+    {
+        printf("Please provide the sourcefile.txt as commaand line\n");
+        return 0;
+    }
+
     // 3. Create the parseTree
     //create the start node
     posToken = head;
@@ -36,7 +44,10 @@ int main()
     createParseTree(p, g);
 
     if (posToken != NULL)
+    {
         printf("ERROR READING INPUT TESTCASE (IT OCCURS USUALLY IF AN UNKNOWN SYMBOLS APPEAR WHICH CANNOT DOEAS NOT MATCH ANY RULE)\n");
+        return 0;
+    }
     //4. Printing the parse tree
     printParseTree(p);
 
