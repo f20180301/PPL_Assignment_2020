@@ -5,7 +5,7 @@
 
 ### Birla Institute of Technology and Science, Pilani, Pilani Campus
 
-# Topic: Assignment 1: Language design and type expression computation
+## Topic: Assignment 1: Language design and type expression computation
 Contributors: Yash Raj Singh, Shubham Agarwal, Agrawal Rajat Ramesh, Sahil Kattna
 
 Assignment  date: 30 October 2020.
