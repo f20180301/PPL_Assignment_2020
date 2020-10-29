@@ -721,6 +721,7 @@ void traverse_parse_tree(parseTree *t)
 		{
 			if(t->firstChild->exp_type.tag == primitive)
 			{
+				printf("INSIDE PRIMITIVE\n");
 				if(t->firstChild->exp_type.record.primitive_type == t->firstChild->sibling->sibling->exp_type.record.primitive_type)
 				{
 					t->exp_type = t->firstChild->exp_type;
@@ -734,6 +735,7 @@ void traverse_parse_tree(parseTree *t)
 			}
 			else if(t->firstChild->exp_type.tag == array)
 				{
+					printf("INSIDE ARRAY\n");
 					// check if the dims are equal
 					if(t->firstChild->exp_type.record.arr_record.dim == t->firstChild->sibling->sibling->exp_type.record.arr_record.dim)
 						t->exp_type = t->firstChild->exp_type;
@@ -745,6 +747,7 @@ void traverse_parse_tree(parseTree *t)
 				}
 				else if(t->firstChild->exp_type.tag == jagged_array)
 				{
+					printf("INSIDE JAGGED\n");
 					// check the dimensions
 					if(t->firstChild->exp_type.record.j_arr_record.dim == t->firstChild->sibling->sibling->exp_type.record.j_arr_record.dim)
 						t->exp_type = t->firstChild->exp_type;
@@ -945,6 +948,12 @@ void traverse_parse_tree(parseTree *t)
 			// find the typeExpression int the TypeExpression Table
 			
 			t->exp_type = search_table(t->firstChild->Node.terminal.lexeme);
+			if(t->exp_type.tag == not_app)
+			{
+				printf("TYPERROR VARIABLE DEFINED CARRIES AN ERROR\n");
+				strcpy(t->Node.nonTerminal.lex_nt,t->firstChild->Node.terminal.lexeme);
+				return;
+			}
 		}
 		else
 		{
@@ -961,7 +970,7 @@ void traverse_parse_tree(parseTree *t)
 			TypeExpression var_exp = search_table(t->firstChild->Node.terminal.lexeme);
 			if(var_exp.tag == not_app)
 			{
-				printf("ERROR...%s NOT Present in the TypeExpression Table\n", t->firstChild->Node.terminal.lexeme);
+				printf("ERROR...%s VARIABLE DEFINED HAS ERROR\n", t->firstChild->Node.terminal.lexeme);
 				t->exp_type.tag = not_app;
 				return;
 			}
@@ -1195,12 +1204,13 @@ int check_idx(parseTree * p_idx,TypeExpression var_exp,int arr_size)
 	int count = 0;
 	int prev_1 = -1, prev_2 = -1; // for jagged array
 	// keep going forward in the indexes until I get an epsilon
-	printf("%s\n", NonTerminalMap[p_idx->Node.nonTerminal.nt]);
+	// keep going forward in the indexes until I get an epsilon
+	//printf("%s\n", NonTerminalMap[p_idx->Node.nonTerminal.nt]);
 	while(!p_idx->firstChild->isTerm) // encountered an epsilon then exit
 	{
 		//<num_id> => NUM
 		//<num_id> => ID
-		printf("%s\n", NonTerminalMap[p_idx->firstChild->Node.nonTerminal.nt]);
+		//printf("%s\n", NonTerminalMap[p_idx->firstChild->Node.nonTerminal.nt]);
 		parseTree * p_num_id = p_idx->firstChild;
 		count++;
 		
@@ -1233,7 +1243,7 @@ int check_idx(parseTree * p_idx,TypeExpression var_exp,int arr_size)
 		{
 			int num = atoi(p_num_id->firstChild->Node.terminal.lexeme);
 			// do bound checking here
-			if(var_exp.info == Static)
+			if(var_exp.info == Static || var_exp.tag == jagged_array)
 			{
 				if(var_exp.tag == jagged_array)
 				{
