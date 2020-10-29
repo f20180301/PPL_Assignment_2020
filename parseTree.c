@@ -235,7 +235,7 @@ TypeExpression jagged(int lo, int hi, parseTree *jagLines, int dimen, TypeExpres
         indx = atoi(jagList->Node.terminal.lexeme);
         if (szchk != indx) // Checking index value
         {
-            int dep = 0;
+            int dep = jagList->depth;
             if (dimen == 2)
             {
                 printf("%d   DECLARATION   ***   ***   ***   ***   ***   %d   2D_Jagged_Array_Index_Mismatch \n", jagList->Node.terminal.line_num, dep);
@@ -264,14 +264,14 @@ TypeExpression jagged(int lo, int hi, parseTree *jagLines, int dimen, TypeExpres
                 }
                 if (dpnumList->Node.terminal.t == EPSILON)
                 {
-                    int dep = 0;
+                    int dep = dpnumList->depth;
                     printf("%d   DECLARATION   ***   ***   ***   ***   ***   %d   2D_Jagged_Array_No_Element_In_Row \n", dpnumList->Node.terminal.line_num, dep);
                     expr.tag = not_app;
                     return expr;
                 }
                 if (dpnumList->sibling->firstChild->Node.terminal.t != EPSILON)
                 {
-                    int dep = 0;
+                    int dep = dpnumList->sibling->firstChild->depth;
                     printf("%d   DECLARATION   ***   ***   ***   ***   ***   %d   2D_Jagged_Array_Multiple_Element_In_Row \n", dpnumList->Node.terminal.line_num, dep);
                     expr.tag = not_app;
                     return expr;
@@ -280,14 +280,14 @@ TypeExpression jagged(int lo, int hi, parseTree *jagLines, int dimen, TypeExpres
             }
             if (numList->firstChild->Node.terminal.t == EPSILON)
             {
-                int dep = 0;
+                int dep = numList->firstChild->depth;
                 printf("%d   DECLARATION   ***   ***   ***   ***   ***   %d   2D_Jagged_Array_No_Element_In_Row \n", dpnumList->Node.terminal.line_num, dep);
                 expr.tag = not_app;
                 return expr;
             }
             if (numList->firstChild->sibling->firstChild->Node.terminal.t != EPSILON)
             {
-                int dep = 0;
+                int dep = numList->firstChild->sibling->firstChild->depth;
                 printf("%d   DECLARATION   ***   ***   ***   ***   ***   %d   2D_Jagged_Array_Multiple_Element_In_Row \n", dpnumList->Node.terminal.line_num, dep);
                 expr.tag = not_app;
                 return expr;
@@ -296,7 +296,7 @@ TypeExpression jagged(int lo, int hi, parseTree *jagLines, int dimen, TypeExpres
             numcount++;
             if (sz != numcount) // Matchng size with no. of elements counted
             {
-                int dep = 0;
+                int dep = dpnumList->depth;
                 printf("%d   DECLARATION   ***   ***   ***   ***   ***   %d   2D_Jagged_Array_Size_Mismatch \n", dpnumList->Node.terminal.line_num, dep);
                 expr.tag = not_app;
                 return expr;
@@ -319,7 +319,7 @@ TypeExpression jagged(int lo, int hi, parseTree *jagLines, int dimen, TypeExpres
                 }
                 if (dpnumList->Node.terminal.t == EPSILON && idxcount == 0)
                 {
-                    int dep = 0;
+                    int dep = dpnumList->depth;
                     printf("%d   DECLARATION   ***   ***   ***   ***   ***   %d   3D_Jagged_Array_No_Element_In_3rd_Dimension \n", dpnumList->Node.terminal.line_num, dep);
                     expr.tag = not_app;
                     return expr;
@@ -337,7 +337,7 @@ TypeExpression jagged(int lo, int hi, parseTree *jagLines, int dimen, TypeExpres
             }
             if (dpnumList->Node.terminal.t == EPSILON && idxcount == 0)
             {
-                int dep = 0;
+                int dep = dpnumList->depth;
                 printf("%d   DECLARATION   ***   ***   ***   ***   ***   %d   3D_Jagged_Array_No_Element_In_3rd_Dimension \n", dpnumList->Node.terminal.line_num, dep);
                 expr.tag = not_app;
                 return expr;
@@ -346,7 +346,7 @@ TypeExpression jagged(int lo, int hi, parseTree *jagLines, int dimen, TypeExpres
             jagl[szchk - lo - 1][counter] = idxcount;
             if (counter != sz)
             {
-                int dep = 0;
+                int dep = dpnumList->depth;
                 printf("%d   DECLARATION   ***   ***   ***   ***   ***   %d   3D_Jagged_Array_Size_Mismatch \n", dpnumList->Node.terminal.line_num, dep);
                 expr.tag = not_app;
                 return expr;
@@ -502,7 +502,7 @@ void traverse_parse_tree(parseTree *t)
                     {
                         exp_table_record.tag = not_app;
                         exp_table_record.info = N_A; //erroneous type declaration, storing N_A in the field in node.
-                        int dep = 0;
+                        int dep = temp->firstChild->depth;
                         printf("%d   DECLARATION   ***   ***   ***   ***   ***   %d   Array_Range_Invalid_Variable \n", line, dep);
                         break;
                     }
@@ -552,7 +552,7 @@ void traverse_parse_tree(parseTree *t)
                     {
                         exp_table_record.tag = not_app;
                         exp_table_record.info = N_A; //erroneous type declaration, storing N_A in the field in node.
-                        int dep = 0;
+                        int dep = temp->firstChild->depth;
                         printf("%d   DECLARATION   ***   ***   ***   ***   ***   %d   Array_Range_Invalid_Variable \n", line, dep);
                         break;
                     }
@@ -605,7 +605,7 @@ void traverse_parse_tree(parseTree *t)
                     exp_table_record.tag = not_app;
                     exp_table_record.info = N_A; //erroneous type declaration, storing N_A in the field in node.
 
-                    int dep = 0;
+                    int dep = store->depth;
                     printf("%d   DECLARATION   ***   ***   ***   ***   ***   %d   Array_Range_Mismatch \n", line, dep);
                     break;
                 }
@@ -650,7 +650,7 @@ void traverse_parse_tree(parseTree *t)
                 else
                 {
                     //error
-                    int dep = 0;
+                    int dep = store->depth;
                     printf("%d   DECLARATION   ***   ***   ***   ***   ***   %d   Jagged_Array_Range_Mismatch \n", temp->firstChild->sibling->Node.terminal.line_num, dep);
                     exp_table_record.tag = not_app;
                 }
@@ -685,7 +685,7 @@ void traverse_parse_tree(parseTree *t)
                 }
                 else
                 {
-                    int dep = 0;
+                    int dep = store->depth;
                     printf("%d   DECLARATION   ***   ***   ***   ***   ***   %d   Jagged_Array_Range_Mismatch \n", temp->firstChild->sibling->Node.terminal.line_num, dep);
                 }
                 store->parent->exp_type = exp_table_record;
