@@ -739,22 +739,40 @@ void traverse_parse_tree(parseTree *t)
     {
 
         //<assignment_stmt> => <arr_pid> EQUALS <expression> SEMICOLON
-
+	
         traverse_parse_tree(t->firstChild);                   // check for the validity of the id on left
         traverse_parse_tree(t->firstChild->sibling->sibling); // traverse the expression part
-
+			
+		int line_no = t->firstChild->sibling->Node.terminal.line_num;
+		char left[100], right[100];
+		char message[100];
+		
+		// for left
+		if(t->firstChild->exp_type.tag == primitive)
+			strcpy(left, TerminalMap[t->firstChild->exp_type.record.primitive_type]);
+		else
+			strcpy(left, NonTerminalMap[t->firstChild->exp_type.tag]);
+		// for right
+		if(t->firstChild->sibling->sibling->exp_type.tag == primitive)
+		{
+			strcpy(right, TerminalMap[t->firstChild->sibling->sibling->exp_type.record.primitive_type]);
+		}
+		else
+			strcpy(right, NonTerminalMap[t->firstChild->sibling->sibling->exp_type.tag]);
+		
         // Now check the validity of the assignment statement and make changes int the parent t node
         // both operands need to be of same type
-        if (t->firstChild->exp_type.tag == not_app && t->firstChild->sibling->sibling->exp_type.tag == not_app)
+        if (t->firstChild->exp_type.tag == not_app || t->firstChild->sibling->sibling->exp_type.tag == not_app)
         {
-            printf("ERROR In assignment\n");
+            //printf("ERROR In assignment\n");
+            printf("%-5d %-15s %-5s %-15s %-15s %-15s %-15s %-5d %-50s\n", line_no, "ASSIGNMENT", "=", t->firstChild->Node.nonTerminal.lex_nt, left, t->firstChild->sibling->sibling->Node.nonTerminal.lex_nt, right, t->depth, "TYPE ERROR as LHS and RHS are of different types.");
             // ignoring in original here
         }
         else if (t->firstChild->exp_type.tag == t->firstChild->sibling->sibling->exp_type.tag)
         {
             if (t->firstChild->exp_type.tag == primitive)
             {
-                printf("INSIDE PRIMITIVE\n");
+                //printf("INSIDE PRIMITIVE\n");
                 if (t->firstChild->exp_type.record.primitive_type == t->firstChild->sibling->sibling->exp_type.record.primitive_type)
                 {
                     t->exp_type = t->firstChild->exp_type;
@@ -762,38 +780,43 @@ void traverse_parse_tree(parseTree *t)
                 }
                 else
                 {
-                    printf("ERROR... Operands should be of same Type in = \n");
+                    //printf("ERROR... Operands should be of same Type in = \n");
+                    printf("%-5d %-15s %-5s %-15s %-15s %-15s %-15s %-5d %-50s\n", line_no, "ASSIGNMENT", "=", t->firstChild->Node.nonTerminal.lex_nt, left, t->firstChild->sibling->sibling->Node.nonTerminal.lex_nt, right, t->depth, "TYPE ERROR as LHS and RHS are of different types.");
                     t->exp_type.tag = not_app;
                 }
             }
             else if (t->firstChild->exp_type.tag == array)
             {
-                printf("INSIDE ARRAY\n");
+                //printf("INSIDE ARRAY\n");
                 // check if the dims are equal
                 if (t->firstChild->exp_type.record.arr_record.dim == t->firstChild->sibling->sibling->exp_type.record.arr_record.dim)
                     t->exp_type = t->firstChild->exp_type;
                 else
                 {
-                    printf("ERROR... Arrays need to be of same dimension = \n");
+                    //printf("ERROR... Arrays need to be of same dimension = \n");
+                    sprintf(message, "Type Array as LHS and RHS are array of different sizes %d and %d", t->firstChild->exp_type.record.arr_record.dim, t->firstChild->sibling->sibling->exp_type.record.arr_record.dim);
+                    printf("%-5d %-15s %-5s %-15s %-15s %-15s %-15s %-5d %-50s\n", line_no, "ASSIGNMENT", "=", t->firstChild->Node.nonTerminal.lex_nt, left, t->firstChild->sibling->sibling->Node.nonTerminal.lex_nt, right, t->depth,message);
                     t->exp_type.tag = not_app;
                 }
             }
             else if (t->firstChild->exp_type.tag == jagged_array)
             {
-                printf("INSIDE JAGGED\n");
+                //printf("INSIDE JAGGED\n");
                 // check the dimensions
                 if (t->firstChild->exp_type.record.j_arr_record.dim == t->firstChild->sibling->sibling->exp_type.record.j_arr_record.dim)
                     t->exp_type = t->firstChild->exp_type;
                 else
                 {
-                    printf("ERROR... Arrays need to be of same dimension = \n");
+                    sprintf(message, "Type Array as LHS and RHS are array of different sizes %d and %d", t->firstChild->exp_type.record.j_arr_record.dim , t->firstChild->sibling->sibling->exp_type.record.j_arr_record.dim);
+                   printf("%-5d %-15s %-5s %-15s %-15s %-15s %-15s %-5d %-50s\n", line_no, "ASSIGNMENT", "=", t->firstChild->Node.nonTerminal.lex_nt, left, t->firstChild->sibling->sibling->Node.nonTerminal.lex_nt, right, t->depth,message);
                     t->exp_type.tag = not_app;
                 }
             }
         }
         else
         {
-            printf("ERROR... Operands Should be of same type in =\n");
+            //printf("ERROR... Operands Should be of same type in =\n");
+            printf("%-5d %-15s %-5s %-15s %-15s %-15s %-15s %-5d %-50s\n", line_no, "ASSIGNMENT", "=", t->firstChild->Node.nonTerminal.lex_nt, left, t->firstChild->sibling->sibling->Node.nonTerminal.lex_nt, right, t->depth, "TYPE ERROR as LHS and RHS are of different types.");
             t->exp_type.tag = not_app;
         }
         strcpy(t->Node.nonTerminal.lex_nt, t->firstChild->Node.nonTerminal.lex_nt);
@@ -830,6 +853,25 @@ void traverse_parse_tree(parseTree *t)
             //<op1> => OR
             // if plus, minus // operands can be primitive integer, real
             // if and, or // operands can be primitive boolean
+            
+            int line_no = t->firstChild->sibling->Node.terminal.line_num;
+			char left[100], right[100];
+			char message[100];
+			
+			// for left
+			if(t->firstChild->exp_type.tag == primitive)
+				strcpy(left, TerminalMap[t->firstChild->exp_type.record.primitive_type]);
+			else
+				strcpy(left, NonTerminalMap[t->firstChild->exp_type.tag]);
+			// for right
+			if(t->firstChild->sibling->sibling->exp_type.tag == primitive)
+			{
+				strcpy(right, TerminalMap[t->firstChild->sibling->sibling->exp_type.record.primitive_type]);
+			}
+			else
+				strcpy(right, NonTerminalMap[t->firstChild->sibling->sibling->exp_type.tag]);
+            
+            
             if (t->firstChild->exp_type.tag == t->firstChild->sibling->sibling->exp_type.tag) // operands need to be of same type
             {
                 if (t->firstChild->sibling->Node.terminal.t == AND || t->firstChild->sibling->Node.terminal.t == OR)
@@ -841,7 +883,8 @@ void traverse_parse_tree(parseTree *t)
                     }
                     else
                     {
-                        printf("ERROR... Operands need to be boolean with %s\n", t->firstChild->sibling->firstChild->Node.terminal.lexeme);
+                        //printf("ERROR... Operands need to be boolean with %s\n", t->firstChild->sibling->firstChild->Node.terminal.lexeme);
+                        printf("%-5d %-15s %-5s %-15s %-15s %-15s %-15s %-5d %-50s\n", line_no, "ASSIGNMENT", t->firstChild->sibling->firstChild->Node.terminal.lexeme, t->firstChild->Node.nonTerminal.lex_nt, left, t->firstChild->sibling->sibling->Node.nonTerminal.lex_nt, right, t->depth, "TYPE ERROR as both the operands need to be BOOLEAN");
                         t->exp_type.tag = not_app;
                     }
                 }
@@ -850,19 +893,49 @@ void traverse_parse_tree(parseTree *t)
                     // operands should not be boolean
                     if (t->firstChild->exp_type.record.primitive_type == BOOLEAN)
                     {
-                        printf("ERROR... Operands cannot be boolean with %s\n", t->firstChild->sibling->firstChild->Node.terminal.lexeme);
+                        //printf("ERROR... Operands cannot be boolean with %s\n", t->firstChild->sibling->firstChild->Node.terminal.lexeme);
+                        printf("%-5d %-15s %-5s %-15s %-15s %-15s %-15s %-5d %-50s\n", line_no, "ASSIGNMENT", t->firstChild->sibling->firstChild->Node.terminal.lexeme, t->firstChild->Node.nonTerminal.lex_nt, left, t->firstChild->sibling->sibling->Node.nonTerminal.lex_nt, right, t->depth, "TYPE ERROR as operands cannot be BOOLEAN");
                         t->exp_type.tag = not_app;
                     }
                     else
                     {
                         // operands are of same type
                         t->exp_type = t->firstChild->exp_type;
+                        
+                        if (t->firstChild->exp_type.tag == array)
+						{
+							// check if the dims are equal
+							if (t->firstChild->exp_type.record.arr_record.dim == t->firstChild->sibling->sibling->exp_type.record.arr_record.dim)
+								t->exp_type = t->firstChild->exp_type;
+							else
+							{
+								//printf("ERROR... Arrays need to be of same dimension\n");
+								 sprintf(message, "Type Array as LHS and RHS are array of different sizes %d and %d", t->firstChild->exp_type.record.arr_record.dim, t->firstChild->sibling->sibling->exp_type.record.arr_record.dim);
+							printf("%-5d %-15s %-5s %-15s %-15s %-15s %-15s %-5d %-50s\n", line_no, "ASSIGNMENT", "=", t->firstChild->Node.nonTerminal.lex_nt, left, t->firstChild->sibling->sibling->Node.nonTerminal.lex_nt, right, t->depth,message);
+								t->exp_type.tag = not_app;
+							}
+						}
+						else if (t->firstChild->exp_type.tag == jagged_array)
+						{
+							// check the dimensions
+							if (t->firstChild->exp_type.record.j_arr_record.dim == t->firstChild->sibling->sibling->exp_type.record.j_arr_record.dim)
+								t->exp_type = t->firstChild->exp_type;
+							else
+							{
+								//printf("ERROR... Arrays need to be of same dimension\n");
+								 sprintf(message, "Type Array as LHS and RHS are array of different sizes %d and %d", t->firstChild->exp_type.record.arr_record.dim, t->firstChild->sibling->sibling->exp_type.record.arr_record.dim);
+							printf("%-5d %-15s %-5s %-15s %-15s %-15s %-15s %-5d %-50s\n", line_no, "ASSIGNMENT", "=", t->firstChild->Node.nonTerminal.lex_nt, left, t->firstChild->sibling->sibling->Node.nonTerminal.lex_nt, right, t->depth,message);
+								t->exp_type.tag = not_app;
+							}
+						}
+								
                     }
                 }
             }
             else
             {
-                printf("ERROR... Operands need to be of same type in %s\n", NonTerminalMap[arithmetic_expression]);
+                //printf("ERROR... Operands need to be of same type in %s\n", NonTerminalMap[arithmetic_expression]);
+                printf("%-5d %-15s %-5s %-15s %-15s %-15s %-15s %-5d %-50s\n", line_no, "ASSIGNMENT", t->firstChild->sibling->firstChild->Node.terminal.lexeme, t->firstChild->Node.nonTerminal.lex_nt, left, t->firstChild->sibling->sibling->Node.nonTerminal.lex_nt, right, t->depth, "TYPE ERROR as LHS and RHS are of different types.");
                 t->exp_type.tag = not_app;
             }
         }
@@ -888,6 +961,24 @@ void traverse_parse_tree(parseTree *t)
             //<op2> => MUL
             // both operand real or integer
             // in div integer / integer will give real
+			
+			int line_no = t->firstChild->sibling->Node.terminal.line_num;
+			char left[100], right[100];
+			char message[100];
+			
+			// for left
+			if(t->firstChild->exp_type.tag == primitive)
+				strcpy(left, TerminalMap[t->firstChild->exp_type.record.primitive_type]);
+			else
+				strcpy(left, NonTerminalMap[t->firstChild->exp_type.tag]);
+			// for right
+			if(t->firstChild->sibling->sibling->exp_type.tag == primitive)
+			{
+				strcpy(right, TerminalMap[t->firstChild->sibling->sibling->exp_type.record.primitive_type]);
+			}
+			else
+				strcpy(right, NonTerminalMap[t->firstChild->sibling->sibling->exp_type.tag]);
+			
 
             // operands need to be of same type
             if (t->firstChild->exp_type.tag == t->firstChild->sibling->sibling->exp_type.tag)
@@ -899,7 +990,9 @@ void traverse_parse_tree(parseTree *t)
                         t->exp_type = t->firstChild->exp_type;
                     else
                     {
-                        printf("ERROR... Arrays need to be of same dimension\n");
+                        //printf("ERROR... Arrays need to be of same dimension\n");
+                         sprintf(message, "Type Array as LHS and RHS are array of different sizes %d and %d", t->firstChild->exp_type.record.arr_record.dim, t->firstChild->sibling->sibling->exp_type.record.arr_record.dim);
+                    printf("%-5d %-15s %-5s %-15s %-15s %-15s %-15s %-5d %-50s\n", line_no, "ASSIGNMENT", "=", t->firstChild->Node.nonTerminal.lex_nt, left, t->firstChild->sibling->sibling->Node.nonTerminal.lex_nt, right, t->depth,message);
                         t->exp_type.tag = not_app;
                     }
                 }
@@ -910,13 +1003,16 @@ void traverse_parse_tree(parseTree *t)
                         t->exp_type = t->firstChild->exp_type;
                     else
                     {
-                        printf("ERROR... Arrays need to be of same dimension\n");
+                        //printf("ERROR... Arrays need to be of same dimension\n");
+                         sprintf(message, "Type Array as LHS and RHS are array of different sizes %d and %d", t->firstChild->exp_type.record.arr_record.dim, t->firstChild->sibling->sibling->exp_type.record.arr_record.dim);
+                    printf("%-5d %-15s %-5s %-15s %-15s %-15s %-15s %-5d %-50s\n", line_no, "ASSIGNMENT", "=", t->firstChild->Node.nonTerminal.lex_nt, left, t->firstChild->sibling->sibling->Node.nonTerminal.lex_nt, right, t->depth,message);
                         t->exp_type.tag = not_app;
                     }
                 }
                 else if (t->firstChild->exp_type.record.primitive_type == BOOLEAN) // operands cannot be boolean
                 {
-                    printf("ERROR... Operands cannot be BOOLEAN with %s\n", t->firstChild->sibling->firstChild->Node.terminal.lexeme);
+                    //printf("ERROR... Operands cannot be BOOLEAN with %s\n", t->firstChild->sibling->firstChild->Node.terminal.lexeme);
+                    printf("%-5d %-15s %-5s %-15s %-15s %-15s %-15s %-5d %-50s\n", line_no, "ASSIGNMENT", t->firstChild->sibling->firstChild->Node.terminal.lexeme, t->firstChild->Node.nonTerminal.lex_nt, left, t->firstChild->sibling->sibling->Node.nonTerminal.lex_nt, right, t->depth, "TYPE ERROR as operands cannot be BOOLEAN");
                     t->exp_type.tag = not_app;
                 }
                 else
@@ -931,7 +1027,9 @@ void traverse_parse_tree(parseTree *t)
             }
             else
             {
-                printf("ERROR... Operands need to be of same type in %s\n", t->firstChild->sibling->firstChild->Node.terminal.lexeme);
+                //printf("ERROR... Operands need to be of same type in %s\n", t->firstChild->sibling->firstChild->Node.terminal.lexeme);
+                 printf("%-5d %-15s %-5s %-15s %-15s %-15s %-15s %-5d %-50s\n", line_no, "ASSIGNMENT", t->firstChild->sibling->firstChild->Node.terminal.lexeme, t->firstChild->Node.nonTerminal.lex_nt, left, t->firstChild->sibling->sibling->Node.nonTerminal.lex_nt, right, t->depth, "TYPE ERROR as LHS and RHS are of different types.");
+				t->exp_type.tag = not_app;
             }
         }
         strcpy(t->Node.nonTerminal.lex_nt, t->firstChild->Node.nonTerminal.lex_nt);
@@ -973,15 +1071,29 @@ void traverse_parse_tree(parseTree *t)
     {
         //<arr_pid> => ID SQOP <idx> SQCL
         //<arr_pid> => ID
+        int line_no = t->firstChild->Node.terminal.line_num;
+		char left[100];
+		//char message[100];
+			
+			// for left
+			if(t->firstChild->exp_type.tag == primitive)
+				strcpy(left, TerminalMap[t->firstChild->exp_type.record.primitive_type]);
+			else
+				strcpy(left, NonTerminalMap[t->firstChild->exp_type.tag]);
         if (t->firstChild->sibling == NULL)
         {
             // copy the details of this type expression in arr_pid
             // find the typeExpression int the TypeExpression Table
 
             t->exp_type = search_table(t->firstChild->Node.terminal.lexeme);
+            if(t->exp_type.tag == primitive)
+				strcpy(left, TerminalMap[t->exp_type.record.primitive_type]);
+			else
+				strcpy(left, NonTerminalMap[t->exp_type.tag]);
             if (t->exp_type.tag == not_app)
             {
-                printf("TYPERROR VARIABLE DEFINED CARRIES AN ERROR\n");
+                //printf("TYPERROR VARIABLE DEFINED CARRIES AN ERROR\n");
+                 printf("%-5d %-15s %-5s %-15s %-15s %-15s %-15s %-5d %-50s\n", line_no, "ASSIGNMENT", "***", t->firstChild->Node.terminal.lexeme, "***", "***", "***", t->depth, "ERROR The Variable is not declared");
                 strcpy(t->Node.nonTerminal.lex_nt, t->firstChild->Node.terminal.lexeme);
                 return;
             }
@@ -999,16 +1111,22 @@ void traverse_parse_tree(parseTree *t)
             int arr_size = 0;
             // get the typeExpression of the variable from the table
             TypeExpression var_exp = search_table(t->firstChild->Node.terminal.lexeme);
+            if(var_exp.tag == primitive)
+				strcpy(left, TerminalMap[var_exp.record.primitive_type]);
+			else
+				strcpy(left, NonTerminalMap[var_exp.tag]);
             if (var_exp.tag == not_app)
             {
-                printf("ERROR...%s VARIABLE DEFINED HAS ERROR\n", t->firstChild->Node.terminal.lexeme);
+                //printf("ERROR...%s VARIABLE DEFINED HAS ERROR\n", t->firstChild->Node.terminal.lexeme);
+                printf("%-5d %-15s %-5s %-15s %-15s %-15s %-15s %-5d %-50s\n", line_no, "ASSIGNMENT", "***", t->firstChild->Node.terminal.lexeme, "***", "***", "***", t->depth, "ERROR The Variable is not declared");
                 t->exp_type.tag = not_app;
                 return;
             }
             // Now check the size and ranges
             if (var_exp.tag == primitive)
             {
-                printf("ERROR... Primitives cannot be Dereferenced\n");
+                //printf("ERROR... Primitives cannot be Dereferenced\n");
+                printf("%-5d %-15s %-5s %-15s %-15s %-15s %-15s %-5d %-50s\n", line_no, "ASSIGNMENT", "***", t->firstChild->Node.terminal.lexeme, TerminalMap[t->firstChild->exp_type.record.primitive_type], "***", "***", t->depth, "Primitives cannot be dereferenced");
                 t->exp_type.tag = not_app;
                 return;
             }
@@ -1025,7 +1143,9 @@ void traverse_parse_tree(parseTree *t)
             //<idx> => <num_id> <idx>
             //<idx> => EPSILON
             // after checking all the idx's
-            if (check_idx(p_idx, var_exp, arr_size)) // all idx's are valid i.e. range and dimensions
+            char lex[100];
+            strcpy(lex, t->firstChild->Node.terminal.lexeme);
+            if (check_idx(p_idx, var_exp, arr_size, lex, line_no)) // all idx's are valid i.e. range and dimensions
             {
                 // store the info in arr_pid node
                 // The expType will change will no longer be array
@@ -1223,11 +1343,11 @@ TypeExpression search_table(char *lex)
         }
     }
     // if not found
-    printf("ERROR!!! TYPE EXPRESSION NOT FOUND IN TABLE, %s NOT PRESENT\n", lex);
+    //printf("ERROR!!! TYPE EXPRESSION NOT FOUND IN TABLE, %s NOT PRESENT\n", lex);
     return x;
 }
 
-int check_idx(parseTree *p_idx, TypeExpression var_exp, int arr_size)
+int check_idx(parseTree *p_idx, TypeExpression var_exp, int arr_size, char * lex, int line_no)
 {
     //<idx> => <num_id> <idx>
     //<idx> => EPSILON
@@ -1248,7 +1368,10 @@ int check_idx(parseTree *p_idx, TypeExpression var_exp, int arr_size)
         if (count > arr_size)
         {
             // ERRROR dereferenced greater than the dimension.
-            printf("ERRROR dereferenced greater than the dimension.\n");
+            //printf("ERRROR dereferenced greater than the dimension.\n");
+            char message[100];
+            sprintf(message, "ERROR The variable is Dereferenced Greater than its Dimensions %d", arr_size);
+            printf("%-5d %-15s %-5s %-15s %-15s %-15s %-15s %-5d %-50s\n", line_no, "ASSIGNMENT", "[ ]", lex, NonTerminalMap[var_exp.tag], "***", "***", p_idx->depth, message);
             // print the error here
             p_idx->exp_type.tag = not_app;
             return 0;
@@ -1260,7 +1383,13 @@ int check_idx(parseTree *p_idx, TypeExpression var_exp, int arr_size)
             TypeExpression id_exp = search_table(p_num_id->firstChild->Node.terminal.lexeme);
             if (id_exp.tag != primitive || id_exp.record.primitive_type != INTEGER)
             {
-                printf("ERROR... ARRAY Index needs to be a INTEGER\n");
+				char left[100];
+				if(p_num_id->firstChild->exp_type.tag == primitive)
+					strcpy(left, TerminalMap[p_num_id->firstChild->exp_type.record.primitive_type]);
+				else
+					strcpy(left, NonTerminalMap[p_num_id->firstChild->exp_type.tag]);
+                //printf("ERROR... ARRAY Index needs to be a INTEGER\n");
+                printf("%-5d %-15s %-5s %-15s %-15s %-15s %-15s %-5d %-50s\n", line_no, "ASSIGNMENT", "[ ]", lex, NonTerminalMap[var_exp.tag], p_num_id->firstChild->Node.terminal.lexeme, left, p_idx->depth, "ERROR Array Index needs to be an Integer");
                 p_num_id->exp_type.tag = not_app;
                 return 0;
             }
