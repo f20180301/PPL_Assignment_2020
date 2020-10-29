@@ -112,13 +112,13 @@ void tokeniseSourcecode(char a[100], token *head)
     fp = fopen(a, "r+");
     if (fp == NULL)
     {
-        printf("ERRROR\n");
+        printf("ERROR OPENING SOURCE CODE FILE\n");
     }
     while (fscanf(fp, "%[^\n]\n", buff) != EOF)
     {
         count++;
         char *token_split;
-        token_split = strtok(buff, " ");
+        token_split = strtok(buff, "  \t");
         while (token_split != NULL)
         {
             if (token_split != NULL)
@@ -126,7 +126,7 @@ void tokeniseSourcecode(char a[100], token *head)
                 s = createNode(token_split, count);
                 insertNode(s);
             }
-            token_split = strtok(NULL, " ");
+            token_split = strtok(NULL, "  \t");
         }
     }
     //printLinkedList();
@@ -363,7 +363,7 @@ int find(char *str, int isterm)
                 return i;
         }
     }
-    printf("Error - NOT FOUND || RETURNING START SYMBOL %s\n", str);
+    printf("Error - NOT FOUND %s || RETURNING START SYMBOL \n", str);
     return 0;
 }
 
@@ -901,6 +901,10 @@ void printParseTree(parseTree *t)
 {
     // Initial setup.
     FILE *fp = fopen("parseTree.txt", "w");
+    if (fp == NULL)
+    {
+        printf("ERROR OPENING FILE TO PRINT PARSE TREE\n");
+    }
 
     fprintf(fp, "\n------------------------------------------------------Printing Parse Tree-----------------------------------------------------\n\n");
     //printf("\n------------------------------------------------------Printing Parse Tree On the Console-----------------------------------------------\n\n");
@@ -1469,7 +1473,7 @@ void printTypeExpressionsTable(TypeExpressionTable T[], char *filename)
     FILE *fp = fopen(filename, "w");
     if (fp == NULL)
     {
-        printf("Error opening");
+        printf("ERROR OPENING FILE TO PRINT TYPE EXPRESSION TABLE");
         return;
     }
 
@@ -1640,7 +1644,6 @@ int main()
 
     // 2. Tokenize the source code
     tokeniseSourcecode("file2.txt", head);
-
     // 3. Create the parseTree
     //create the start node
     posToken = head;
@@ -1655,7 +1658,7 @@ int main()
     createParseTree(p, g);
 
     if (posToken != NULL)
-        printf("ERROR READING INPUT STRING (IT OCCURS USUALLY IF AN UNKNOWN SYMBOLS APPEAR WHICH CANNOT DOEAS NOT MATCH ANY RULE)\n");
+        printf("ERROR READING INPUT TESTCASE (IT OCCURS USUALLY IF AN UNKNOWN SYMBOLS APPEAR WHICH CANNOT DOEAS NOT MATCH ANY RULE)\n");
     //4. Printing the parse tree
     printParseTree(p);
 
