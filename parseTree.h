@@ -14,7 +14,7 @@ AGRAWAL RAJAT RAMESH -- 2018A7PS0182P
 typedef struct terminalNode
 {
     Terminal t;
-    char lexeme[100];
+    char lexeme[200];
     int line_num;
 } TerminalNode;
 
@@ -23,7 +23,7 @@ typedef struct nonTerminalNode
 {
     NonTerminal nt;
     grules *expRule; // for getting the rule used in parsing
-	char lex_nt[100];
+	char lex_nt[200];
 } NonTerminalNode;
 
 // Union for Term / NonTerm Nodes
