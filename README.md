@@ -42,3 +42,7 @@ Instructor IC: Prof. Vanadana
   and corresponding header file <filename.h> are included.
   ```
           
+### KINDLY NOTE:
+  #### **DUE TO MULTIPLE INTER-DEPENDECIES, THE VERSION HAS BEEN SIMPLIED AND COMPILES ALL THE FILES THROUGH DRIVER.C ITSELF.**
+  #### **KINDLY AVOID COMPLILING ALL THE INDIVIDUAL FILES.**
+  #### **_KINDLY DO MAKE AND THEN EXECUTE ./EXE <FILENAME.TXT>_.**
