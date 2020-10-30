@@ -910,7 +910,7 @@ void traverse_parse_tree(parseTree *t)
                         t->exp_type.tag = not_app;
                     }
                 }
-                else // operator is mult and div
+                else // operator is plus and minus
                 {
                     // operands should not be boolean
                     if (t->firstChild->exp_type.record.primitive_type == BOOLEAN)
@@ -950,8 +950,17 @@ void traverse_parse_tree(parseTree *t)
 								t->exp_type.tag = not_app;
 							}
 						}
-								
-                    }
+						else // checks for primitives
+						{
+							if(t->firstChild->exp_type.record.primitive_type != t->firstChild->sibling->sibling->exp_type.record.primitive_type)
+							{
+								printf("%-5d %-15s %-5s %-15s %-15s %-15s %-15s %-5d %-50s\n", line_no, "ASSIGNMENT", t->firstChild->sibling->firstChild->Node.terminal.lexeme, t->firstChild->Node.nonTerminal.lex_nt, left, t->firstChild->sibling->sibling->Node.nonTerminal.lex_nt, right, t->depth, "TYPE ERROR as both Operands are of Different Types");
+								t->exp_type.tag = not_app;
+							}
+							else
+								t->exp_type = t->firstChild->exp_type;  
+								}			
+							}
                 }
             }
             else
@@ -1003,7 +1012,12 @@ void traverse_parse_tree(parseTree *t)
 			
 
             // operands need to be of same type
-            if (t->firstChild->exp_type.tag == t->firstChild->sibling->sibling->exp_type.tag)
+            if(t->firstChild->exp_type.tag == not_app || t->firstChild->sibling->sibling->exp_type.tag == not_app)
+            {
+				printf("%-5d %-15s %-5s %-15s %-15s %-15s %-15s %-5d %-50s\n", line_no, "ASSIGNMENT", t->firstChild->sibling->firstChild->Node.terminal.lexeme, t->firstChild->Node.nonTerminal.lex_nt, left, t->firstChild->sibling->sibling->Node.nonTerminal.lex_nt, right, t->depth, "TYPE ERROR as both Operands are of Different Types");
+                        t->exp_type.tag = not_app;
+			}
+            else if (t->firstChild->exp_type.tag == t->firstChild->sibling->sibling->exp_type.tag)
             {
                 if (t->firstChild->exp_type.tag == array)
                 {
@@ -1040,9 +1054,19 @@ void traverse_parse_tree(parseTree *t)
                 else
                 {
                     // handle seperately the case of primitives
-                    t->exp_type = t->firstChild->exp_type;
-                    if (t->firstChild->sibling->Node.terminal.t == DIVIDE && t->firstChild->exp_type.record.primitive_type == INTEGER) // both operands are integer
+                    
+                    //printf("INSIDE PRIMITIVE\n");
+                    // check of the operand types are of same primitive type also
+                    if(t->firstChild->exp_type.record.primitive_type != t->firstChild->sibling->sibling->exp_type.record.primitive_type)
                     {
+						printf("%-5d %-15s %-5s %-15s %-15s %-15s %-15s %-5d %-50s\n", line_no, "ASSIGNMENT", t->firstChild->sibling->firstChild->Node.terminal.lexeme, t->firstChild->Node.nonTerminal.lex_nt, left, t->firstChild->sibling->sibling->Node.nonTerminal.lex_nt, right, t->depth, "TYPE ERROR as both Operands are of Different Types");
+                        t->exp_type.tag = not_app;
+					}
+					else
+						t->exp_type = t->firstChild->exp_type;                    
+                    if (t->firstChild->sibling->firstChild->Node.terminal.t == DIVIDE && t->firstChild->exp_type.record.primitive_type == INTEGER) // both operands are integer
+                    {
+						//printf("HERE\n");
                         t->exp_type.record.primitive_type = REAL;
                     }
                 }
