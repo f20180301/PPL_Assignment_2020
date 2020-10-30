@@ -781,6 +781,7 @@ void traverse_parse_tree(parseTree *t)
         {
             //printf("ERROR In assignment\n");
             printf("%-5d %-15s %-5s %-15s %-15s %-15s %-15s %-5d %-50s\n", line_no, "ASSIGNMENT", "=", t->firstChild->Node.nonTerminal.lex_nt, left, t->firstChild->sibling->sibling->Node.nonTerminal.lex_nt, right, t->depth, "TYPE ERROR as LHS and RHS are of different types.");
+			t->exp_type.tag = not_app;
             // ignoring in original here
         }
         else if (t->firstChild->exp_type.tag == t->firstChild->sibling->sibling->exp_type.tag)
@@ -892,10 +893,8 @@ void traverse_parse_tree(parseTree *t)
             {
 				printf("%-5d %-15s %-5s %-15s %-15s %-15s %-15s %-5d %-50s\n", line_no, "ASSIGNMENT", t->firstChild->sibling->firstChild->Node.terminal.lexeme, t->firstChild->Node.nonTerminal.lex_nt, left, t->firstChild->sibling->sibling->Node.nonTerminal.lex_nt, right, t->depth, "TYPE ERROR as both Operands are of Different Types");
                         t->exp_type.tag = not_app;
-                        return;
 			}
-            
-            if (t->firstChild->exp_type.tag == t->firstChild->sibling->sibling->exp_type.tag) // operands need to be of same type
+            else if (t->firstChild->exp_type.tag == t->firstChild->sibling->sibling->exp_type.tag) // operands need to be of same type
             {
                 if (t->firstChild->sibling->firstChild->Node.terminal.t == AND || t->firstChild->sibling->firstChild->Node.terminal.t == OR)
                 {
