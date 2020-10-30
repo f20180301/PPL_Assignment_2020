@@ -1349,7 +1349,7 @@ void printParseTreeUtil(parseTree *t, FILE *fp, int depth)
                     }
                 }
 
-                sprintf(exp2, "), basicElementType = integeri> %-10s", "ji");
+                sprintf(exp2, "), basicElementType = Integer>");
                 strcat(exp, exp2);
 
                 //basic=Integer by def
@@ -1545,7 +1545,7 @@ void printParseTree(parseTree *t)
     }
 
     fprintf(fp, "\n------------------------------------------------------Printing Parse Tree-----------------------------------------------------\n\n");
-    //printf("\n------------------------------------------------------Printing Parse Tree On the Console-----------------------------------------------\n\n");
+    fprintf(fp,"\n------------------------------------------------------(KINDLY SCROLL RIGHT TO VIEW MORE)-----------------------------------------------\n\n");
     //fprintf(fp, "%-25s %-10s %-15s %-15s %-30s %-5s %s\n\n\n", "LEXEME","LINE","TOKEN","VALUE","PARENT","LEAF","NODE");
     fprintf(fp, "%-24s %-25s %-150s %-30s %-10s %-200s %-10s\n\n\n", "SYMBOL", "TERMINAL / NON TERMINAL", "TYPE EXPRESSION", "LEXEME", "LINE", "GRAMMAR RULE", "DEPTH");
 

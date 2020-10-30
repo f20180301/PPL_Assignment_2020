@@ -51,6 +51,11 @@ int main(int argc, char *argv[])
     // printTypeExpressionsTable(table, "typeExpressionTable.txt");
     do
     {
+        printf("Option 0:To Exit\n");
+        printf("Option 1:Create Parse Tree\n");
+        printf("Option 2:Create and Traverse Parse Tree\n");
+        printf("Option 3:Create, Traverse Parse Tree and Print Parse Tree\n");
+        printf("Option 4:Create, Traverse Parse Tree, Print Parse Tree and Type Expression Table\n");
         printf("Please Choose your option : ");
         scanf("%d", &n);
         switch (n)
