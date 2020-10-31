@@ -1,5 +1,5 @@
 # PPL_Assignment_2020
-(PRIVATE REPO)
+(PUBLIC REPO)
 
 #### Principles of Programming Languages (CS F301)
 
@@ -43,7 +43,7 @@ Instructor IC: Prof. Vanadana
   ```
           
 ### KINDLY NOTE:
-  #### **DUE TO MULTIPLE INTER-DEPENDECIES, THE VERSION HAS BEEN SIMPLIED AND COMPILES ALL THE FILES THROUGH DRIVER.C ITSELF.**
+  #### **DUE TO MULTIPLE INTER-DEPENDECIES, THE VERSION HAS BEEN SIMPLIFIED AND COMPILES ALL THE FILES THROUGH DRIVER.C ITSELF.**
   #### **KINDLY AVOID COMPLILING ALL THE INDIVIDUAL FILES.**
   #### **_KINDLY DO MAKE AND THEN EXECUTE ./EXE <FILENAME.TXT>_.**
 ***************************************************************************
